@@ -1,0 +1,416 @@
+/* Reset y tamaño básico */
+html, body {
+  margin: 0; padding: 0;
+  width: 100vw; height: 100vh;
+  transition: background 2s ease-in-out, color 1.5s ease;
+}
+
+body {
+  overflow: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Contenedores pantallas */
+.pantalla {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* centra vertical */
+  align-items: center;     /* centra horizontal */
+  
+  transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.opacity-0 {
+  opacity: 0;
+}
+
+.opacity-100 {
+  opacity: 1;
+}
+
+.pantalla.visible {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto;
+}
+
+.oculto {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Fondo nocturno con estrellas */
+.fondo-nocturno {
+  background: linear-gradient(to bottom, #0a0a23, #000000);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: black;
+  position: relative;
+  overflow: hidden;
+}
+.fondo-nocturno::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: url("img/estrellas.png") repeat;
+  background-size: 200px;
+  opacity: 0.3;
+  animation: estrellas 60s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+@keyframes estrellas {
+  from { background-position: 0 0; }
+  to { background-position: 1000px 1000px; }
+}
+
+/* Flotación linternas */
+@keyframes flotar {
+  0%   { transform: translateY(0) translateX(0); }
+  50%  { transform: translateY(-40px) translateX(60px); }
+  100% { transform: translateY(0) translateX(0); }
+}
+.animate-float {
+  animation: flotar 4s ease-in-out infinite;
+}
+.delay-500  { animation-delay: 0.5s; }
+.delay-1000 { animation-delay: 1s; }
+.delay-1500 { animation-delay: 1.5s; }
+.delay-2000 { animation-delay: 2s; }
+.delay-2500 { animation-delay: 2.5s; }
+.delay-3000 { animation-delay: 3s; }
+
+/* Tema nocturno texto y botones */
+.tema-nocturno h2,
+.tema-nocturno #mensaje-linterna {
+  color: #fbe870 !important;
+}
+.tema-nocturno button {
+  background-color: #bfa2db !important;
+  color: black !important;
+}
+.tema-nocturno button:hover {
+  background-color: #a882d6 !important;
+}
+
+/* Fondo Enredados para juego Pascal */
+.fondo-enredados {
+  background: linear-gradient(135deg, #457f4a 0%, #b2e59e 50%, #f3e5ab 80%, #eec6ff 100%);
+  transition: background 2s ease-in-out;
+  min-height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+  color: #2b2115;
+}
+
+
+/* Estilo para el arbusto que recibe a Pascal - resaltado */
+
+.arbusto {
+  transition: transform 0.7s ease;
+  cursor: pointer;
+}
+
+/* Clase para destacar arbusto destino (central) */
+/* .arbusto.destino-pascal {
+  box-shadow: 0 0 15px 5px #a3f7a3;
+  border-radius: 12px;
+  transition: box-shadow 0.7s ease;
+} */
+
+/* Se pueden definir animaciones para los arbustos al mezclarse */
+@keyframes mezclarArbustos {
+  0%   { transform: translateX(0); }
+  12%  { transform: translateX(12px); }
+  25%  { transform: translateX(-18px); }
+  37%  { transform: translateX(16px); }
+  50%  { transform: translateX(-12px); }
+  68%  { transform: translateX(10px); }
+  80%  { transform: translateX(-6px); }
+  100% { transform: translateX(0); }
+}
+
+
+.mezclando .arbusto {
+  animation: mezclarArbustos 1.8s cubic-bezier(0.86,0,0.07,1) infinite alternate;
+}
+
+.animacionesuave {
+  animation: mezclarArbustos 1.8s cubic-bezier(0.86,0,0.07,1) infinite alternate;
+}
+
+
+#img-pascal {
+  pointer-events: none;
+  z-index: 50;
+  position: absolute; /* Se ajusta por JS, pero importante para poder mover */
+}
+
+
+#juego3 {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #457f4a 0%, #b2e59e 50%, #f3e5ab 80%, #eec6ff 100%);
+  color: #2b2115;
+}
+
+#titulo-pascal {
+  position: center;
+  top: -160px; /* Puedes ajustar este valor para moverlo arriba/abajo */
+  left: 35%;
+  transform: translateX(-50%);
+  width: max-content;
+  z-index: 20;
+}
+
+
+#pascal-stars {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.pascal-star {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffef71 50%, #ffd700 100%, transparent 100%);
+  opacity: 0.9;
+  width: 8px; height: 8px;
+  box-shadow: 0 0 6px 1px #ffe066, 0 0 15px 6px #ffd70044;
+  animation: pascalTwinkle 2.2s ease-in-out infinite;
+}
+
+@keyframes pascalTwinkle {
+  0%   { opacity: 0.65; }
+  20%  { opacity: 1; }
+  40%  { opacity: 0.6; }
+  60%  { opacity: 0.75; }
+  80%  { opacity: 1; }
+  100% { opacity: 0.55; }
+}
+
+
+#juego3 > *:not(#pascal-stars) {
+  position: relative;
+  z-index: 2;
+}
+
+  #contenedor-arbustos {
+  margin-top: 40px; /* Menos que mt-32, ajusta según prefieras */
+  z-index: 2;
+  position: relative;
+}
+
+/* Fondo Enredados para Pascal y Torre */
+.fondo-enredados {
+  background: linear-gradient(135deg, #457f4a 0%, #b2e59e 50%, #f3e5ab 80%, #eec6ff 100%);
+  transition: background 2s ease-in-out;
+  min-height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+  color: #2b2115;
+}
+
+/* ==== ANIMACIONES PARA TORRE ==== */
+@keyframes desplazarAbajo {
+  from { top: 0; opacity: 1; }
+  to { top: 120px; opacity: 0; }
+}
+
+@keyframes aparecerDesdeArriba {
+  from { top: -120px; opacity: 0; }
+  to { top: 0; opacity: 1; }
+}
+
+.animar-torre1 {
+  animation: desplazarAbajo 1.5s forwards ease-in-out;
+}
+
+.animar-torre2 {
+  animation: aparecerDesdeArriba 1.5s forwards ease-in-out;
+}
+
+/* ==== BARRA DE PROGRESO ==== */
+#barra-progreso-container {
+  width: 24px;
+  height: 250px;
+  background-color: #d1d5db; /* gris claro */
+  border-radius: 12px;
+  border: 4px solid #9333ea;
+  position: relative;
+  overflow: hidden;
+}
+
+#barra-progreso {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: #7c3aed; /* morado */
+  transition: height 0.5s ease-in-out;
+}
+
+/* ==== TRANSICIONES Y UTILS ==== */
+.opacity-0 {
+  opacity: 0;
+}
+
+.opacity-100 {
+  opacity: 1;
+}
+
+.fade-visible {
+  opacity: 1 !important;
+}
+
+/* ==== BOTONES GENERALES ==== */
+button {
+  background-color: #bfa2db;
+  color: #222;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #a882d6;
+  transform: scale(1.05);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+
+.pantalla {
+  opacity: 0;
+  transition: opacity 1s ease;
+  pointer-events: none;
+}
+.pantalla.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.pantalla.oculto {
+  display: none;
+}
+
+
+.pantalla {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#pantalla-propuesta {
+  transition: background-color 1s ease;
+}
+
+#frase-propuesta {
+  opacity: 0;
+}
+
+#frase-propuesta.opacity-100 {
+  opacity: 1;
+}
+
+
+/* Fondo degradado vertical */
+.fondo-torre {
+  background: linear-gradient(to top, #41662a 0%, #72a751 30%, #7be6d7 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Capa de nubes en movimiento */
+.nubes-fondo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: url('img/nube.png') repeat-x;
+  background-size: contain;
+  animation: moverNubes 60s linear infinite;
+  opacity: 0.4;
+  pointer-events: none; /* evita que interfiera con clics */
+  z-index: 0;
+}
+
+/* Animación de nubes */
+@keyframes moverNubes {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+
+.fondo-propuesta {
+  background: linear-gradient(to bottom right, #e6d1fa, #d4a9ff, #b167f7, #9333ea, #6b21a8);
+}
+
+
+.aparecer-suave {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: aparecer 2s forwards;
+}
+
+@keyframes aparecer {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+@keyframes parpadeo {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 0.8; }
+}
+
+.destello {
+  position: absolute;
+  background-color: rgb(255, 215, 0);
+  border-radius: 50%;
+  opacity: 0;
+  animation: parpadeo 2s infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 1.5s ease-out forwards;
+}
+
+.delay-500 {
+  animation-delay: 0.5s;
+}

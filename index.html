@@ -1,21 +1,150 @@
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Para Juanita ✨</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
   <script defer src="script.js"></script>
 </head>
 <body class="bg-gradient-to-b from-purple-100 to-yellow-100 text-center font-sans">
+  
   <!-- Pantalla de bienvenida -->
-  <div id="pantalla-bienvenida" class="h-screen flex flex-col justify-center items-center p-4">
+  <section id="pantalla-bienvenida" class="pantalla visible flex flex-col justify-center items-center">
     <h1 class="text-3xl font-bold text-purple-700 mb-4">Juanita, tengo algo para ti...</h1>
-    <button onclick="iniciarJuego()" class="bg-purple-500 text-white px-6 py-3 rounded-full text-lg hover:bg-purple-600 transition">Empezar 💜</button>
+    <button id="btn-empezar" class="bg-purple-500 text-white px-6 py-3 rounded-full text-lg hover:bg-purple-600 transition">
+      Empezar 💜
+    </button>
+  </section>
+
+  <!-- Juego 1: Encuentra la linterna correcta -->
+  <section id="juego-linternas" class="pantalla oculto fondo-nocturno relative overflow-hidden">
+    <h2 class="text-2xl font-semibold text-purple-700 absolute top-20 left-1/2 transform -translate-x-1/2 z-10">
+      Encuentra la linterna mágica
+    </h2>
+    <div id="linternas" class="relative w-full h-full">
+      <img src="img/linterna1.png" class="linterna absolute w-16 animate-float" style="top: 510px; left: 20%;" data-num="1" />
+      <img src="img/linterna1.png" class="linterna absolute w-16 animate-float delay-500" style="top: 410px; left: 40%;" data-num="2" />
+      <img src="img/linterna1.png" class="linterna absolute w-16 animate-float delay-1000" style="top: 230px; left: 60%;" data-num="3" />
+      <img src="img/linterna1.png" class="linterna absolute w-16 animate-float delay-1500" style="top: 320px; left: 30%;" data-num="4" />
+      <img src="img/linterna1.png" class="linterna absolute w-16 animate-float delay-2500" style="top: 170px; left: 5%;" data-num="5" />
+      <img src="img/linterna1.png" class="linterna absolute w-16 animate-float delay-2000" style="top: 420px; left: 10%;" data-num="6" />
+      <img src="img/linterna1.png" class="linterna absolute w-16 animate-float delay-3000" style="top: 270px; left: 5%;" data-num="7" />
+      <img src="img/linterna1.png" class="linterna absolute w-16 animate-float delay-1000" style="top: 470px; left: 60%;" data-num="8" />
+      <img src="img/linterna1.png" class="linterna absolute w-16 animate-float delay-1500" style="top: 200px; left: 30%;" data-num="9" />
+      <img src="img/linterna1.png" class="linterna absolute w-16 animate-float delay-500" style="top: 350px; left: 70%;" data-num="10" />
+    </div>
+    <div id="mensaje-linterna" class="absolute bottom-48 left-1/2 transform -translate-x-1/2 text-green-700 font-bold text-lg hidden z-10">
+      🌟Y hoy aquí, viendo las estrellaaaaas🌟
+    </div>
+    <button id="boton-siguiente" class="hidden absolute bottom-36 left-1/2 transform -translate-x-1/2 bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 z-10 transition-colors duration-1000">
+      Continuar 💫
+    </button>
+  </section>
+
+  <!-- Juego 3: Encuentra a Pascal -->
+  <section id="juego3" class="pantalla oculto w-full flex flex-col items-center justify-center relative overflow-hidden">
+  <div id="pascal-stars"></div>
+  <h2 
+    id="titulo-pascal" 
+    class="text-2xl text-green-800 font-bold absolute top-5 left-1/2 transform -translate-x-1/2 z-20"
+    style="width: max-content;"
+  >
+    🦎 ¿Dónde está Pascal? 🦎
+  </h2>
+
+  <!-- Imagen Pascal centrada debajo del título -->
+  <img 
+    id="img-pascal" 
+    src="img/pascal.png" 
+    alt="Pascal"
+    style="width: 80px; position: absolute; top: 80px; left: 50%; transform: translate(-50%, 0); opacity: 1; transition: all 0.7s ease;"
+  />
+
+  <div id="contenedor-arbustos" class="flex gap-8 relative mt-32 z-10">
+    <div class="arbusto" data-index="0">
+      <img src="img/arbusto.png" class="w-32 h-32" />
+    </div>
+    <div class="arbusto" data-index="1">
+      <img src="img/arbusto.png" class="w-32 h-32" />
+    </div>
+    <div class="arbusto" data-index="2">
+      <img src="img/arbusto.png" class="w-32 h-32" />
+    </div>
   </div>
 
-  <!-- Aquí irán los juegos dinámicamente -->
+  <div id="mensaje-pascal" class="text-purple-700 mt-6 font-semibold hidden">
+    ¡Encontraste a Pascal! 💜🦎
+  </div>
+  <button id="boton-juego3" class="hidden absolute bottom+20 left+13 bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 z-10 transition-colors duration-1000">
+    Continuar 🌠
+  </button>
+
+</section>
+
+ <!-- Juego 4: Sube a la torre -->
+
+<!-- Pantalla del juego de la torre -->
+<section id="pantalla-torre" class="pantalla oculto fondo-torre relative overflow-hidden flex flex-col items-center justify-start min-h-screen">
+  
+
+    <div class="nubes-fondo"></div>
+  <!-- Título del juego -->
+    <h1 id="titulo-torre" class="text-3xl font-bold text-center mb-2">
+    🏰 ¡Sube la torre de Rapunzel! 🏰
+  </h1>
+
+  <!-- Contenedor de la torre -->
+ <div id="torre-container" class="flex gap-5 items-start justify-center mt-1 mb-2">
+    <img id="torre1" src="img/torre1.png" class="w-40 transition-all duration-1000" />
+    <img id="torre2" src="img/torre2.png" class="w-40 absolute opacity-0 transition-all duration-1000" />
+  </div>
+
+  <!-- BARRA DE PROGRESO (20px abajo de torres) -->
+  <div id="barra-progreso-container" class="w-8 h-60 bg-gray-300 rounded-full overflow-hidden cursor-pointer border-4 border-purple-500 relative mb-6">
+    <div id="barra-progreso" class="bg-purple-600 w-full transition-all duration-500 absolute bottom-0" style="height: 0%"></div>
+  </div>
+
+  <!-- BOTÓN DE CONTINUAR -->
+  <button id="btn-siguiente-juego" class="hidden bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition duration-500 mb-3">
+    Continuar💕
+  </button>
+
+  <!-- TEXTO FINAL -->
+  <p id="mensaje-final" class="text-xl font-semibold text-purple-800 hidden">¡Llegaste 👸!</p>
+
+</section>
+</div>
+
+
+<section id="pantalla-propuesta" class="pantalla hidden fondo-propuesta flex flex-col items-center justify-center text-center text-white p-6">
+   <div id="destellos-container" class="absolute inset-0 pointer-events-none z-0"></div>
+    <h1 id="frase-propuesta" class="text-4xl font-bold mb-6 aparecer-suave">
+    Te quiero hacer una pregunta
+  </h1>
+
+  <button id="btn-propuesta-continuar" class="hidden bg-purple-600 text-white px-6 py-3 rounded-full mt-4 hover:bg-purple-700 transition aparecer-suave">
+    Continuar
+  </button>
+
+  <div id="opciones-respuesta" class="hidden mt-6 space-x-4">
+    <button id="bsi" class="bg-purple-500 text-white px-6 py-2 rounded-full hover:bg-purple-600 transition aparecer-suave">Si</button>
+    <button id="bno" class="bg-purple-500 text-white px-6 py-2 rounded-full hover:bg-purple-600 transition aparecer-suave">No </button>
+  </div>
+</section>
+
+<!-- Pantalla de celebración -->
+<section id="pantalla-celebracion" class="pantalla hidden flex items-center justify-center min-h-screen bg-gradient-to-b from-purple-300 via-pink-200 to-yellow-100 relative overflow-hidden">
+  <div class="text-center z-10">
+    <h1 class="text-4xl font-bold text-purple-800 animate-fade-in">Adiós prenovios</h1>
+    <p class="mt-4 text-lg text-purple-700 animate-fade-in delay-500">🎉👩‍❤️‍👨 Hola novios 🎉👩‍❤️‍👨</p>
+  </div>
+  <!-- Contenedor para confetis -->
+  <canvas id="confeti-canvas" class="absolute top-0 left-0 w-full h-full z-0 pointer-events-none"></canvas>
+</section>
+
+
 
 </body>
 </html>

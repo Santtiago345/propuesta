@@ -451,12 +451,7 @@
   function handleResize() {
     if (isBuilding || !pageFlip) return;
     isBuilding = true;
-    var curIdx = pageFlip.getCurrentPageIndex();
-    buildAllPages();
-    buildTocElements();
-    var wrapper = $('bookWrapper');
-    pageFlip.loadFromHTML(wrapper.querySelectorAll('.book-page'));
-    pageFlip.flip(Math.min(curIdx, pageFlip.getPageCount() - 1), 'instant');
+    rebuildAndReload();
     isBuilding = false;
   }
 
@@ -464,8 +459,9 @@
 
   function setupEvents() {
     ctrlPrev.addEventListener('click', function () { if (pageFlip) pageFlip.flipPrev('bottom'); });
-    ctrlNext.addEventListener('click', function () { if (pageFlip) pageFlip.flipNext('bottom'); });
+    ctrlNext.addEventListener('click', function () { if (pageFlip) pageFlip.flipNext('bottom');     });
     $('ctrlToc').addEventListener('click', openToc);
+    $('ctrlDev').addEventListener('click', toggleDevMode);
     $('tocClose').addEventListener('click', closeToc);
     tocOverlay.addEventListener('click', function (e) { if (e.target === tocOverlay) closeToc(); });
     document.addEventListener('keydown', function (e) {
@@ -478,6 +474,153 @@
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(handleResize, 300);
     });
+  }
+
+  /* ======== DEV MODE ======== */
+  var devMode = false;
+  var devDebounce = null;
+
+  function toggleDevMode() {
+    devMode = !devMode;
+    var scene = document.getElementById('scene');
+    var btnDev = $('ctrlDev');
+
+    if (devMode) {
+      scene.classList.add('dev-mode');
+      btnDev.classList.add('active');
+      enableEditing();
+    } else {
+      scene.classList.remove('dev-mode');
+      btnDev.classList.remove('active');
+      disableEditing();
+      rebuildAndReload();
+    }
+  }
+
+  function enableEditing() {
+    var inners = document.querySelectorAll('.book-page .page-inner');
+    for (var i = 0; i < inners.length; i++) {
+      inners[i].contentEditable = 'true';
+      inners[i].addEventListener('input', onDevInput);
+    }
+  }
+
+  function disableEditing() {
+    var inners = document.querySelectorAll('.book-page .page-inner');
+    for (var i = 0; i < inners.length; i++) {
+      inners[i].contentEditable = 'false';
+      inners[i].removeEventListener('input', onDevInput);
+    }
+  }
+
+  function onDevInput() {
+    clearTimeout(devDebounce);
+    devDebounce = setTimeout(function () { rebuildAndReload(); }, 600);
+  }
+
+  function rebuildAndReload() {
+    if (!pageFlip) return;
+    var curIdx = pageFlip.getCurrentPageIndex();
+    var wrapper = $('bookWrapper');
+    var allPages = wrapper.querySelectorAll('.book-page');
+    var fixedCount = 10;
+    var total = allPages.length;
+
+    var sections = [];
+    var currentSection = null;
+
+    for (var i = fixedCount; i < total - 1; i++) {
+      var page = allPages[i];
+      if (page.classList.contains('blank-page')) continue;
+      if (page.classList.contains('cover-page')) continue;
+      var inner = page.querySelector('.page-inner');
+      if (!inner) continue;
+      var hdr = page.querySelector('.hdr-center');
+      var secTitle = hdr ? hdr.textContent.trim() : '';
+      if (!currentSection || currentSection.title !== secTitle) {
+        currentSection = { title: secTitle, pagesHTML: [] };
+        sections.push(currentSection);
+      }
+      currentSection.pagesHTML.push(inner.innerHTML);
+    }
+
+    var allNewPages = [];
+    var newToc = [];
+    var pageNum = 10;
+
+    for (var s = 0; s < sections.length; s++) {
+      var sec = sections[s];
+      var combinedHTML = sec.pagesHTML.join('');
+      var tmp = document.createElement('div');
+      tmp.innerHTML = combinedHTML;
+      var h2 = tmp.querySelector('h2.ch-title');
+      if (h2) h2.remove();
+
+      var elements = [];
+      Array.from(tmp.childNodes).forEach(function (node) {
+        if (node.nodeType === 3) {
+          var t = node.textContent.trim();
+          if (t) elements.push(t);
+        } else if (node.nodeType === 1) {
+          elements.push(node.outerHTML);
+        }
+      });
+
+      var isChapter = sec.title !== 'Introducci\u00f3n' && sec.title !== 'Introduccion';
+      var newPages = paginateSection(sec.title, elements, pageNum, isChapter);
+      allNewPages = allNewPages.concat(newPages);
+      newToc.push({ page: pageNum, label: sec.title });
+      pageNum += newPages.length;
+    }
+
+    var existing = wrapper.querySelectorAll('.book-page');
+    var fixedPages = [];
+    for (var fi = 0; fi < fixedCount; fi++) { fixedPages.push(existing[fi]); }
+    var backCover = existing[existing.length - 1];
+
+    var fillerPages = [];
+    if ((fixedCount + allNewPages.length + 1) % 2 !== 0) {
+      var bp = document.createElement('div');
+      bp.className = 'book-page blank-page';
+      fillerPages.push(bp);
+    }
+
+    var assembled = fixedPages.concat(allNewPages, fillerPages, [backCover]);
+    pagesLen = assembled.length;
+
+    while (wrapper.firstChild) wrapper.removeChild(wrapper.firstChild);
+    for (var ai = 0; ai < assembled.length; ai++) { wrapper.appendChild(assembled[ai]); }
+
+    pageLabels = [];
+    for (var pi = 0; pi < pagesLen; pi++) {
+      if (pi === 0) pageLabels.push('Portada');
+      else if (pi >= 1 && pi <= 3) pageLabels.push('');
+      else if (pi === 4) pageLabels.push('T\u00edtulo');
+      else if (pi === 5) pageLabels.push('');
+      else if (pi === 6) pageLabels.push('Agradecimientos');
+      else if (pi === 7) pageLabels.push('');
+      else if (pi === 8) pageLabels.push('\u00cdndice');
+      else if (pi >= fixedCount && pi < pagesLen - (fillerPages.length + 1)) {
+        var found = '';
+        for (var ti = 0; ti < newToc.length; ti++) {
+          var ns = (ti + 1 < newToc.length) ? newToc[ti + 1].page : (pagesLen - (fillerPages.length + 1));
+          if (pi >= newToc[ti].page && pi < ns) { found = newToc[ti].label; break; }
+        }
+        pageLabels.push(found);
+      } else if (pi === pagesLen - 1) pageLabels.push('Contraportada');
+      else pageLabels.push('');
+    }
+
+    tocItems = newToc;
+    buildTocElements();
+
+    pageFlip.loadFromHTML(wrapper.querySelectorAll('.book-page'));
+    pagesLen = pageFlip.getPageCount();
+    if (devMode) enableEditing();
+
+    var target = Math.min(curIdx, pageFlip.getPageCount() - 1);
+    updateControls();
+    setTimeout(function () { if (target >= 0) pageFlip.flip(target, 'bottom'); }, 100);
   }
 
   /* ======== INIT ======== */

@@ -454,6 +454,14 @@ html, body {
 }
 
 /* ── DEV MODE ── */
+.dev-mode .book-wrapper,
+.dev-mode .book-wrapper * {
+  pointer-events: none;
+}
+.dev-mode .book-page .page-inner,
+.dev-mode .book-page .page-inner * {
+  pointer-events: auto;
+}
 .dev-mode .page-inner {
   cursor: text;
   outline: 2px dashed rgba(124,58,237,0.3);
@@ -461,4 +469,10 @@ html, body {
 }
 .dev-mode .page-inner:focus {
   outline: 2px solid rgba(124,58,237,0.6);
+}
+
+/* Asegurar que controles sigan funcionando en dev mode */
+.dev-mode .ctrl,
+.dev-mode .ctrl * {
+  pointer-events: auto !important;
 }

@@ -55,6 +55,7 @@
   ];
 
   /* ======== PAGINADOR ======== */
+  /* ======== PAGINADOR GENERALIZADO ======== */
   function crearPaginaPrueba(wrapper) {
     var r = wrapper.getBoundingClientRect();
     var tp = document.createElement('div');
@@ -67,12 +68,12 @@
         '<span class="hdr-center">X</span>' +
         '<span class="hdr-right">0</span>' +
       '</div>' +
-      '<div class="page-content"></div>';
+      '<div class="page-content"><div class="page-inner"></div></div>';
     document.body.appendChild(tp);
     return tp;
   }
 
-  function makePage(title, body, pnum) {
+  function makePage(title, bodyHTML, pnum) {
     var d = document.createElement('div');
     d.className = 'book-page';
     d.innerHTML =
@@ -81,91 +82,185 @@
         '<span class="hdr-center">' + title + '</span>' +
         '<span class="hdr-right">' + pnum + '</span>' +
       '</div>' +
-      '<div class="page-content">' + body + '</div>';
+      '<div class="page-content"><div class="page-inner">' + bodyHTML + '</div></div>';
     return d;
   }
 
-  function paginate(paragraphs, title, startNum) {
+  function parseElements(elements, title, isChapter) {
+    var items = [];
+    if (isChapter) {
+      items.push({ tag: 'h2', className: 'ch-title', text: title, isTitle: true });
+    }
+    
+    elements.forEach(function(el) {
+      if (typeof el === 'string') {
+        var tmp = document.createElement('div');
+        tmp.innerHTML = el.trim();
+        if (tmp.children.length > 0) {
+          Array.from(tmp.children).forEach(function(child) {
+            items.push(domToItem(child));
+          });
+        } else if (el.trim()) {
+          items.push({ tag: 'p', className: '', text: el.trim() });
+        }
+      }
+    });
+    return items;
+  }
+
+  function domToItem(node) {
+    var tag = node.tagName.toLowerCase();
+    var className = node.className || '';
+    if (tag === 'ul') {
+      var listItems = [];
+      Array.from(node.children).forEach(function(li) {
+        listItems.push(li.innerHTML || li.textContent);
+      });
+      return { tag: 'ul', className: className, listItems: listItems };
+    }
+    return { tag: tag, className: className, html: node.innerHTML, text: node.textContent || node.innerText };
+  }
+
+  function renderItemHTML(item, overrideContent) {
+    var cls = item.className ? ' class="' + item.className + '"' : '';
+    if (item.tag === 'ul') {
+      var lis = (overrideContent || item.listItems).map(function(li) {
+        return '<li>' + li + '</li>';
+      }).join('');
+      return '<ul' + cls + '>' + lis + '</ul>';
+    }
+    var content = overrideContent !== undefined ? overrideContent : (item.html || item.text);
+    return '<' + item.tag + cls + '>' + content + '</' + item.tag + '>';
+  }
+
+  function paginateSection(title, elements, startNum, isChapter) {
     var wrapper = $('bookWrapper');
     var tp = crearPaginaPrueba(wrapper);
-    var contentEl = tp.querySelector('.page-content');
+    var innerEl = tp.querySelector('.page-inner');
 
-    var pages = [];
-    var accHTML = '';   // HTML acumulado en la pagina de prueba
-    var consumed = 0;   // cuantos parrafos completos se consumieron
-
-    function overflow() {
-      return contentEl.scrollHeight > contentEl.clientHeight;
+    function checkOverflow() {
+      return innerEl.scrollHeight > innerEl.clientHeight;
     }
 
-    // Ir añadiendo parrafos completos mientras quepan
-    while (consumed < paragraphs.length) {
-      var prev = accHTML;
-      accHTML += '<p>' + paragraphs[consumed] + '</p>';
-      contentEl.innerHTML = accHTML;
-      consumed++;
+    var items = parseElements(elements, title, isChapter);
+    var pages = [];
+    var currentHTML = '';
+    var itemIdx = 0;
 
-      if (overflow()) {
-        // El ultimo parrafo no cupo. Revertir y guardar pagina.
-        consumed--;
-        accHTML = prev;
-        if (accHTML) {
-          pages.push(makePage(title, accHTML, startNum + pages.length));
-          accHTML = '';
-          contentEl.innerHTML = '';
-        }
-        // Intentar llenar el resto de la pagina con palabras del parrafo problematico
-        var words = paragraphs[consumed].split(' ');
-        var part = '';
-        for (var w = 0; w < words.length; w++) {
-          var test = part ? part + ' ' + words[w] : words[w];
-          contentEl.innerHTML = accHTML + '<p>' + test + '</p>';
-          if (!overflow()) {
-            part = test;
-          } else {
-            // Guardar lo que cupo, si hay algo
-            if (part || accHTML) {
-              pages.push(makePage(title, accHTML + (part ? '<p>' + part + '</p>' : ''), startNum + pages.length));
+    while (itemIdx < items.length) {
+      var item = items[itemIdx];
+      var itemHTML = renderItemHTML(item);
+      
+      innerEl.innerHTML = currentHTML + itemHTML;
+      
+      if (!checkOverflow()) {
+        currentHTML += itemHTML;
+        itemIdx++;
+      } else {
+        if (item.tag === 'ul' && item.listItems && item.listItems.length > 1) {
+          var fitLis = [];
+          for (var liIdx = 0; liIdx < item.listItems.length; liIdx++) {
+            var testLis = fitLis.concat([item.listItems[liIdx]]);
+            var testListHTML = renderItemHTML(item, testLis);
+            innerEl.innerHTML = currentHTML + testListHTML;
+            if (!checkOverflow()) {
+              fitLis.push(item.listItems[liIdx]);
+            } else {
+              break;
             }
-            // Preparar siguiente pagina con lo que sobra del parrafo
-            accHTML = '';
-            contentEl.innerHTML = '<p>' + words.slice(w).join(' ') + '</p>';
-            // Si aun asi no cabe en pagina vacia, seguir partiendo
-            while (overflow()) {
-              var ws2 = contentEl.textContent.split(' ');
-              var partial = '';
-              for (var w2 = 0; w2 < ws2.length; w2++) {
-                var n2 = partial ? partial + ' ' + ws2[w2] : ws2[w2];
-                contentEl.innerHTML = '<p>' + n2 + '</p>';
-                if (overflow()) {
-                  if (partial) pages.push(makePage(title, '<p>' + partial + '</p>', startNum + pages.length));
-                  contentEl.innerHTML = '<p>' + ws2.slice(w2).join(' ') + '</p>';
-                  partial = '';
-                  break;
+          }
+          if (fitLis.length > 0) {
+            currentHTML += renderItemHTML(item, fitLis);
+            pages.push(makePage(title, currentHTML, startNum + pages.length));
+            currentHTML = '';
+            items[itemIdx] = { tag: 'ul', className: item.className, listItems: item.listItems.slice(fitLis.length) };
+          } else {
+            if (currentHTML) {
+              pages.push(makePage(title, currentHTML, startNum + pages.length));
+              currentHTML = '';
+            } else {
+              fitLis = [item.listItems[0]];
+              currentHTML = renderItemHTML(item, fitLis);
+              pages.push(makePage(title, currentHTML, startNum + pages.length));
+              currentHTML = '';
+              items[itemIdx] = { tag: 'ul', className: item.className, listItems: item.listItems.slice(1) };
+            }
+          }
+        } else if (!item.isTitle) {
+          var words = (item.text || '').split(/\s+/);
+          
+          if (words.length <= 1) {
+            if (currentHTML) {
+              pages.push(makePage(title, currentHTML, startNum + pages.length));
+              currentHTML = '';
+            } else {
+              currentHTML = itemHTML;
+              pages.push(makePage(title, currentHTML, startNum + pages.length));
+              currentHTML = '';
+              itemIdx++;
+            }
+          } else {
+            var low = 1;
+            var high = words.length;
+            var best = 0;
+
+            while (low <= high) {
+              var mid = Math.floor((low + high) / 2);
+              var testWords = words.slice(0, mid).join(' ');
+              var testHTML = currentHTML + renderItemHTML(item, testWords);
+              innerEl.innerHTML = testHTML;
+              if (!checkOverflow()) {
+                best = mid;
+                low = mid + 1;
+              } else {
+                high = mid - 1;
+              }
+            }
+
+            if (best > 0) {
+              var partWords = words.slice(0, best).join(' ');
+              currentHTML += renderItemHTML(item, partWords);
+              pages.push(makePage(title, currentHTML, startNum + pages.length));
+              currentHTML = '';
+              
+              var restWords = words.slice(best).join(' ');
+              if (restWords.trim()) {
+                items[itemIdx] = { tag: item.tag, className: item.className, html: restWords, text: restWords };
+              } else {
+                itemIdx++;
+              }
+            } else {
+              if (currentHTML) {
+                pages.push(makePage(title, currentHTML, startNum + pages.length));
+                currentHTML = '';
+              } else {
+                var partWords = words.slice(0, 1).join(' ');
+                currentHTML = renderItemHTML(item, partWords);
+                pages.push(makePage(title, currentHTML, startNum + pages.length));
+                currentHTML = '';
+                var restWords = words.slice(1).join(' ');
+                if (restWords.trim()) {
+                  items[itemIdx] = { tag: item.tag, className: item.className, html: restWords, text: restWords };
                 } else {
-                  partial = n2;
+                  itemIdx++;
                 }
               }
-              if (partial && !overflow()) break;
             }
-            consumed++;
-            accHTML = contentEl.innerHTML;
-            break;
           }
-        }
-        if (!overflow() && part) {
-          // Todas las palabras del parrafo cupieron en el espacio restante
-          accHTML += '<p>' + part + '</p>';
-          // consumed ya fue incrementado antes del revert, falta uno mas?
-          // consumed fue: incrementado, luego decrementado, ahora debe incrementarse de nuevo
-          consumed++;
+        } else {
+          if (currentHTML) {
+            pages.push(makePage(title, currentHTML, startNum + pages.length));
+            currentHTML = '';
+          } else {
+            currentHTML += itemHTML;
+            itemIdx++;
+          }
         }
       }
     }
 
-    // Ultima pagina
-    if (accHTML) {
-      pages.push(makePage(title, accHTML, startNum + pages.length));
+    if (currentHTML) {
+      pages.push(makePage(title, currentHTML, startNum + pages.length));
     }
 
     document.body.removeChild(tp);
@@ -176,38 +271,54 @@
   function buildAllPages() {
     var wrapper = $('bookWrapper');
     var existing = wrapper.querySelectorAll('.book-page');
-    var backHTML = existing[existing.length - 1]; // la contraportada es la ultima
+    var backHTML = existing[existing.length - 1]; // Contraportada
 
-    // Paginas fijas: 0-9
     var fixedPages = [];
     for (var i = 0; i < existing.length - 1; i++) {
       fixedPages.push(existing[i]);
     }
 
-    // Generar intro
-    var introPages = paginate(introParagraphs, 'Introducci\u00f3n', 10);
-    var introCount = introPages.length;
+    // Paginación Introducción
+    var introPages = paginateSection('Introducci\u00f3n', introParagraphs, 10, false);
+    
+    // Paginación Capítulos
+    var currentNum = 10 + introPages.length;
+    var chapterPagesList = [];
+    var chapterMeta = [];
 
-    // Generar capitulos
-    var chapStart = 10 + introCount;
-    var chapterPages = [];
+    tocItems = [{ page: 10, label: 'Introducci\u00f3n' }];
+
     for (var c = 0; c < chapters.length; c++) {
-      chapterPages.push(makePage(chapters[c].title, chapters[c].html, chapStart + c));
+      var cTitle = chapters[c].title;
+      var cPages = paginateSection(cTitle, [chapters[c].html], currentNum, true);
+      tocItems.push({ page: currentNum, label: cTitle });
+      chapterMeta.push({ title: cTitle, startPage: currentNum, count: cPages.length });
+      currentNum += cPages.length;
+      chapterPagesList = chapterPagesList.concat(cPages);
     }
 
-    // Ensamblar en orden
-    var allPages = fixedPages.concat(introPages, chapterPages, [backHTML]);
+    var contentTotal = fixedPages.length + introPages.length + chapterPagesList.length;
+    var fillerPages = [];
+    if ((contentTotal + 1) % 2 !== 0) {
+      var blankP = document.createElement('div');
+      blankP.className = 'book-page blank-page';
+      fillerPages.push(blankP);
+    }
+
+    var allPages = fixedPages.concat(introPages, chapterPagesList, fillerPages, [backHTML]);
     var total = allPages.length;
     pagesLen = total;
 
-    // Reconstruir wrapper
     while (wrapper.firstChild) wrapper.removeChild(wrapper.firstChild);
     for (var a = 0; a < allPages.length; a++) {
       wrapper.appendChild(allPages[a]);
     }
 
-    // pageLabels
     pageLabels = [];
+    var introStart = fixedPages.length;
+    var introEnd = introStart + introPages.length;
+    var chapStartIdx = introEnd;
+
     for (var pi = 0; pi < total; pi++) {
       if (pi === 0) pageLabels.push('Portada');
       else if (pi >= 1 && pi <= 3) pageLabels.push('');
@@ -216,18 +327,20 @@
       else if (pi === 6) pageLabels.push('Agradecimientos');
       else if (pi === 7) pageLabels.push('');
       else if (pi === 8) pageLabels.push('\u00cdndice');
-      else if (pi === 9) pageLabels.push('');
-      else if (pi >= 10 && pi < 10 + introCount) pageLabels.push('Introducci\u00f3n');
-      else if (pi >= 10 + introCount && pi < total - 1)
-        pageLabels.push(chapters[pi - 10 - introCount].title);
+      else if (pi >= introStart && pi < introEnd) pageLabels.push('Introducci\u00f3n');
+      else if (pi >= chapStartIdx && pi < total - (fillerPages.length + 1)) {
+        var pNum = pi + 1;
+        var foundTitle = '';
+        for (var cm = 0; cm < chapterMeta.length; cm++) {
+          if (pNum >= chapterMeta[cm].startPage && pNum < chapterMeta[cm].startPage + chapterMeta[cm].count) {
+            foundTitle = chapterMeta[cm].title;
+            break;
+          }
+        }
+        pageLabels.push(foundTitle);
+      }
       else if (pi === total - 1) pageLabels.push('Contraportada');
       else pageLabels.push('');
-    }
-
-    // TOC
-    tocItems = [{ page: 10, label: 'Introducci\u00f3n' }];
-    for (var ci = 0; ci < chapters.length; ci++) {
-      tocItems.push({ page: chapStart + ci, label: chapters[ci].title });
     }
   }
 
@@ -235,12 +348,15 @@
   function buildTocElements() {
     var pgBody = $('tocBody');
     var pgProf = $('tocProfesional');
+    if (pgBody) pgBody.innerHTML = '';
+    if (pgProf) pgProf.innerHTML = '';
+
     tocItems.forEach(function (item) {
       if (pgBody) {
         var r = document.createElement('div');
         r.className = 'toc-row';
         r.innerHTML = '<span class="toc-label">' + item.label + '</span><span class="toc-num">' + item.page + '</span>';
-        r.addEventListener('click', function () { closeToc(); goTo(item.page); });
+        r.addEventListener('click', function () { closeToc(); goTo(item.page - 1); });
         pgBody.appendChild(r);
       }
       if (pgProf) {
@@ -249,7 +365,7 @@
         p.innerHTML = '<span class="toc-label">' + item.label +
           ' <span style="color:#ccc;font-size:0.6rem;">..................................................</span></span>' +
           '<span class="toc-num">' + item.page + '</span>';
-        p.addEventListener('click', function () { goTo(item.page); });
+        p.addEventListener('click', function () { goTo(item.page - 1); });
         pgProf.appendChild(p);
       }
     });

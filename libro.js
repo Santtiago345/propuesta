@@ -596,8 +596,8 @@
   function changeFontSize(dir) {
     devFontLevel += dir;
     var pct = 100 + devFontLevel * 10;
-    var label = cont.querySelector('.dev-size-label');
-    var area = cont.querySelector('.dev-content-area');
+    var label = editContainer.querySelector('.dev-size-label');
+    var area = editContainer.querySelector('.dev-content-area');
     if (label) label.textContent = pct + '%';
     if (area) area.style.fontSize = (0.82 * (pct / 100)) + 'rem';
   }
@@ -674,15 +674,17 @@
       var h2 = tmp.querySelector('h2.ch-title');
       if (h2) h2.remove();
 
+      // Solo extraer <p> y <ul> para el paginador
       var elements = [];
-      Array.from(tmp.childNodes).forEach(function (node) {
-        if (node.nodeType === 3) {
-          var t = node.textContent.trim();
-          if (t) elements.push(t);
-        } else if (node.nodeType === 1) {
-          elements.push(node.outerHTML);
-        }
+      tmp.querySelectorAll('p, ul').forEach(function (el) {
+        elements.push(el.outerHTML);
       });
+      // Si no hay elementos estructurados, tomar texto plano como parrafos
+      if (elements.length === 0 && tmp.textContent.trim()) {
+        tmp.textContent.trim().split(/\n+/).forEach(function (line) {
+          if (line.trim()) elements.push('<p>' + line.trim() + '</p>');
+        });
+      }
 
       var isChapter = sec.title !== 'Introducci\u00f3n' && sec.title !== 'Introduccion';
       var newPages = paginateSection(sec.title, elements, pageNum, isChapter);

@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   <title>Nuestra Historia 📖</title>
   <link rel="stylesheet" href="libro.css" />
 </head>
@@ -10,80 +10,148 @@
 
   <a href="index.html" class="top-back-link">← Inicio</a>
 
-  <!-- CONTENEDOR PRINCIPAL -->
+  <!-- Overlay de carga -->
+  <div class="loader" id="loader">Cargando libro...</div>
+
+  <!-- Escena -->
   <div class="flipbook-scene" id="scene">
 
-    <!-- LIBRO CERRADO (PORTADA) -->
-    <div class="book-closed-wrap" id="bookClosedWrap">
-      <div class="book-3d-closed">
-        <div class="book-spine-3d"></div>
-        <div class="book-cover-3d" id="bookCover3d">
-          <div class="cover-pattern"></div>
-          <div class="cover-content">
-            <div class="cover-stars">✦ ✦ ✦ ✦ ✦</div>
+    <!-- Contenedor del libro (StPageFlip) -->
+    <div class="book-wrapper" id="bookWrapper">
+
+      <!-- Page 0: Portada -->
+      <div class="book-page cover-page">
+        <div class="cover-deco">
+          <div class="cover-frame-inner">
+            <div class="cover-ornament">✦ ✦ ✦</div>
             <h1 class="cover-main-title">Nuestra<br>Historia</h1>
             <div class="cover-line"></div>
             <p class="cover-subtitle">Un libro para ti, Juanita 💜</p>
-            <button class="cover-open-btn" id="btnOpenBook">Abrir libro ✨</button>
           </div>
         </div>
-        <div class="book-pages-stack"></div>
       </div>
+
+      <!-- Page 1: Índice (izquierda) -->
+      <div class="book-page">
+        <div class="page-content">
+          <h2 class="ch-title">📑 Índice</h2>
+          <ul class="index-list">
+            <li data-page="3"><span class="idx-badge">1</span> El día que te conocí</li>
+            <li data-page="4"><span class="idx-badge">2</span> Nuestra primera cita</li>
+            <li data-page="4"><span class="idx-badge">3</span> Lo que más me gusta de ti</li>
+            <li data-page="5"><span class="idx-badge">4</span> Momentos inolvidables</li>
+            <li data-page="5"><span class="idx-badge">5</span> Razones para amarte</li>
+            <li data-page="6"><span class="idx-badge">6</span> Mi carta para ti</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Page 2: El día que te conocí (derecha) -->
+      <div class="book-page">
+        <div class="page-content">
+          <h2 class="ch-title">✨ El día que te conocí</h2>
+          <p>Recuerdo perfectamente ese momento. El universo conspiró para que nuestros caminos se cruzaran, y desde ese instante supe que mi vida cambiaría para siempre.</p>
+          <p>Tu sonrisa iluminó todo a mi alrededor, y aunque no lo sabías, ya habías robado completamente mi corazón.</p>
+          <p class="quote">"A veces el amor llega sin avisar, como una brisa suave que se convierte en huracán."</p>
+        </div>
+      </div>
+
+      <!-- Page 3: Nuestra primera cita (izquierda) -->
+      <div class="book-page">
+        <div class="page-content">
+          <h2 class="ch-title">🌸 Nuestra primera cita</h2>
+          <p>Los nervios, las mariposas en el estómago, la emoción de verte llegar. Esa primera cita fue el comienzo de algo mágico que ni yo mismo podía creer.</p>
+          <p>Cada palabra que dijiste, cada risa que compartimos, se quedó grabada en mi memoria como el día más feliz de mi vida... hasta que llegó el siguiente a tu lado.</p>
+          <p class="quote">"No fue el lugar, ni la hora, ni el momento. Fuiste tú quien hizo que todo fuera perfecto."</p>
+        </div>
+      </div>
+
+      <!-- Page 4: Lo que más me gusta de ti (derecha) -->
+      <div class="book-page">
+        <div class="page-content">
+          <h2 class="ch-title">💖 Lo que más me gusta de ti</h2>
+          <p>Me encanta tu forma de ver el mundo, esa chispa que tienes en los ojos cuando algo te emociona, tu risa contagiosa que alegra hasta los días más grises.</p>
+          <p>Admiro tu fortaleza, tu ternura, tu inteligencia y ese corazón tan grande que tienes.</p>
+          <p class="quote">"Eres el tipo de persona que hace que el mundo sea un lugar mejor solo con existir."</p>
+        </div>
+      </div>
+
+      <!-- Page 5: Momentos inolvidables (izquierda) -->
+      <div class="book-page">
+        <div class="page-content">
+          <h2 class="ch-title">🌟 Momentos inolvidables</h2>
+          <p>Cada recuerdo contigo es un tesoro: las llamadas hasta tarde, los mensajes que me sacan una sonrisa, los planes que hacemos juntos y los sueños que compartimos.</p>
+          <p>No existe un solo día en el que no agradezca al destino por haberte puesto en mi camino. Eres mi lugar favorito en el mundo entero.</p>
+          <p class="quote">"Los momentos más simples se vuelven extraordinarios cuando los vivo contigo."</p>
+        </div>
+      </div>
+
+      <!-- Page 6: Razones para amarte (derecha) -->
+      <div class="book-page">
+        <div class="page-content">
+          <h2 class="ch-title">💌 Razones para amarte</h2>
+          <p>Podría llenar mil libros con las razones por las que te amo, pero aquí van solo algunas:</p>
+          <ul class="reasons">
+            <li>💜 Porque me haces ser mejor persona cada día</li>
+            <li>💜 Porque tu felicidad es mi felicidad</li>
+            <li>💜 Porque contigo todo tiene sentido</li>
+            <li>💜 Porque eres mi hogar, mi paz y mi alegría</li>
+            <li>💜 Porque simplemente eres tú</li>
+          </ul>
+          <p class="quote">"Te amo no por lo que eres, sino por lo que soy yo cuando estoy contigo."</p>
+        </div>
+      </div>
+
+      <!-- Page 7: Mi carta para ti (izquierda) -->
+      <div class="book-page">
+        <div class="page-content">
+          <h2 class="ch-title">💌 Mi carta para ti</h2>
+          <p>Querida Juanita,</p>
+          <p>Escribir esto me hace sentir el hombre más afortunado del mundo. Cada palabra que lees aquí sale directamente de mi corazón, porque eso es lo que haces tú: sacar lo mejor de mí.</p>
+          <p>Gracias por cada sonrisa, por cada momento, por cada enseñanza. Eres y siempre serás la persona más importante en mi vida.</p>
+          <p class="signature">Con todo mi amor,<br>siempre tuyo 💜</p>
+        </div>
+      </div>
+
+      <!-- Page 8: Contraportada (derecha/hard) -->
+      <div class="book-page cover-page">
+        <div class="cover-deco">
+          <h2 style="color:#fff;font-size:1.6rem;margin-bottom:1rem;border-bottom:2px solid rgba(255,215,0,0.5);padding-bottom:0.5rem">Y esta historia...</h2>
+          <p style="color:rgba(255,255,255,0.9);font-size:1.1rem;margin-bottom:0.5rem">...apenas comienza ✨</p>
+          <p style="color:rgba(255,255,255,0.8)">Porque lo mejor está por venir,<br>y quiero vivirlo todo a tu lado.</p>
+          <a href="index.html" class="end-btn">Volver al inicio 🏠</a>
+        </div>
+      </div>
+
     </div>
 
-    <!-- LIBRO ABIERTO -->
-    <div class="book-container" id="bookContainer">
-      
-      <!-- Sombra inferior -->
-      <div class="book-shadow"></div>
+    <!-- Overlay instructivo -->
+    <div class="hint-overlay" id="hintOverlay">
+      <div class="hint-text">Arrastra la esquina o presiona las flechas</div>
+      <div class="hint-arrow">↗</div>
+    </div>
 
-      <!-- Lomo -->
-      <div class="book-binding"></div>
+    <!-- Controles externos -->
+    <button class="ctrl ctrl-prev" id="ctrlPrev" title="Anterior">❮</button>
+    <button class="ctrl ctrl-next" id="ctrlNext" title="Siguiente">❯</button>
+    <button class="ctrl ctrl-toc" id="ctrlToc" title="Índice">☰</button>
+    <button class="ctrl ctrl-fs" id="ctrlFs" title="Pantalla completa">⛶</button>
 
-      <!-- PÁGINA IZQUIERDA -->
-      <div class="page-left-side" id="pageLeftSide">
-        <div class="page-left-content" id="pageLeftContent"></div>
-      </div>
+    <div class="page-indicator" id="pageIndicator">Portada</div>
 
-      <!-- LADO DERECHO (contiene la pila de hojas) -->
-      <div class="page-right-side" id="pageRightSide">
-        <!-- Hojas apiladas visibles desde el borde -->
-        <div class="sheets-stack" id="sheetsStack"></div>
-        <!-- Hoja actual (la que se voltea) -->
-        <div class="sheet-flipper" id="sheetFlipper">
-          <div class="sheet-front" id="sheetFront">
-            <div class="sheet-content" id="sheetFrontContent"></div>
-          </div>
-          <div class="sheet-back" id="sheetBack">
-            <div class="sheet-content" id="sheetBackContent"></div>
-          </div>
+    <!-- Panel Índice -->
+    <div class="toc-overlay" id="tocOverlay">
+      <div class="toc-panel">
+        <div class="toc-bar">
+          <h2>📑 Índice</h2>
+          <button class="toc-close" id="tocClose">✕</button>
         </div>
-        <!-- Sombra de la hoja al voltear -->
-        <div class="flip-shadow" id="flipShadow"></div>
-      </div>
-
-      <!-- Controles -->
-      <button class="ctrl-btn ctrl-prev" id="ctrlPrev" title="Anterior">❮</button>
-      <button class="ctrl-btn ctrl-next" id="ctrlNext" title="Siguiente">❯</button>
-      <button class="ctrl-btn ctrl-toc" id="ctrlToc" title="Índice">☰</button>
-      <button class="ctrl-btn ctrl-zoom" id="ctrlZoom" title="Pantalla completa">⛶</button>
-
-      <!-- Indicador de página -->
-      <div class="page-counter" id="pageCounter">1 / 8</div>
-
-      <!-- Panel de Índice (overlay) -->
-      <div class="toc-overlay" id="tocOverlay">
-        <div class="toc-panel">
-          <div class="toc-header">
-            <h2>📑 Índice</h2>
-            <button class="toc-close" id="tocClose">✕</button>
-          </div>
-          <div class="toc-list" id="tocList"></div>
-        </div>
+        <div class="toc-body" id="tocBody"></div>
       </div>
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.js"></script>
   <script src="libro.js"></script>
   <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };

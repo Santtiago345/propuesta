@@ -1,346 +1,102 @@
-/* ========================================
-   FLIPBOOK - Nuestra Historia
-   ======================================== */
+/* ===========================================
+   FLIPBOOK - Nuestra Historia (StPageFlip)
+   =========================================== */
 
-/* ── RESET ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
   width: 100vw; height: 100vh;
   overflow: hidden;
   font-family: 'Georgia', 'Times New Roman', serif;
-  background: #1a1a2e;
+  background: #0d0618;
   -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
-/* ── BOTÓN VOLVER ── */
+/* ── BACK LINK ── */
 .top-back-link {
-  position: fixed;
+  position: fixed; z-index: 999;
   top: 14px; left: 14px;
-  z-index: 999;
-  background: rgba(255,255,255,0.12);
-  backdrop-filter: blur(6px);
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(5px);
   color: #e9d5ff;
-  padding: 7px 16px;
-  border-radius: 20px;
-  font-size: 0.82rem;
+  padding: 6px 15px;
+  border-radius: 18px;
+  font-size: 0.8rem;
   font-family: 'Segoe UI', sans-serif;
   text-decoration: none;
   transition: 0.25s;
 }
-.top-back-link:hover { background: rgba(255,255,255,0.22); }
+.top-back-link:hover { background: rgba(255,255,255,0.2); }
 
-/* ── ESCENA ── */
+/* ── LOADER ── */
+.loader {
+  position: fixed; inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0d0618;
+  color: #c084fc;
+  font-size: 1.2rem;
+  font-family: 'Segoe UI', sans-serif;
+  transition: opacity 0.4s;
+}
+.loader.done { opacity: 0; pointer-events: none; }
+
+/* ── SCENE ── */
 .flipbook-scene {
   width: 100%; height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(ellipse at 50% 40%, #2d2040 0%, #1a1028 55%, #0d0618 100%);
-  perspective: 1400px;
+  background: radial-gradient(ellipse at 50% 40%, #261d38 0%, #120a20 60%, #080312 100%);
+  perspective: 2000px;
 }
 
-/* ========================================
-   LIBRO CERRADO
-   ======================================== */
-.book-closed-wrap {
-  cursor: pointer;
-  animation: bookHover 5s ease-in-out infinite;
-}
-.book-closed-wrap.hiding {
-  animation: bookHide 0.7s ease-in forwards;
-}
-@keyframes bookHover {
-  0%,100% { transform: translateY(0); }
-  30%     { transform: translateY(-12px); }
-  60%     { transform: translateY(-4px); }
-}
-@keyframes bookHide {
-  0%   { opacity: 1; transform: scale(1) translateY(0); }
-  100% { opacity: 0; transform: scale(0.6) translateY(-60px); pointer-events: none; }
-}
-
-.book-3d-closed {
-  width: 280px; height: 380px;
+/* ── BOOK WRAPPER ── */
+.book-wrapper {
   position: relative;
-  transform-style: preserve-3d;
-  transform: rotateY(-12deg) rotateX(4deg);
+  box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+  border-radius: 6px;
 }
 
-.book-spine-3d {
-  position: absolute;
-  left: -14px; top: 0;
-  width: 28px; height: 100%;
-  background: linear-gradient(90deg, #3b0764, #581c87, #6b21a8);
-  border-radius: 5px 0 0 5px;
-  box-shadow: inset -4px 0 6px rgba(0,0,0,0.5);
-  z-index: 1;
-}
+/* StPageFlip se encarga del renderizado interno.
+   Solo estilizamos el contenedor. */
 
-.book-cover-3d {
-  position: absolute;
-  left: 14px; top: 0;
-  width: 266px; height: 380px;
-  background: linear-gradient(140deg, #8b5cf6 0%, #7c3aed 20%, #5b21b6 60%, #4c1d95 100%);
-  border-radius: 0 10px 10px 0;
-  box-shadow: 10px 8px 28px rgba(0,0,0,0.55);
+/* ── PÁGINAS (contenido HTML dentro del flipbook) ── */
+.book-page {
+  padding: 0;
   overflow: hidden;
+  background: #fdf8f0;
 }
 
-.cover-pattern {
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(circle at 20% 30%, rgba(255,215,0,0.08) 0%, transparent 50%),
-    radial-gradient(circle at 80% 60%, rgba(255,255,255,0.05) 0%, transparent 50%),
-    radial-gradient(circle at 50% 80%, rgba(255,215,0,0.06) 0%, transparent 50%);
-  pointer-events: none;
-}
-
-.cover-content {
-  position: relative; z-index: 1;
-  height: 100%; display: flex;
-  flex-direction: column;
+.cover-page {
+  background: linear-gradient(140deg, #7c3aed, #5b21b6, #4c1d95);
+  display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  text-align: center;
-  border: 2px solid rgba(255,255,255,0.15);
-  border-radius: 0 8px 8px 0;
-  margin: 10px;
 }
 
-.cover-stars {
-  color: rgba(255,215,0,0.5);
-  font-size: 0.85rem;
-  letter-spacing: 6px;
-  margin-bottom: 1.2rem;
-}
-
-.cover-main-title {
-  color: #fff;
-  font-size: 2.3rem;
-  font-weight: 700;
-  line-height: 1.1;
-  text-shadow: 2px 3px 8px rgba(0,0,0,0.35);
-  margin-bottom: 0.8rem;
-}
-
-.cover-line {
-  width: 50px; height: 2px;
-  background: rgba(255,215,0,0.45);
-  margin-bottom: 1rem;
-}
-
-.cover-subtitle {
-  color: rgba(255,255,255,0.85);
-  font-size: 0.92rem;
-  margin-bottom: 1.5rem;
-}
-
-.cover-open-btn {
-  background: #fff;
-  color: #5b21b6;
-  border: none;
-  padding: 11px 28px;
-  border-radius: 30px;
-  font-size: 0.92rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-  font-family: 'Segoe UI', sans-serif;
-  transition: 0.3s;
-}
-.cover-open-btn:hover {
-  transform: scale(1.08);
-  box-shadow: 0 6px 24px rgba(0,0,0,0.4);
-  background: #fef3c7;
-}
-
-.book-pages-stack {
-  position: absolute;
-  right: 0; top: 0;
-  width: 8px; height: 100%;
-  background: repeating-linear-gradient(
-    0deg,
-    #faf5ec 0px, #f0e6d3 1px,
-    #faf5ec 1px, #e8dcc8 2px
-  );
-  border-radius: 0 3px 3px 0;
-  box-shadow: inset 2px 0 4px rgba(0,0,0,0.15);
-}
-
-/* ========================================
-   LIBRO ABIERTO
-   ======================================== */
-.book-container {
-  display: none;
-  opacity: 0;
-  width: 88vw;
-  max-width: 1000px;
-  height: 66vh;
-  max-height: 650px;
-  position: relative;
-  transform-style: preserve-3d;
-}
-.book-container.visible {
-  display: flex;
-  animation: bookAppear 0.55s ease-out forwards;
-}
-@keyframes bookAppear {
-  from { opacity: 0; transform: scale(0.92); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
-.book-shadow {
-  position: absolute;
-  bottom: -30px; left: 5%; right: 5%;
-  height: 30px;
-  background: radial-gradient(ellipse at center, rgba(0,0,0,0.45) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.book-binding {
-  position: absolute;
-  left: 50%; top: 0;
-  transform: translateX(-50%);
-  width: 3px; height: 100%;
-  background: linear-gradient(90deg, 
-    rgba(0,0,0,0.2), 
-    rgba(0,0,0,0.1),
-    rgba(0,0,0,0.02),
-    rgba(0,0,0,0.1),
-    rgba(0,0,0,0.2)
-  );
-  z-index: 5;
-  border-radius: 1px;
-}
-
-/* ── PÁGINA IZQUIERDA ── */
-.page-left-side {
-  width: 50%; height: 100%;
-  background: #fdf8f0;
-  border-radius: 14px 0 0 14px;
-  box-shadow: inset -8px 0 10px rgba(0,0,0,0.06);
-  overflow: hidden;
-  position: relative;
-  z-index: 2;
-}
-
-.page-left-content {
-  padding: 2.2rem 2rem;
+.page-content {
+  padding: 10%;
   height: 100%;
-  overflow-y: auto;
-}
-.page-left-content::-webkit-scrollbar { width: 4px; }
-.page-left-content::-webkit-scrollbar-thumb {
-  background: rgba(139,92,246,0.2); border-radius: 4px;
 }
 
-/* ── LADO DERECHO ── */
-.page-right-side {
-  width: 50%; height: 100%;
-  position: relative;
-  perspective: 1600px;
-  border-radius: 0 14px 14px 0;
-  overflow: hidden;
-  z-index: 3;
-}
-
-/* Pila de hojas visibles */
-.sheets-stack {
-  position: absolute;
-  right: 0; top: 0;
-  width: 100%; height: 100%;
-  pointer-events: none;
-  z-index: 1;
-  transform-style: preserve-3d;
-}
-
-.sheet-edge {
-  position: absolute;
-  right: 0; top: 0;
-  width: 100%; height: 100%;
-  background: #f5efe4;
-  border-radius: 0 14px 14px 0;
-  transform-origin: left center;
-  transition: transform 0.1s ease;
-}
-
-/* Hoja volteable */
-.sheet-flipper {
-  position: absolute;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
-  transform-style: preserve-3d;
-  transform-origin: left center;
-  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 4;
-}
-
-.sheet-flipper.flipped {
-  transform: rotateY(-175deg);
-}
-
-.sheet-front, .sheet-back {
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  overflow: hidden;
-}
-
-.sheet-front {
-  background: #fdf8f0;
-  border-radius: 0 14px 14px 0;
-  box-shadow: inset 6px 0 10px rgba(0,0,0,0.04);
-  z-index: 1;
-}
-
-.sheet-back {
-  background: #f5efe4;
-  border-radius: 14px 0 0 14px;
-  transform: rotateY(180deg);
-}
-
-.sheet-content {
-  padding: 2.2rem 2rem;
-  height: 100%;
-  overflow-y: auto;
-}
-.sheet-content::-webkit-scrollbar { width: 4px; }
-.sheet-content::-webkit-scrollbar-thumb {
-  background: rgba(139,92,246,0.2); border-radius: 4px;
-}
-
-/* Sombra durante el flip */
-.flip-shadow {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 3;
-  background: transparent;
-  transition: background 0.7s ease;
-}
-.flip-shadow.active {
-  background: linear-gradient(90deg, rgba(0,0,0,0.12) 0%, transparent 70%);
-}
-
-/* ========================================
-   CONTENIDO DE PÁGINAS
-   ======================================== */
-.cht {
+.ch-title {
   color: #3b1f5c;
-  font-size: 1.3rem;
-  margin: 0 0 1rem;
-  padding-bottom: 0.5rem;
+  font-size: clamp(1rem, 2.2vw, 1.35rem);
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.4rem;
   border-bottom: 2px solid #d4a855;
 }
 
-.sheet-content p, .page-left-content p {
+.page-content p {
   color: #5b3a7a;
-  line-height: 1.7;
-  margin: 0.7rem 0;
-  font-size: 0.94rem;
+  line-height: 1.65;
+  margin: 0.5rem 0;
+  font-size: clamp(0.7rem, 1.5vw, 0.9rem);
   text-align: justify;
 }
 
@@ -348,136 +104,199 @@ html, body {
   color: #7c3aed !important;
   font-style: italic;
   border-left: 3px solid #d4a855;
-  padding-left: 1rem;
-  margin: 1rem 0 !important;
-  font-size: 0.88rem !important;
+  padding-left: 0.8rem;
+  margin: 0.7rem 0 !important;
+  font-size: clamp(0.65rem, 1.3vw, 0.82rem) !important;
 }
 
-.sig {
+.signature {
   text-align: right !important;
   color: #3b1f5c !important;
   font-style: italic;
-  margin-top: 1.2rem !important;
+  margin-top: 1rem !important;
 }
 
-/* Índice */
-.toc-inline { list-style: none; padding: 0; margin: 0.6rem 0; }
-.toc-inline li {
-  padding: 0.75rem 1rem;
-  margin: 0.3rem 0;
-  background: rgba(147,51,234,0.05);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.25s;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #3b1f5c;
-  font-size: 0.88rem;
-  border: 1px solid transparent;
-}
-.toc-inline li:hover {
-  background: rgba(147,51,234,0.13);
-  transform: translateX(5px);
-  border-color: rgba(147,51,234,0.2);
-}
-.toc-num {
-  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
-  color: #fff;
-  width: 27px; height: 27px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.78rem;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-/* Razones */
-.reasons { list-style: none; padding: 0; margin: 0.5rem 0; }
-.reasons li { padding: 0.4rem 0; color: #5b3a7a; font-size: 0.88rem; }
-
-/* Contraportada interna */
-.end-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
+/* ── PÁGINA COVER ── */
+.cover-deco {
   text-align: center;
-  background: linear-gradient(145deg, #7c3aed, #5b21b6);
-  color: #fff;
-  padding: 2rem;
+  padding: 10%;
 }
-.end-page h2 { color: #fff !important; border-bottom-color: rgba(255,215,0,0.5) !important; }
-.end-page p { color: rgba(255,255,255,0.9) !important; text-align: center !important; }
-.end-link {
+
+.cover-frame-inner {
+  border: 2px solid rgba(255,255,255,0.25);
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+}
+
+.cover-ornament {
+  color: rgba(255,215,0,0.5);
+  font-size: 0.8rem;
+  letter-spacing: 6px;
+  margin-bottom: 1rem;
+}
+
+.cover-main-title {
+  color: #fff;
+  font-size: clamp(1.5rem, 4vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+  margin-bottom: 0.8rem;
+}
+
+.cover-line {
+  width: 40px; height: 2px;
+  background: rgba(255,215,0,0.4);
+  margin: 0 auto 0.8rem;
+}
+
+.cover-subtitle {
+  color: rgba(255,255,255,0.85);
+  font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+}
+
+.end-btn {
   display: inline-block;
   margin-top: 1.5rem;
   background: #fff;
   color: #5b21b6;
-  padding: 10px 24px;
-  border-radius: 30px;
+  padding: 8px 22px;
+  border-radius: 24px;
   text-decoration: none;
   font-family: 'Segoe UI', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   transition: 0.3s;
 }
-.end-link:hover { transform: scale(1.05); background: #fef3c7; }
+.end-btn:hover { transform: scale(1.05); background: #fef3c7; }
 
-/* ========================================
-   CONTROLES
-   ======================================== */
-.ctrl-btn {
-  position: absolute;
-  z-index: 20;
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255,255,255,0.15);
+/* ── ÍNDICE ── */
+.index-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.4rem 0;
+}
+
+.index-list li {
+  padding: 0.55rem 0.8rem;
+  margin: 0.2rem 0;
+  background: rgba(147,51,234,0.05);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #3b1f5c;
+  font-size: clamp(0.65rem, 1.3vw, 0.82rem);
+  border: 1px solid transparent;
+  font-family: 'Segoe UI', sans-serif;
+}
+.index-list li:hover {
+  background: rgba(147,51,234,0.12);
+  transform: translateX(4px);
+  border-color: rgba(147,51,234,0.2);
+}
+
+.idx-badge {
+  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
   color: #fff;
-  width: 44px; height: 44px;
+  width: 22px; height: 22px;
   border-radius: 50%;
-  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── RAZONES ── */
+.reasons { list-style: none; padding: 0; margin: 0.4rem 0; }
+.reasons li {
+  padding: 0.3rem 0;
+  color: #5b3a7a;
+  font-size: clamp(0.65rem, 1.3vw, 0.82rem);
+}
+
+/* ── CONTROLES ── */
+.ctrl {
+  position: fixed;
+  z-index: 100;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #fff;
+  border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: 0.3s;
+  transition: 0.25s;
   font-family: sans-serif;
 }
-.ctrl-btn:hover { background: rgba(255,255,255,0.28); }
-.ctrl-btn:active { transform: scale(0.9); }
-.ctrl-btn.disabled { opacity: 0.2; pointer-events: none; }
+.ctrl:hover { background: rgba(255,255,255,0.25); }
+.ctrl:active { transform: scale(0.9); }
+.ctrl.disabled { opacity: 0.15; pointer-events: none; }
 
-.ctrl-prev { left: -56px; top: 50%; transform: translateY(-50%); }
-.ctrl-next { right: -56px; top: 50%; transform: translateY(-50%); }
-.ctrl-toc  { top: -56px; right: -10px; }
-.ctrl-zoom { top: -56px; left: -10px; }
+.ctrl-prev { width: 44px; height: 44px; font-size: 1.2rem; top: 50%; left: max(8px, calc((100vw - 90vw)/2 - 56px)); transform: translateY(-50%); }
+.ctrl-next { width: 44px; height: 44px; font-size: 1.2rem; top: 50%; right: max(8px, calc((100vw - 90vw)/2 - 56px)); transform: translateY(-50%); }
+.ctrl-toc  { width: 38px; height: 38px; font-size: 1rem; top: 16px; right: max(16px, calc((100vw - 90vw)/2 + 8px)); }
+.ctrl-fs   { width: 38px; height: 38px; font-size: 1rem; top: 16px; left: max(16px, calc((100vw - 90vw)/2 + 8px)); }
 
-.page-counter {
-  position: absolute;
-  bottom: -36px; left: 50%;
+/* ── PAGE INDICATOR ── */
+.page-indicator {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
   transform: translateX(-50%);
-  color: rgba(255,255,255,0.55);
-  font-size: 0.82rem;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.78rem;
   font-family: 'Segoe UI', sans-serif;
   background: rgba(0,0,0,0.3);
-  padding: 4px 16px;
-  border-radius: 14px;
-  white-space: nowrap;
+  padding: 4px 14px;
+  border-radius: 12px;
+  z-index: 100;
 }
 
-/* ========================================
-   OVERLAY DEL ÍNDICE
-   ======================================== */
+/* ── HINT OVERLAY ── */
+.hint-overlay {
+  position: fixed;
+  bottom: 12%;
+  right: 8%;
+  z-index: 50;
+  opacity: 0.9;
+  transition: opacity 1.5s;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.hint-overlay.faded { opacity: 0; }
+
+.hint-text {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.7rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+.hint-arrow {
+  color: rgba(255,255,255,0.3);
+  font-size: 1.6rem;
+  animation: hintBounce 1.5s ease-in-out infinite;
+}
+@keyframes hintBounce {
+  0%,100% { transform: translate(0,0); }
+  50% { transform: translate(-6px,-6px); }
+}
+
+/* ── TOC OVERLAY ── */
 .toc-overlay {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
-  z-index: 100;
+  background: rgba(0,0,0,0.55);
+  z-index: 200;
   align-items: center;
   justify-content: center;
 }
@@ -485,140 +304,82 @@ html, body {
 
 .toc-panel {
   background: #fdf8f0;
-  border-radius: 16px;
-  width: 90%;
-  max-width: 420px;
-  max-height: 70vh;
+  border-radius: 14px;
+  width: 88%;
+  max-width: 400px;
+  max-height: 68vh;
   overflow-y: auto;
   box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-  animation: tocSlideIn 0.3s ease;
+  animation: tocIn 0.25s ease;
 }
-@keyframes tocSlideIn {
-  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+@keyframes tocIn {
+  from { opacity: 0; transform: translateY(18px) scale(0.97); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.toc-header {
+.toc-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.2rem 1.5rem;
+  padding: 1rem 1.3rem;
   border-bottom: 1px solid #e9d5ff;
+  position: sticky; top: 0;
+  background: #fdf8f0;
+  border-radius: 14px 14px 0 0;
 }
-.toc-header h2 { color: #3b1f5c; font-size: 1.2rem; margin: 0; }
+.toc-bar h2 { color: #3b1f5c; font-size: 1.1rem; margin: 0; }
+
 .toc-close {
   background: none; border: none;
-  color: #5b3a7a; font-size: 1.2rem;
+  color: #5b3a7a; font-size: 1.1rem;
   cursor: pointer; padding: 4px 8px;
   border-radius: 6px; transition: 0.2s;
 }
 .toc-close:hover { background: rgba(139,92,246,0.1); }
 
-.toc-list { padding: 0.8rem 1.5rem 1.5rem; }
-.toc-list .toc-item {
-  padding: 0.7rem 0.9rem;
-  margin: 0.2rem 0;
+.toc-body { padding: 0.8rem 1.3rem 1.3rem; }
+
+.toc-body .toc-item {
+  padding: 0.6rem 0.8rem;
+  margin: 0.15rem 0;
   background: rgba(147,51,234,0.04);
-  border-radius: 8px;
+  border-radius: 7px;
   cursor: pointer;
-  transition: 0.25s;
+  transition: 0.2s;
   display: flex;
   align-items: center;
   gap: 10px;
   color: #3b1f5c;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-family: 'Segoe UI', sans-serif;
   border: 1px solid transparent;
 }
-.toc-list .toc-item:hover {
+.toc-body .toc-item:hover {
   background: rgba(147,51,234,0.12);
   border-color: rgba(147,51,234,0.2);
 }
 
-/* ========================================
-   FULLSCREEN
-   ======================================== */
+/* ── FULLSCREEN ── */
 .flipbook-scene.fullscreen {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  background: radial-gradient(ellipse at 50% 40%, #2d2040 0%, #0d0618 100%);
+  position: fixed; inset: 0; z-index: 300;
+  background: radial-gradient(ellipse at 50% 40%, #261d38 0%, #080312 100%);
 }
-.flipbook-scene.fullscreen .book-container {
-  width: 95vw;
-  height: 82vh;
-  max-width: 1200px;
-  max-height: 90vh;
+.flipbook-scene.fullscreen .book-wrapper {
+  width: 95vw !important;
+  height: 88vh !important;
+  max-width: 1300px;
+  max-height: 95vh;
 }
 
-/* ========================================
-   RESPONSIVE
-   ======================================== */
-@media (max-width: 900px) {
-  .book-container {
-    width: 93vw; height: 62vh;
-  }
-
-  .ctrl-prev { left: -24px; width: 36px; height: 36px; font-size: 0.9rem; }
-  .ctrl-next { right: -24px; width: 36px; height: 36px; font-size: 0.9rem; }
-  .ctrl-toc  { top: -24px; right: -4px; width: 32px; height: 32px; font-size: 0.85rem; }
-  .ctrl-zoom { top: -24px; left: -4px; width: 32px; height: 32px; font-size: 0.85rem; }
-
-  .sheet-content, .page-left-content { padding: 1.4rem 1.2rem; }
-  .cht { font-size: 1.1rem; }
-  .sheet-content p, .page-left-content p { font-size: 0.82rem; }
-
-  .book-3d-closed {
-    width: 220px; height: 300px;
-  }
-  .book-cover-3d {
-    width: 206px; height: 300px;
-  }
-  .cover-main-title { font-size: 1.8rem; }
-  .cover-open-btn { font-size: 0.8rem; padding: 9px 22px; }
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .ctrl-prev { width: 38px; height: 38px; font-size: 1rem; left: 4px; }
+  .ctrl-next { width: 38px; height: 38px; font-size: 1rem; right: 4px; }
+  .ctrl-toc  { width: 32px; height: 32px; font-size: 0.9rem; top: 10px; right: 8px; }
+  .ctrl-fs   { width: 32px; height: 32px; font-size: 0.9rem; top: 10px; left: 8px; }
 }
 
-@media (max-width: 640px) {
-  .book-container {
-    width: 96vw; height: 56vh;
-    flex-direction: column;
-  }
-
-  .book-binding { display: none; }
-
-  .page-left-side {
-    width: 100%; height: 50%;
-    border-radius: 16px 16px 0 0;
-  }
-
-  .page-right-side {
-    width: 100%; height: 50%;
-    border-radius: 0 0 16px 16px;
-    perspective: 1200px;
-  }
-
-  .sheet-flipper { transform-origin: top center; }
-  .sheet-flipper.flipped { transform: rotateX(175deg); }
-  .sheet-front { border-radius: 0 0 16px 16px; }
-  .sheet-back { border-radius: 16px 16px 0 0; transform: rotateX(180deg); }
-
-  .sheets-stack { display: none; }
-
-  .ctrl-prev { left: -16px; width: 30px; height: 30px; font-size: 0.8rem; }
-  .ctrl-next { right: -16px; width: 30px; height: 30px; font-size: 0.8rem; }
-  .ctrl-toc  { top: auto; bottom: -46px; right: 50%; transform: translateX(70px); width: 32px; height: 32px; }
-  .ctrl-zoom { top: auto; bottom: -46px; left: 50%; transform: translateX(-70px); width: 32px; height: 32px; }
-
-  .sheet-content, .page-left-content { padding: 1rem 1rem; }
-  .page-counter { bottom: -46px; }
-
-  .book-3d-closed { width: 190px; height: 260px; }
-  .book-cover-3d { width: 176px; height: 260px; }
-  .cover-main-title { font-size: 1.5rem; }
-  .cover-content { padding: 1.2rem 0.8rem; }
-
-  .flipbook-scene.fullscreen .book-container {
-    height: 88vh;
-    flex-direction: column;
-  }
+@media (max-width: 480px) {
+  .ctrl-prev { width: 32px; height: 32px; font-size: 0.85rem; left: 2px; }
+  .ctrl-next { width: 32px; height: 32px; font-size: 0.85rem; right: 2px; }
 }

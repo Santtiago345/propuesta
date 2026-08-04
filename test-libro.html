@@ -13,243 +13,214 @@
       min-height: 100vh;
     }
     .container { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; }
-    h1 { text-align: center; color: #c084fc; margin-bottom: 0.5rem; }
-    .subtitle { text-align: center; color: #a78bfa; margin-bottom: 1.5rem; font-size: 0.9rem; }
-    .test-list { display: flex; flex-direction: column; gap: 8px; }
-    .test-item {
+    h1 { text-align: center; color: #c084fc; }
+    .sub { text-align: center; color: #a78bfa; margin-bottom: 1.5rem; font-size: 0.9rem; }
+    .tests { display: flex; flex-direction: column; gap: 8px; }
+    .test {
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 10px; padding: 14px 18px;
       display: flex; align-items: center; gap: 12px;
-      transition: all 0.3s ease;
     }
-    .test-icon {
-      width: 34px; height: 34px;
-      border-radius: 50%;
+    .icon {
+      width: 34px; height: 34px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       font-size: 1rem; flex-shrink: 0;
     }
-    .test-icon.pending { background: rgba(148,163,184,0.2); }
-    .test-icon.pass { background: rgba(34,197,94,0.25); }
-    .test-icon.fail { background: rgba(239,68,68,0.25); }
-    .test-name { flex: 1; font-size: 0.9rem; }
-    .test-msg { font-size: 0.78rem; color: #94a3b8; }
+    .icon.pending { background: rgba(148,163,184,0.2); }
+    .icon.pass { background: rgba(34,197,94,0.25); }
+    .icon.fail { background: rgba(239,68,68,0.25); }
+    .name { flex: 1; font-size: 0.9rem; }
+    .msg { font-size: 0.78rem; color: #94a3b8; }
     .summary {
       margin-top: 2rem; padding: 1.5rem;
-      background: rgba(255,255,255,0.08);
-      border-radius: 12px; text-align: center;
+      background: rgba(255,255,255,0.08); border-radius: 12px; text-align: center;
     }
-    .summary.passed { border: 2px solid rgba(34,197,94,0.4); }
-    .summary.failed  { border: 2px solid rgba(239,68,68,0.4); }
+    .summary.ok { border: 2px solid rgba(34,197,94,0.4); }
+    .summary.fail { border: 2px solid rgba(239,68,68,0.4); }
     .btn {
       display: block; margin: 0 auto 1rem;
       padding: 12px 36px; border-radius: 50px;
+      background: linear-gradient(135deg, #7c3aed, #9333ea); color: #fff;
       border: none; font-size: 1rem; font-weight: bold;
-      cursor: pointer; transition: all 0.3s ease;
+      cursor: pointer; transition: 0.3s;
     }
-    .btn-run { background: linear-gradient(135deg, #7c3aed, #9333ea); color: #fff; }
-    .btn-run:hover:not(:disabled) { transform: scale(1.05); }
-    .btn-run:disabled { opacity: 0.4; cursor: not-allowed; }
-    .btn-back {
+    .btn:hover:not(:disabled) { transform: scale(1.05); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .back {
       background: rgba(255,255,255,0.1); color: #c084fc;
       text-decoration: none; display: inline-block;
       padding: 8px 20px; border-radius: 50px; font-size: 0.85rem; margin-bottom: 1rem;
     }
-    .test-progress {
-      width: 100%; height: 4px;
-      background: rgba(255,255,255,0.1); border-radius: 2px;
-      margin: 1rem 0; overflow: hidden;
+    .bar {
+      width: 100%; height: 4px; background: rgba(255,255,255,0.1);
+      border-radius: 2px; margin: 1rem 0; overflow: hidden;
     }
-    .test-progress-bar {
-      height: 100%;
-      background: linear-gradient(90deg, #7c3aed, #a78bfa);
-      border-radius: 2px; transition: width 0.5s ease;
+    .bar-fill {
+      height: 100%; background: linear-gradient(90deg, #7c3aed, #a78bfa);
+      border-radius: 2px; transition: width 0.5s;
     }
-    .running { display: none; color: #fbbf24; font-size: 0.8rem; text-align: center; }
   </style>
 </head>
 <body>
   <div class="container">
-    <a href="libro.html" class="btn-back">← Volver al libro</a>
+    <a href="libro.html" class="back">← Volver al libro</a>
     <h1>🧪 Pruebas del Flipbook</h1>
-    <p class="subtitle">Verificación automática de funcionalidades</p>
+    <p class="sub">Verificación automática con StPageFlip</p>
 
-    <button class="btn btn-run" id="btnRun" onclick="ejecutarTests()" disabled>Cargando libro...</button>
-    <p class="running" id="runningMsg">Ejecutando pruebas...</p>
-
-    <div class="test-progress"><div class="test-progress-bar" id="progressBar" style="width:0%"></div></div>
-    <div class="test-list" id="testList"></div>
+    <button class="btn" id="btnRun" onclick="run()" disabled>Cargando...</button>
+    <div class="bar"><div class="bar-fill" id="bar" style="width:0%"></div></div>
+    <div class="tests" id="tests"></div>
     <div class="summary" id="summary" style="display:none"></div>
   </div>
 
-  <iframe id="testFrame" src="libro.html" style="width:1px;height:1px;position:absolute;opacity:0" onload="onFrameLoaded()"></iframe>
+  <iframe id="frame" src="libro.html" style="width:1px;height:1px;position:absolute;opacity:0" onload="onLoad()"></iframe>
 
   <script>
     var FB = null;
-    var tests = [];
+    var list = [];
     var results = [];
     var total = 0;
 
-    function delay(ms) {
-      return new Promise(function(r) { setTimeout(r, ms); });
-    }
+    function delay(ms) { return new Promise(function(r){setTimeout(r,ms);}); }
 
-    function waitForFB() {
+    function waitFB() {
       return new Promise(function(resolve) {
-        var maxWait = 5000;
-        var start = Date.now();
-        function check() {
+        var max = 12000, start = Date.now();
+        function chk() {
           try {
-            var w = document.getElementById('testFrame').contentWindow;
-            if (w && w.Flipbook && typeof w.Flipbook.getCerrado === 'function') {
-              FB = w.Flipbook;
-              resolve(true); return;
+            var w = document.getElementById('frame').contentWindow;
+            if (w && w.Flipbook && w.Flipbook.isReady && w.Flipbook.isReady()) {
+              FB = w.Flipbook; resolve(true); return;
             }
           } catch(e) {}
-          if (Date.now() - start > maxWait) { resolve(false); return; }
-          setTimeout(check, 100);
+          if (Date.now() - start > max) { resolve(false); return; }
+          setTimeout(chk, 200);
         }
-        check();
+        chk();
       });
     }
 
-    function onFrameLoaded() {
-      setTimeout(function() {
-        waitForFB().then(function(ok) {
-          if (ok) {
-            document.getElementById('btnRun').textContent = 'Ejecutar pruebas ▶';
-            document.getElementById('btnRun').disabled = false;
-            buildTests();
-          } else {
-            document.getElementById('btnRun').textContent = 'Error de carga';
-          }
-        });
-      }, 600);
+    function onLoad() {
+      waitFB().then(function(ok) {
+        var btn = document.getElementById('btnRun');
+        if (ok) { btn.textContent = 'Ejecutar pruebas ▶'; btn.disabled = false; }
+        else { btn.textContent = 'Error de carga'; }
+        buildList();
+      });
     }
 
-    function buildTests() {
-      tests = [
-        { name: '1. El libro inicia cerrado', msg: 'getCerrado() debe ser true al inicio',
-          fn: function() { return FB.getCerrado() === true; } },
-        { name: '2. Abrir el libro', msg: 'abrir() cambia el estado',
-          fn: function() { FB.abrir(); return true; }, delay: 800 },
-        { name: '3. Verificar estado abierto', msg: 'getCerrado() debe ser false',
-          fn: function() { return FB.getCerrado() === false; } },
-        { name: '4. Página inicial correcta', msg: 'getCurrentPage() debe ser 2 (índice | cap1)',
+    function buildList() {
+      list = [
+        { name: '1. El flipbook está listo', msg: 'isReady() debe devolver true',
+          fn: function() { return FB && FB.isReady(); } },
+        { name: '2. Inicia en la portada (página 0)', msg: 'getCurrentPage() debe ser 0',
+          fn: function() { return FB.getCurrentPage() === 0; } },
+        { name: '3. Hay 9 páginas en total', msg: 'getTotalPages() debe ser 9',
+          fn: function() { return FB.getTotalPages() === 9; } },
+        { name: '4. Avanzar a página 2 (índice + cap1)', msg: 'Flip a spread con índice',
+          fn: function() { FB.goToPage(2); return true; }, wait: 1100 },
+        { name: '5. Verificar página 2', msg: 'getCurrentPage() debe ser 2',
           fn: function() { return FB.getCurrentPage() === 2; } },
-        { name: '5. Ir a página 4', msg: 'irAPagina(4) debe saltar correctamente',
-          fn: function() { FB.irAPagina(4); return FB.getCurrentPage() === 4; }, delay: 900 },
-        { name: '6. Ir a página 6', msg: 'irAPagina(6) debe saltar correctamente',
-          fn: function() { FB.irAPagina(6); return FB.getCurrentPage() === 6; }, delay: 900 },
-        { name: '7. Ir a página 8', msg: 'irAPagina(8) debe saltar al final',
-          fn: function() { FB.irAPagina(8); return FB.getCurrentPage() === 8; }, delay: 900 },
-        { name: '8. No ir más allá del final', msg: 'irAPagina(10) no debe cambiar',
-          fn: function() { FB.irAPagina(10); return FB.getCurrentPage() === 8; } },
-        { name: '9. No ir a página inválida', msg: 'irAPagina(3) impar debe ser rechazada',
-          fn: function() { FB.irAPagina(3); return FB.getCurrentPage() === 8; } },
-        { name: '10. Navegar hacia atrás', msg: 'anterior() debe retroceder a 6',
-          fn: function() { FB.anterior(); return FB.getCurrentPage() === 6; }, delay: 900 },
-        { name: '11. Segunda navegación atrás', msg: 'anterior() debe retroceder a 4',
-          fn: function() { FB.anterior(); return FB.getCurrentPage() === 4; }, delay: 900 },
-        { name: '12. Tercera navegación atrás', msg: 'anterior() debe retroceder a 2',
-          fn: function() { FB.anterior(); return FB.getCurrentPage() === 2; }, delay: 900 },
-        { name: '13. No ir antes del inicio', msg: 'anterior() desde inicio no cambia',
-          fn: function() { FB.anterior(); return FB.getCurrentPage() === 2; } },
-        { name: '14. Navegar hacia adelante', msg: 'siguiente() debe avanzar a 4',
-          fn: function() { FB.siguiente(); return FB.getCurrentPage() === 4; }, delay: 900 },
-        { name: '15. Total de páginas correcto', msg: 'getTotalPaginas() debe ser 8',
-          fn: function() { return FB.getTotalPaginas() === 8; } },
-        { name: '16. Cerrar el libro', msg: 'cerrar() restaura estado cerrado',
-          fn: function() { FB.cerrar(); return true; }, delay: 700 },
-        { name: '17. Verificar cerrado', msg: 'getCerrado() debe ser true',
-          fn: function() { return FB.getCerrado() === true; } },
-        { name: '18. Reabrir el libro', msg: 'abrir() debe funcionar de nuevo',
-          fn: function() { FB.abrir(); return true; }, delay: 800 },
-        { name: '19. Verificar reapertura', msg: 'getCerrado() debe ser false',
-          fn: function() { return FB.getCerrado() === false; } },
-        { name: '20. No crash con índice negativo', msg: 'irAPagina(-1) debe ser seguro',
-          fn: function() { try { FB.irAPagina(-1); return true; } catch(e) { return false; } } }
+        { name: '6. Avanzar a página 4', msg: 'Flip a segundo spread',
+          fn: function() { FB.goToPage(4); return true; }, wait: 1100 },
+        { name: '7. Verificar página 4', msg: 'getCurrentPage() debe ser 4',
+          fn: function() { return FB.getCurrentPage() === 4; } },
+        { name: '8. Avanzar a página 6', msg: 'Flip a tercer spread',
+          fn: function() { FB.goToPage(6); return true; }, wait: 1100 },
+        { name: '9. Verificar página 6', msg: 'getCurrentPage() debe ser 6',
+          fn: function() { return FB.getCurrentPage() === 6; } },
+        { name: '10. Avanzar a página 8 (contraportada)', msg: 'Flip al final',
+          fn: function() { FB.goToPage(8); return true; }, wait: 1100 },
+        { name: '11. Verificar última página', msg: 'getCurrentPage() debe ser 8',
+          fn: function() { return FB.getCurrentPage() === 8; } },
+        { name: '12. Volver a la portada', msg: 'goToPage(0) debe funcionar',
+          fn: function() { FB.goToPage(0); return true; }, wait: 1100 },
+        { name: '13. Verificar portada de nuevo', msg: 'getCurrentPage() debe ser 0',
+          fn: function() { return FB.getCurrentPage() === 0; } },
+        { name: '14. flipNext funciona', msg: 'Avanzar con flecha',
+          fn: function() { FB.flipNext(); return true; }, wait: 1100 },
+        { name: '15. Verificar tras flipNext', msg: 'getCurrentPage() debe ser > 0',
+          fn: function() { return FB.getCurrentPage() > 0; } },
+        { name: '16. flipPrev funciona', msg: 'Retroceder con flecha',
+          fn: function() { FB.flipPrev(); return true; }, wait: 1100 },
+        { name: '17. Verificar tras flipPrev', msg: 'getCurrentPage() debe ser 0',
+          fn: function() { return FB.getCurrentPage() === 0; } },
+        { name: '18. Sin crashes con páginas inválidas', msg: 'goToPage(-1) y goToPage(99) no crashean',
+          fn: function() {
+            try { FB.goToPage(-1); FB.goToPage(99); return true; }
+            catch(e) { return false; }
+          }}
       ];
-      total = tests.length;
-      renderTests();
+      total = list.length;
+      renderList();
     }
 
-    function renderTests() {
-      var list = document.getElementById('testList');
-      list.innerHTML = '';
-      tests.forEach(function(t, i) {
+    function renderList() {
+      var d = document.getElementById('tests');
+      d.innerHTML = '';
+      list.forEach(function(t,i) {
         var div = document.createElement('div');
-        div.className = 'test-item';
-        div.id = 'test-' + i;
+        div.className = 'test'; div.id = 't-'+i;
         div.innerHTML =
-          '<div class="test-icon pending" id="icon-' + i + '">·</div>' +
-          '<div><div class="test-name">' + t.name + '</div>' +
-          '<div class="test-msg">' + t.msg + '</div></div>';
-        list.appendChild(div);
+          '<div class="icon pending" id="ic-'+i+'">·</div>' +
+          '<div><div class="name">'+t.name+'</div>' +
+          '<div class="msg">'+t.msg+'</div></div>';
+        d.appendChild(div);
       });
     }
 
-    async function ejecutarTests() {
+    async function run() {
       document.getElementById('btnRun').disabled = true;
-      document.getElementById('runningMsg').style.display = 'block';
       results = [];
 
-      var ok = await waitForFB();
+      var ok = await waitFB();
       if (!ok) {
-        document.getElementById('testList').innerHTML =
-          '<div class="test-item"><div class="test-icon fail">!</div>' +
-          '<div><div class="test-name">Error de carga</div>' +
-          '<div class="test-msg">Abre desde un servidor: npx serve .</div></div></div>';
+        document.getElementById('tests').innerHTML =
+          '<div class="test"><div class="icon fail">!</div>' +
+          '<div><div class="name">Error</div>' +
+          '<div class="msg">No se pudo acceder al libro. Abre con: npx serve .</div></div></div>';
         document.getElementById('btnRun').disabled = false;
         return;
       }
 
-      if (!FB.getCerrado()) { FB.cerrar(); await delay(700); }
-
-      for (var i = 0; i < tests.length; i++) {
-        var t = tests[i];
-        var icon = document.getElementById('icon-' + i);
-        var item = document.getElementById('test-' + i);
+      for (var i = 0; i < list.length; i++) {
+        var t = list[i];
         var passed = false;
-
         try { passed = t.fn(); } catch(e) { passed = false; }
-
         results.push({ name: t.name, passed: passed });
 
-        icon.classList.remove('pending');
+        var ic = document.getElementById('ic-'+i);
+        var ti = document.getElementById('t-'+i);
+        ic.classList.remove('pending');
         if (passed) {
-          icon.classList.add('pass'); icon.textContent = '\u2713';
-          item.style.borderColor = 'rgba(34,197,94,0.4)';
+          ic.classList.add('pass'); ic.textContent = '\u2713';
+          ti.style.borderColor = 'rgba(34,197,94,0.4)';
         } else {
-          icon.classList.add('fail'); icon.textContent = '\u2717';
-          item.style.borderColor = 'rgba(239,68,68,0.4)';
+          ic.classList.add('fail'); ic.textContent = '\u2717';
+          ti.style.borderColor = 'rgba(239,68,68,0.4)';
         }
-
-        document.getElementById('progressBar').style.width = ((i + 1) / total * 100) + '%';
-
-        if (t.delay) await delay(t.delay);
+        document.getElementById('bar').style.width = ((i+1)/total*100)+'%';
+        if (t.wait) await delay(t.wait);
       }
 
-      document.getElementById('runningMsg').style.display = 'none';
-      mostrarResumen();
+      showSummary();
       document.getElementById('btnRun').disabled = false;
     }
 
-    function mostrarResumen() {
-      var p = results.filter(function(r) { return r.passed; }).length;
+    function showSummary() {
+      var p = results.filter(function(r){return r.passed;}).length;
       var f = results.length - p;
-      var allOk = f === 0;
+      var ok = f === 0;
       var s = document.getElementById('summary');
       s.style.display = 'block';
-      s.className = 'summary ' + (allOk ? 'passed' : 'failed');
+      s.className = 'summary '+(ok?'ok':'fail');
       s.innerHTML =
-        '<h2 style="margin:0 0 0.8rem;color:' + (allOk ? '#22c55e' : '#ef4444') + '">' +
-        (allOk ? '\u2705 Todas las pruebas pasaron' : '\u274C Hay pruebas fallidas') +
-        '</h2>' +
-        '<p style="margin:0;font-size:0.95rem">' +
-        '<span style="color:#22c55e">\u2713 ' + p + ' pasaron</span> &nbsp;|&nbsp; ' +
-        '<span style="color:#ef4444">\u2717 ' + f + ' fallaron</span> &nbsp;|&nbsp; Total: ' + results.length +
-        '</p>';
+        '<h2 style="margin:0 0 0.6rem;color:'+(ok?'#22c55e':'#ef4444')+'">'+
+        (ok?'\u2705 Todo correcto':'\u274C Hay fallos')+'</h2>'+
+        '<p style="margin:0;font-size:0.9rem">'+
+        '<span style="color:#22c55e">\u2713 '+p+' pasaron</span> &nbsp;|&nbsp; '+
+        '<span style="color:#ef4444">\u2717 '+f+' fallaron</span> &nbsp;|&nbsp; Total: '+results.length+'</p>';
     }
   </script>
 </body>

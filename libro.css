@@ -122,7 +122,36 @@ html, body {
 /* Cover no necesita header */
 .cover-page .page-hdr,
 .blank-page .page-hdr,
-.title-page .page-hdr { display: none; }
+.title-page .page-hdr,
+.section-cover-page .page-hdr { display: none; }
+
+/* ── SECTION COVER (primera página de sección) ── */
+.section-cover-page {
+  background: #fdf8f0;
+}
+
+.section-cover-page .page-content {
+  height: 100%;
+  padding: 0;
+}
+
+.section-cover-page .page-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 75%;
+  padding: 0 12%;
+}
+
+.section-cover-title {
+  color: #3b1f5c;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 1.5px;
+  line-height: 1.2;
+}
 
 .page-content {
   flex: 1 1 auto;

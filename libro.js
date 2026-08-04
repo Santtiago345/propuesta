@@ -90,6 +90,22 @@
     return d;
   }
 
+  function makeSectionCoverPage(title, pnum) {
+    var d = document.createElement('div');
+    d.className = 'book-page section-cover-page';
+    d.setAttribute('data-r', pnum);
+    d.innerHTML =
+      '<div class="page-hdr">' +
+        '<span class="hdr-left"></span>' +
+        '<span class="hdr-center"></span>' +
+        '<span class="hdr-right"></span>' +
+      '</div>' +
+      '<div class="page-content"><div class="page-inner">' +
+        '<h1 class="section-cover-title">' + title + '</h1>' +
+      '</div></div>';
+    return d;
+  }
+
   function parseElements(elements, title, isChapter) {
     var items = [];
     if (isChapter) {
@@ -291,8 +307,14 @@
       fixedPages.push(existing[i]);
     }
 
-    // Paginación Introducción
-    var introPages = paginateSection('Introducci\u00f3n', introParagraphs, 10, false);
+    // Página portada de sección Introducción (sin header, título centrado)
+    var introCover = makeSectionCoverPage('Introducci\u00f3n', 10);
+
+    // Paginación contenido Introducción (páginas con header normal)
+    var introContentPages = paginateSection('Introducci\u00f3n', introParagraphs, 11, false);
+
+    // Combinar: portada de sección + páginas de contenido
+    var introPages = [introCover].concat(introContentPages);
     
     // Paginación Capítulos
     var currentNum = 10 + introPages.length;
@@ -369,7 +391,7 @@
         var r = document.createElement('div');
         r.className = 'toc-row';
         r.innerHTML = '<span class="toc-label">' + item.label + '</span><span class="toc-num">' + item.page + '</span>';
-        r.addEventListener('click', function () { closeToc(); goTo(item.page - 1); });
+        r.addEventListener('click', function () { closeToc(); goTo(item.page); });
         pgBody.appendChild(r);
       }
       if (pgProf) {
@@ -378,7 +400,7 @@
         p.innerHTML = '<span class="toc-label">' + item.label +
           ' <span style="color:#ccc;font-size:0.6rem;">..................................................</span></span>' +
           '<span class="toc-num">' + item.page + '</span>';
-        p.addEventListener('click', function () { goTo(item.page - 1); });
+        p.addEventListener('click', function () { goTo(item.page); });
         pgProf.appendChild(p);
       }
     });
@@ -433,7 +455,7 @@
   function handleResize() {
     if (isBuilding || !pageFlip) return;
     isBuilding = true;
-    rebuildAndReload();
+    rebuildAllPages();
     isBuilding = false;
   }
 

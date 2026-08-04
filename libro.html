@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nuestra Historia 📖</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="libro.css" />
+</head>
+<body>
+
+  <a href="index.html" class="fixed top-4 left-4 z-50 bg-white bg-opacity-80 text-purple-700 px-4 py-2 rounded-full text-sm font-semibold shadow hover:bg-purple-100 transition no-underline">
+    ← Inicio
+  </a>
+
+  <!-- Escena del libro -->
+  <div class="book-scene">
+    <div class="book-wrapper" id="bookWrapper">
+      
+      <!-- PORTADA -->
+      <div class="page cover" data-page="0">
+        <div class="page-face front cover-front">
+          <div class="cover-decoration">
+            <div class="cover-frame">
+              <h1 class="cover-title">Nuestra<br>Historia</h1>
+              <p class="cover-subtitle">Un libro para ti, Juanita 💜</p>
+              <div class="cover-hearts">
+                <span>💕</span><span>💖</span><span>💕</span>
+              </div>
+              <button class="btn-open" onclick="abrirLibro()">Abrir libro ✨</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ÍNDICE -->
+      <div class="page" data-page="1">
+        <div class="page-face front">
+          <div class="page-content">
+            <h2 class="chapter-title">📑 Índice</h2>
+            <ul class="index-list" id="indexList">
+              <li onclick="irAPagina(2)"><span class="idx-num">1</span> El día que te conocí</li>
+              <li onclick="irAPagina(3)"><span class="idx-num">2</span> Nuestra primera cita</li>
+              <li onclick="irAPagina(4)"><span class="idx-num">3</span> Lo que más me gusta de ti</li>
+              <li onclick="irAPagina(5)"><span class="idx-num">4</span> Momentos inolvidables</li>
+              <li onclick="irAPagina(6)"><span class="idx-num">5</span> Razones para amarte</li>
+              <li onclick="irAPagina(7)"><span class="idx-num">6</span> Mi carta para ti</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- PÁGINA 1 -->
+      <div class="page" data-page="2">
+        <div class="page-face front">
+          <div class="page-content">
+            <span class="page-num">1</span>
+            <h2 class="chapter-title">✨ El día que te conocí</h2>
+            <p>Recuerdo perfectamente ese momento. El universo conspiró para que nuestros caminos se cruzaran, y desde ese instante supe que mi vida cambiaría para siempre.</p>
+            <p>Tu sonrisa iluminó todo a mi alrededor, y aunque no lo sabías, ya habías robado completamente mi corazón.</p>
+            <p class="page-quote">"A veces el amor llega sin avisar, como una brisa suave que se convierte en huracán."</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PÁGINA 2 -->
+      <div class="page" data-page="3">
+        <div class="page-face front">
+          <div class="page-content">
+            <span class="page-num">2</span>
+            <h2 class="chapter-title">🌸 Nuestra primera cita</h2>
+            <p>Los nervios, las mariposas en el estómago, la emoción de verte llegar. Esa primera cita fue el comienzo de algo mágico que ni yo mismo podía creer.</p>
+            <p>Cada palabra que dijiste, cada risa que compartimos, se quedó grabada en mi memoria como el día más feliz de mi vida... hasta que llegó el siguiente a tu lado.</p>
+            <p class="page-quote">"No fue el lugar, ni la hora, ni el momento. Fuiste tú quien hizo que todo fuera perfecto."</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PÁGINA 3 -->
+      <div class="page" data-page="4">
+        <div class="page-face front">
+          <div class="page-content">
+            <span class="page-num">3</span>
+            <h2 class="chapter-title">💖 Lo que más me gusta de ti</h2>
+            <p>Me encanta tu forma de ver el mundo, esa chispa que tienes en los ojos cuando algo te emociona, tu risa contagiosa que alegra hasta los días más grises.</p>
+            <p>Admiro tu fortaleza, tu ternura, tu inteligencia y ese corazón tan grande que tienes. Eres la combinación perfecta de todo lo bueno que existe en este mundo.</p>
+            <p class="page-quote">"Eres el tipo de persona que hace que el mundo sea un lugar mejor solo con existir."</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PÁGINA 4 -->
+      <div class="page" data-page="5">
+        <div class="page-face front">
+          <div class="page-content">
+            <span class="page-num">4</span>
+            <h2 class="chapter-title">🌟 Momentos inolvidables</h2>
+            <p>Cada recuerdo contigo es un tesoro: las llamadas hasta tarde, los mensajes que me sacan una sonrisa, los planes que hacemos juntos y los sueños que compartimos.</p>
+            <p>No existe un solo día en el que no agradezca al destino por haberte puesto en mi camino. Eres mi lugar favorito en el mundo entero.</p>
+            <p class="page-quote">"Los momentos más simples se vuelven extraordinarios cuando los vivo contigo."</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PÁGINA 5 -->
+      <div class="page" data-page="6">
+        <div class="page-face front">
+          <div class="page-content">
+            <span class="page-num">5</span>
+            <h2 class="chapter-title">💌 Razones para amarte</h2>
+            <p>Podría llenar mil libros con las razones por las que te amo, pero aquí van solo algunas:</p>
+            <ul class="reasons-list">
+              <li>💜 Porque me haces ser mejor persona cada día</li>
+              <li>💜 Porque tu felicidad es mi felicidad</li>
+              <li>💜 Porque contigo todo tiene sentido</li>
+              <li>💜 Porque eres mi hogar, mi paz y mi alegría</li>
+              <li>💜 Porque simplemente eres tú</li>
+            </ul>
+            <p class="page-quote">"Te amo no por lo que eres, sino por lo que soy yo cuando estoy contigo."</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PÁGINA 6 - CARTA FINAL -->
+      <div class="page" data-page="7">
+        <div class="page-face front">
+          <div class="page-content">
+            <span class="page-num">6</span>
+            <h2 class="chapter-title">💌 Mi carta para ti</h2>
+            <p>Querida Juanita,</p>
+            <p>Escribir esto me hace sentir el hombre más afortunado del mundo. Cada palabra que lees aquí sale directamente de mi corazón, porque eso es lo que haces tú: sacar lo mejor de mí.</p>
+            <p>Gracias por cada sonrisa, por cada momento, por cada enseñanza. Eres y siempre serás la persona más importante en mi vida.</p>
+            <p class="signature">Con todo mi amor,<br>siempre tuyo 💜</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTRAPORTADA -->
+      <div class="page back-cover" data-page="8">
+        <div class="page-face front back-cover-face">
+          <div class="cover-decoration">
+            <h2 class="text-3xl font-bold text-purple-800 mb-4">Y esta historia...</h2>
+            <p class="text-purple-700 text-xl mb-6">...apenas comienza ✨</p>
+            <p class="text-purple-600">Porque lo mejor está por venir,<br>y quiero vivirlo todo a tu lado.</p>
+            <a href="index.html" class="mt-8 inline-block bg-purple-500 text-white px-6 py-3 rounded-full hover:bg-purple-600 transition no-underline">Volver al inicio 🏠</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Controles de navegación -->
+    <button class="nav-btn nav-prev" id="btnPrev" onclick="paginaAnterior()" title="Anterior">◀</button>
+    <button class="nav-btn nav-next" id="btnNext" onclick="paginaSiguiente()" title="Siguiente">▶</button>
+
+    <!-- Indicador de página -->
+    <div class="page-indicator" id="pageIndicator">Portada</div>
+
+  </div>
+
+  <script src="libro.js"></script>
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

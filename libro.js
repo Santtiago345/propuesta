@@ -79,6 +79,7 @@
   function makePage(title, bodyHTML, pnum) {
     var d = document.createElement('div');
     d.className = 'book-page';
+    d.setAttribute('data-r', pnum);
     d.innerHTML =
       '<div class="page-hdr">' +
         '<span class="hdr-left">' + pnum + '</span>' +
@@ -460,6 +461,7 @@
   /* ======== DEV MODE ======== */
   var devMode = false;
   var devDebounce = null;
+  var activeEditArea = null;
 
   function toggleDevMode() {
     devMode = !devMode;
@@ -468,45 +470,114 @@
     var wrapper = $('bookWrapper');
 
     if (devMode) {
-      // Crear overlay que bloquea interaccion de StPageFlip
-      var overlay = document.createElement('div');
-      overlay.className = 'dev-overlay';
-      overlay.id = 'devOverlay';
-      wrapper.appendChild(overlay);
-
       scene.classList.add('dev-mode');
       btnDev.classList.add('active');
-      enableEditing();
+      document.addEventListener('click', onDevClick, true);
     } else {
-      var ov = $('devOverlay');
-      if (ov) ov.remove();
-
       scene.classList.remove('dev-mode');
       btnDev.classList.remove('active');
-      disableEditing();
+      removeEditArea();
+      document.removeEventListener('click', onDevClick, true);
       rebuildAndReload();
     }
   }
 
-  function enableEditing() {
-    var inners = document.querySelectorAll('.book-page .page-inner');
-    for (var i = 0; i < inners.length; i++) {
-      inners[i].contentEditable = 'true';
-      inners[i].addEventListener('input', onDevInput);
+  function onDevClick(e) {
+    if (!devMode) return;
+    // Ignorar clicks en controles
+    if (e.target.closest('.ctrl') || e.target.closest('.toc-overlay') ||
+        e.target.closest('.dev-edit-area') || e.target.closest('.top-back-link')) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    var wrapper = $('bookWrapper');
+    var rect = wrapper.getBoundingClientRect();
+    var cx = e.clientX;
+    var cy = e.clientY;
+
+    // Verificar que el click esta dentro del libro
+    if (cx < rect.left || cx > rect.right || cy < rect.top || cy > rect.bottom) return;
+
+    // Buscar page-inner usando coordenadas relativas
+    var pages = wrapper.querySelectorAll('.book-page');
+    var targetInner = null;
+    var targetPage = null;
+
+    for (var i = 0; i < pages.length; i++) {
+      var pr = pages[i].getBoundingClientRect();
+      // StPageFlip usa transform, el rect refleja la posicion real
+      if (cx >= pr.left && cx <= pr.right && cy >= pr.top && cy <= pr.bottom) {
+        var inner = pages[i].querySelector('.page-inner');
+        if (inner && !pages[i].classList.contains('cover-page') &&
+            !pages[i].classList.contains('blank-page') && !pages[i].classList.contains('title-page')) {
+          targetInner = inner;
+          targetPage = pages[i];
+          break;
+        }
+      }
+    }
+
+    if (!targetInner) return;
+
+    removeEditArea();
+    createEditArea(targetInner, targetPage);
+  }
+
+  function createEditArea(inner, page) {
+    var ir = inner.getBoundingClientRect();
+
+    var ea = document.createElement('div');
+    ea.className = 'dev-edit-area';
+    ea.contentEditable = 'true';
+    ea.innerHTML = inner.innerHTML;
+    ea.style.cssText =
+      'position:fixed;' +
+      'left:' + ir.left + 'px;top:' + ir.top + 'px;' +
+      'width:' + ir.width + 'px;height:' + ir.height + 'px;' +
+      'padding:' + getComputedStyle(inner).padding + ';' +
+      'font-family:Georgia,"Times New Roman",serif;' +
+      'font-size:' + getComputedStyle(inner).fontSize + ';' +
+      'line-height:' + getComputedStyle(inner).lineHeight + ';';
+    ea.setAttribute('data-source-page', page.getAttribute('data-r') || '');
+
+    document.body.appendChild(ea);
+    activeEditArea = ea;
+
+    ea.addEventListener('input', function () {
+      clearTimeout(devDebounce);
+      devDebounce = setTimeout(function () {
+        flushEditAndRepaginate();
+      }, 600);
+    });
+
+    ea.addEventListener('blur', function () {
+      clearTimeout(devDebounce);
+      flushEditAndRepaginate();
+    });
+
+    setTimeout(function () { ea.focus(); }, 50);
+  }
+
+  function removeEditArea() {
+    if (activeEditArea) {
+      activeEditArea.remove();
+      activeEditArea = null;
     }
   }
 
-  function disableEditing() {
-    var inners = document.querySelectorAll('.book-page .page-inner');
-    for (var i = 0; i < inners.length; i++) {
-      inners[i].contentEditable = 'false';
-      inners[i].removeEventListener('input', onDevInput);
+  function flushEditAndRepaginate() {
+    if (!activeEditArea || !pageFlip) return;
+    var dataPage = activeEditArea.getAttribute('data-source-page');
+    if (dataPage) {
+      var pages = document.querySelectorAll('.book-page[data-r="' + dataPage + '"]');
+      for (var p = 0; p < pages.length; p++) {
+        var inner = pages[p].querySelector('.page-inner');
+        if (inner) { inner.innerHTML = activeEditArea.innerHTML; break; }
+      }
     }
-  }
-
-  function onDevInput() {
-    clearTimeout(devDebounce);
-    devDebounce = setTimeout(function () { rebuildAndReload(); }, 600);
+    removeEditArea();
+    rebuildAndReload();
   }
 
   function rebuildAndReload() {
@@ -607,17 +678,6 @@
 
     pageFlip.loadFromHTML(wrapper.querySelectorAll('.book-page'));
     pagesLen = pageFlip.getPageCount();
-    
-    if (devMode) {
-      // Re-crear overlay despues de recargar
-      if (!$('devOverlay')) {
-        var ov = document.createElement('div');
-        ov.className = 'dev-overlay';
-        ov.id = 'devOverlay';
-        wrapper.appendChild(ov);
-      }
-      enableEditing();
-    }
 
     var target = Math.min(curIdx, pageFlip.getPageCount() - 1);
     updateControls();

@@ -455,35 +455,25 @@ html, body {
 
 /* ── DEV MODE ── */
 .dev-mode .book-wrapper {
-  position: relative;
-}
-
-.dev-overlay {
-  display: none;
-  position: absolute;
-  inset: 0;
-  z-index: 60;
-  pointer-events: auto;
-  background: transparent;
-}
-
-.dev-mode .dev-overlay {
-  display: block;
-}
-
-.dev-mode .book-page {
   pointer-events: none;
 }
 
-.dev-mode .book-page .page-inner {
-  position: relative;
-  z-index: 70;
+.dev-mode .book-wrapper .page-inner {
+  pointer-events: none;
+}
+
+.dev-mode .dev-edit-area {
   pointer-events: auto;
   cursor: text;
   outline: 2px dashed rgba(124,58,237,0.3);
   outline-offset: -2px;
+  position: fixed;
+  z-index: 500;
+  background: #fdf8f0;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
-.dev-mode .book-page .page-inner:focus {
+.dev-mode .dev-edit-area:focus {
   outline: 2px solid rgba(124,58,237,0.6);
 }

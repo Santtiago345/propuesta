@@ -25,33 +25,14 @@
     'Este es mi intento.'
   ];
 
-  /* ======== CAPITULOS FIJOS ======== */
+  /* ======== CAPITULOS ======== */
   var chapters = [
-    { title: 'El d\u00eda que te conoc\u00ed', html:
-      '<p>Recuerdo perfectamente ese momento. El universo conspir\u00f3 para que nuestros caminos se cruzaran, y desde ese instante supe que mi vida cambiar\u00eda para siempre.</p>' +
-      '<p>Tu sonrisa ilumin\u00f3 todo a mi alrededor, y aunque no lo sab\u00edas, ya hab\u00edas robado completamente mi coraz\u00f3n.</p>' +
-      '<p class="quote">\u201cA veces el amor llega sin avisar, como una brisa suave que se convierte en hurac\u00e1n.\u201d</p>' },
-    { title: 'Nuestra primera cita', html:
-      '<p>Los nervios, las mariposas en el est\u00f3mago, la emoci\u00f3n de verte llegar. Esa primera cita fue el comienzo de algo m\u00e1gico que ni yo mismo pod\u00eda creer.</p>' +
-      '<p>Cada palabra que dijiste, cada risa que compartimos, se qued\u00f3 grabada en mi memoria como el d\u00eda m\u00e1s feliz de mi vida... hasta que lleg\u00f3 el siguiente a tu lado.</p>' +
-      '<p class="quote">\u201cNo fue el lugar, ni la hora, ni el momento. Fuiste t\u00fa quien hizo que todo fuera perfecto.\u201d</p>' },
-    { title: 'Lo que m\u00e1s me gusta de ti', html:
-      '<p>Me encanta tu forma de ver el mundo, esa chispa que tienes en los ojos cuando algo te emociona, tu risa contagiosa que alegra hasta los d\u00edas m\u00e1s grises.</p>' +
-      '<p>Admiro tu fortaleza, tu ternura, tu inteligencia y ese coraz\u00f3n tan grande que tienes.</p>' +
-      '<p class="quote">\u201cEres el tipo de persona que hace que el mundo sea un lugar mejor solo con existir.\u201d</p>' },
-    { title: 'Momentos inolvidables', html:
-      '<p>Cada recuerdo contigo es un tesoro: las llamadas hasta tarde, los mensajes que me sacan una sonrisa, los planes que hacemos juntos y los sue\u00f1os que compartimos.</p>' +
-      '<p>No existe un solo d\u00eda en el que no agradezca al destino por haberte puesto en mi camino. Eres mi lugar favorito en el mundo entero.</p>' +
-      '<p class="quote">\u201cLos momentos m\u00e1s simples se vuelven extraordinarios cuando los vivo contigo.\u201d</p>' },
-    { title: 'Razones para amarte', html:
-      '<p>Podr\u00eda llenar mil libros con las razones por las que te amo, pero aqu\u00ed van solo algunas:</p>' +
-      '<ul class="reasons"><li>Porque me haces ser mejor persona cada d\u00eda</li><li>Porque tu felicidad es mi felicidad</li><li>Porque contigo todo tiene sentido</li><li>Porque eres mi hogar, mi paz y mi alegr\u00eda</li><li>Porque simplemente eres t\u00fa</li></ul>' +
-      '<p class="quote">\u201cTe amo no por lo que eres, sino por lo que soy yo cuando estoy contigo.\u201d</p>' },
-    { title: 'Mi carta para ti', html:
-      '<p>Querida Juanita,</p>' +
-      '<p>Escribir esto me hace sentir el hombre m\u00e1s afortunado del mundo. Cada palabra que lees aqu\u00ed sale directamente de mi coraz\u00f3n, porque eso es lo que haces t\u00fa: sacar lo mejor de m\u00ed.</p>' +
-      '<p>Gracias por cada sonrisa, por cada momento, por cada ense\u00f1anza. Eres y siempre ser\u00e1s la persona m\u00e1s importante en mi vida.</p>' +
-      '<p class="signature">Con todo mi amor,<br>siempre tuyo</p>' }
+    { title: 'El d\u00eda que te conoc\u00ed', html: '<p></p>' },
+    { title: 'Nuestra primera cita', html: '<p></p>' },
+    { title: 'Lo que m\u00e1s me gusta de ti', html: '<p></p>' },
+    { title: 'Momentos inolvidables', html: '<p></p>' },
+    { title: 'Razones para amarte', html: '<p></p>' },
+    { title: 'Mi carta para ti', html: '<p></p>' }
   ];
 
   /* ======== PAGINADOR ======== */
@@ -484,12 +465,22 @@
     devMode = !devMode;
     var scene = document.getElementById('scene');
     var btnDev = $('ctrlDev');
+    var wrapper = $('bookWrapper');
 
     if (devMode) {
+      // Crear overlay que bloquea interaccion de StPageFlip
+      var overlay = document.createElement('div');
+      overlay.className = 'dev-overlay';
+      overlay.id = 'devOverlay';
+      wrapper.appendChild(overlay);
+
       scene.classList.add('dev-mode');
       btnDev.classList.add('active');
       enableEditing();
     } else {
+      var ov = $('devOverlay');
+      if (ov) ov.remove();
+
       scene.classList.remove('dev-mode');
       btnDev.classList.remove('active');
       disableEditing();
@@ -616,7 +607,17 @@
 
     pageFlip.loadFromHTML(wrapper.querySelectorAll('.book-page'));
     pagesLen = pageFlip.getPageCount();
-    if (devMode) enableEditing();
+    
+    if (devMode) {
+      // Re-crear overlay despues de recargar
+      if (!$('devOverlay')) {
+        var ov = document.createElement('div');
+        ov.className = 'dev-overlay';
+        ov.id = 'devOverlay';
+        wrapper.appendChild(ov);
+      }
+      enableEditing();
+    }
 
     var target = Math.min(curIdx, pageFlip.getPageCount() - 1);
     updateControls();

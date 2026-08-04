@@ -119,13 +119,7 @@ html, body {
 /* ── PÁGINA COVER ── */
 .cover-deco {
   text-align: center;
-  padding: 10%;
-}
-
-.cover-frame-inner {
-  border: 2px solid rgba(255,255,255,0.25);
-  border-radius: 12px;
-  padding: 2rem 1.5rem;
+  width: 100%;
 }
 
 .cover-ornament {

@@ -55,12 +55,21 @@
   ];
 
   /* ======== PAGINADOR ======== */
-  function medir() {
-    var w = $('bookWrapper');
-    var r = w.getBoundingClientRect();
-    var pw = r.width / 2;
-    if (pw < 120) pw = 240;
-    return { usableW: Math.floor(pw * 0.78), usableH: Math.floor(r.height - 58) };
+  function crearPaginaPrueba(wrapper) {
+    var r = wrapper.getBoundingClientRect();
+    var tp = document.createElement('div');
+    tp.className = 'book-page';
+    tp.style.cssText = 'position:fixed;top:-9999px;left:-9999px;visibility:hidden;' +
+      'width:' + (r.width / 2) + 'px;height:' + r.height + 'px;';
+    tp.innerHTML =
+      '<div class="page-hdr">' +
+        '<span class="hdr-left">0</span>' +
+        '<span class="hdr-center">X</span>' +
+        '<span class="hdr-right">0</span>' +
+      '</div>' +
+      '<div class="page-content"></div>';
+    document.body.appendChild(tp);
+    return tp;
   }
 
   function makePage(title, body, pnum) {
@@ -77,110 +86,93 @@
   }
 
   function paginate(paragraphs, title, startNum) {
-    var dim = medir();
-    // Medidor oculto
+    var wrapper = $('bookWrapper');
+    var tp = crearPaginaPrueba(wrapper);
+    var contentEl = tp.querySelector('.page-content');
+
+    // Dimensiones reales del area de contenido
+    var cs = getComputedStyle(contentEl);
+    var padL = parseFloat(cs.paddingLeft) || 0;
+    var padR = parseFloat(cs.paddingRight) || 0;
+    var maxW = contentEl.clientWidth - padL - padR;
+    var maxH = contentEl.clientHeight;
+
+    if (maxW < 80 || maxH < 80) { maxW = 180; maxH = 380; }
+
+    // Medidor identico: mismo ancho de contenido, misma fuente
     var m = document.createElement('div');
     m.style.cssText =
-      'position:fixed;top:-9999px;left:-9999px;visibility:hidden;width:' + dim.usableW + 'px;' +
-      'font-family:Georgia,"Times New Roman",serif;font-size:0.82rem;line-height:1.65;' +
+      'position:fixed;top:-9999px;left:-9999px;visibility:hidden;' +
+      'width:' + maxW + 'px;' +
+      'font-family:Georgia,"Times New Roman",serif;' +
+      'font-size:0.82rem;line-height:1.65;' +
       'word-wrap:break-word;overflow-wrap:break-word;';
     document.body.appendChild(m);
 
-    var maxH = dim.usableH;
-    var pages = [];
-    var buf = '';       // HTML acumulado de la pagina actual
-    var bufH = 0;       // altura medida de buf
-    var remWords = '';  // palabras que sobraron del parrafo anterior
-    var idx = 0;
-
-    function testHTML(h) {
-      m.innerHTML = '<div>' + h + '</div>';
+    function mide(html) {
+      m.innerHTML = '<div>' + html + '</div>';
       return m.firstChild.scrollHeight;
     }
 
-    while (idx < paragraphs.length || remWords) {
-      var source;
-      if (remWords) {
-        // Continuar con lo que sobro
-        source = remWords;
-        remWords = '';
-      } else {
-        source = paragraphs[idx];
-        idx++;
-      }
+    var pages = [];
+    var buf = '';
+    var idx = 0;
+    var rest = ''; // texto sobrante
 
-      var wrapP = '<p>' + source + '</p>';
-      var testText = buf ? buf + wrapP : wrapP;
-      var h = testHTML(testText);
+    while (idx < paragraphs.length || rest) {
+      var source = rest || paragraphs[idx];
+      if (!rest) idx++;
+      rest = '';
+
+      var cand = buf ? buf + '<p>' + source + '</p>' : '<p>' + source + '</p>';
+      var h = mide(cand);
 
       if (h <= maxH) {
-        // Cabe entero
-        buf = testText;
-        bufH = h;
+        buf = cand;
         continue;
       }
 
-      // No cabe. Intentar palabra por palabra
-      var words = source.split(' ');
-      var partial = buf ? buf.slice(buf.lastIndexOf('<p>')) : '';
-      // Extraer solo el texto del parrafo actual del buffer
+      // No cabe entero
       if (buf) {
-        // El parrafo que no cupo es source; buf ya tiene parrafos completos previos
-        // Tratar de añadir palabras de source una a una
+        // Pagina parcialmente llena. Añadir palabras una a una.
+        var words = source.split(' ');
         var added = '';
         for (var w = 0; w < words.length; w++) {
-          var next = added ? added + ' ' + words[w] : words[w];
-          var t = testHTML(buf + '<p>' + next + '</p>');
-          if (t <= maxH) {
-            added = next;
+          var nextW = added ? added + ' ' + words[w] : words[w];
+          if (mide(buf + '<p>' + nextW + '</p>') <= maxH) {
+            added = nextW;
           } else {
-            // Agregar lo que cupo como continuacion de pagina y el resto a remWords
-            if (added) {
-              buf += '<p>' + added + '</p>';
-            }
-            // Lo que sobra del parrafo
-            remWords = words.slice(w).join(' ');
+            pages.push(makePage(title, buf + (added ? '<p>' + added + '</p>' : ''), startNum + pages.length));
+            buf = '';
+            rest = words.slice(w).join(' ');
             break;
           }
         }
-        if (!remWords) {
-          // Todas las palabras cupieron
-          buf += '<p>' + source + '</p>';
-          continue;
+        if (!rest && added) {
+          buf += '<p>' + added + '</p>';
         }
       } else {
-        // Pagina vacia, partir palabra por palabra
-        var partial2 = '';
-        for (var w2 = 0; w2 < words.length; w2++) {
-          var n2 = partial2 ? partial2 + ' ' + words[w2] : words[w2];
-          var t2 = testHTML('<p>' + n2 + '</p>');
-          if (t2 <= maxH) {
-            partial2 = n2;
+        // Pagina vacia. Partir palabra por palabra.
+        var ws = source.split(' ');
+        var part = '';
+        for (var w2 = 0; w2 < ws.length; w2++) {
+          var n2 = part ? part + ' ' + ws[w2] : ws[w2];
+          if (mide('<p>' + n2 + '</p>') <= maxH) {
+            part = n2;
           } else {
-            if (partial2) {
-              pages.push(makePage(title, '<p>' + partial2 + '</p>', startNum + pages.length));
-            }
-            remWords = words.slice(w2).join(' ');
-            partial2 = '';
+            if (part) pages.push(makePage(title, '<p>' + part + '</p>', startNum + pages.length));
+            rest = ws.slice(w2).join(' ');
+            part = '';
             break;
           }
         }
-        if (!remWords && partial2) {
-          buf = '<p>' + partial2 + '</p>';
-        }
-        if (remWords) continue;
+        if (!rest && part) buf = '<p>' + part + '</p>';
       }
-
-      // Guardar pagina actual y resetear buffer
-      pages.push(makePage(title, buf, startNum + pages.length));
-      buf = '';
     }
 
-    // Ultima pagina
-    if (buf) {
-      pages.push(makePage(title, buf, startNum + pages.length));
-    }
+    if (buf) pages.push(makePage(title, buf, startNum + pages.length));
 
+    document.body.removeChild(tp);
     document.body.removeChild(m);
     return pages;
   }

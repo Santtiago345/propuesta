@@ -4,29 +4,36 @@
   var pageFlip = null, pagesLen = 0;
 
   var pageLabels = [
-    'Portada',        // 0
-    '',               // 1 (blank)
-    'Titulo',         // 2
-    'Agradecimientos',// 3
-    'Indice',         // 4
-    'Introduccion',   // 5
-    'El dia que te conoci',     // 6
-    'Nuestra primera cita',     // 7
-    'Lo que mas me gusta de ti',// 8
-    'Momentos inolvidables',    // 9
-    'Razones para amarte',      // 10
-    'Mi carta para ti',         // 11
-    'Contraportada'             // 12
+    'Portada',          // 0
+    '',                 // 1
+    '',                 // 2
+    '',                 // 3
+    'Titulo',           // 4
+    '',                 // 5
+    'Agradecimientos',  // 6
+    '',                 // 7
+    'Indice',           // 8
+    '',                 // 9
+    'Introduccion',     // 10
+    'Introduccion',     // 11
+    'Introduccion',     // 12
+    'El dia que te conoci',       // 13
+    'Nuestra primera cita',       // 14
+    'Lo que mas me gusta de ti',  // 15
+    'Momentos inolvidables',      // 16
+    'Razones para amarte',        // 17
+    'Mi carta para ti',           // 18
+    'Contraportada'               // 19
   ];
 
   var tocItems = [
-    { page: 5, label: 'Introduccion' },
-    { page: 6, label: 'El dia que te conoci' },
-    { page: 7, label: 'Nuestra primera cita' },
-    { page: 8, label: 'Lo que mas me gusta de ti' },
-    { page: 9, label: 'Momentos inolvidables' },
-    { page: 10, label: 'Razones para amarte' },
-    { page: 11, label: 'Mi carta para ti' }
+    { page: 10, label: 'Introduccion' },
+    { page: 13, label: 'El dia que te conoci' },
+    { page: 14, label: 'Nuestra primera cita' },
+    { page: 15, label: 'Lo que mas me gusta de ti' },
+    { page: 16, label: 'Momentos inolvidables' },
+    { page: 17, label: 'Razones para amarte' },
+    { page: 18, label: 'Mi carta para ti' }
   ];
 
   var ctrlPrev, ctrlNext, pageIndicator, tocOverlay;
@@ -44,39 +51,29 @@
     if (pageFlip) pageFlip.flip(p, 'bottom');
   }
 
-  /* ─── BUILD TOC ─── */
   function buildTocElements() {
     var pgBody = $('tocBody');
     var pgProf = $('tocProfesional');
-    if (!pgBody && !pgProf) return;
 
-    tocItems.forEach(function (item, i) {
-      // Panel overlay
+    tocItems.forEach(function (item) {
       if (pgBody) {
-        var overlayRow = document.createElement('div');
-        overlayRow.className = 'toc-row';
-        overlayRow.innerHTML =
-          '<span class="toc-label">' + item.label + '</span>' +
-          '<span class="toc-num">' + item.page + '</span>';
-        overlayRow.addEventListener('click', function () { closeToc(); goTo(item.page); });
-        pgBody.appendChild(overlayRow);
+        var r = document.createElement('div');
+        r.className = 'toc-row';
+        r.innerHTML = '<span class="toc-label">' + item.label + '</span><span class="toc-num">' + item.page + '</span>';
+        r.addEventListener('click', function () { closeToc(); goTo(item.page); });
+        pgBody.appendChild(r);
       }
 
-      // Pagina de indice
       if (pgProf) {
-        var pageRow = document.createElement('div');
-        pageRow.className = 'toc-row';
-        pageRow.innerHTML =
-          '<span class="toc-label">' + item.label +
-          ' <span style="color:#aaa;font-size:0.7rem;">....................</span></span>' +
-          '<span class="toc-num">' + item.page + '</span>';
-        pageRow.addEventListener('click', function () { goTo(item.page); });
-        pgProf.appendChild(pageRow);
+        var p = document.createElement('div');
+        p.className = 'toc-row';
+        p.innerHTML = '<span class="toc-label">' + item.label + ' <span style="color:#ccc;font-size:0.65rem;">............................................</span></span><span class="toc-num">' + item.page + '</span>';
+        p.addEventListener('click', function () { goTo(item.page); });
+        pgProf.appendChild(p);
       }
     });
   }
 
-  /* ─── UI ─── */
   function updateControls() {
     if (!pageFlip) return;
     var idx = pageFlip.getCurrentPageIndex();
@@ -90,7 +87,6 @@
   function openToc() { tocOverlay.classList.add('open'); }
   function closeToc() { tocOverlay.classList.remove('open'); }
 
-  /* ─── CREATE ─── */
   function createFlipbook() {
     var wrapper = $('bookWrapper');
     var pageEls = wrapper.querySelectorAll('.book-page');
@@ -118,13 +114,11 @@
 
     pageFlip.on('flip', updateControls);
     pageFlip.on('changeOrientation', updateControls);
-
     updateControls();
 
     setTimeout(function () { $('loader').classList.add('done'); }, 300);
   }
 
-  /* ─── EVENTS ─── */
   function setupEvents() {
     ctrlPrev.addEventListener('click', function () {
       if (pageFlip) pageFlip.flipPrev('bottom');
@@ -132,27 +126,19 @@
     ctrlNext.addEventListener('click', function () {
       if (pageFlip) pageFlip.flipNext('bottom');
     });
-
     $('ctrlToc').addEventListener('click', openToc);
     $('tocClose').addEventListener('click', closeToc);
-
     tocOverlay.addEventListener('click', function (e) {
       if (e.target === tocOverlay) closeToc();
     });
-
     document.addEventListener('keydown', function (e) {
       if (!pageFlip) return;
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        e.preventDefault(); pageFlip.flipNext('bottom');
-      }
-      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        e.preventDefault(); pageFlip.flipPrev('bottom');
-      }
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); pageFlip.flipNext('bottom'); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); pageFlip.flipPrev('bottom'); }
       if (e.key === 'Escape' && tocOverlay.classList.contains('open')) closeToc();
     });
   }
 
-  /* ─── INIT ─── */
   function waitForLib(cb) {
     if (typeof St !== 'undefined' && St.PageFlip) { cb(); return; }
     var n = 0;
@@ -171,7 +157,6 @@
     setupEvents();
   });
 
-  /* ─── API ─── */
   window.Flipbook = {
     getCurrentPage: function () { return pageFlip ? pageFlip.getCurrentPageIndex() : -1; },
     getTotalPages: function () { return pagesLen; },

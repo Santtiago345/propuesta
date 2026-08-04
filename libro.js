@@ -90,99 +90,85 @@
     var tp = crearPaginaPrueba(wrapper);
     var contentEl = tp.querySelector('.page-content');
 
-    // Dimensiones reales del area de contenido
-    var cs = getComputedStyle(contentEl);
-    var padL = parseFloat(cs.paddingLeft) || 0;
-    var padR = parseFloat(cs.paddingRight) || 0;
-    var padB = parseFloat(cs.paddingBottom) || 0;
-    var maxW = contentEl.clientWidth - padL - padR;
-    var maxH = contentEl.clientHeight - padB;
-
-    if (maxW < 80 || maxH < 80) { maxW = 180; maxH = 380; }
-
-    // Leer font-size real de un <p> en el content
-    var testP = document.createElement('p');
-    testP.textContent = 'X';
-    contentEl.appendChild(testP);
-    var realFontSize = getComputedStyle(testP).fontSize;
-    var realLineHeight = getComputedStyle(testP).lineHeight;
-    contentEl.removeChild(testP);
-
-    // Medidor identico: mismo ancho de contenido, misma fuente
-    var m = document.createElement('div');
-    m.style.cssText =
-      'position:fixed;top:-9999px;left:-9999px;visibility:hidden;' +
-      'width:' + maxW + 'px;' +
-      'font-family:Georgia,"Times New Roman",serif;' +
-      'font-size:' + realFontSize + ';line-height:' + realLineHeight + ';' +
-      'word-wrap:break-word;overflow-wrap:break-word;';
-    document.body.appendChild(m);
-
-    function mide(html) {
-      m.innerHTML = '<div>' + html + '</div>';
-      return m.firstChild.scrollHeight;
-    }
-
     var pages = [];
-    var buf = '';
-    var idx = 0;
-    var rest = ''; // texto sobrante
+    var accHTML = '';   // HTML acumulado en la pagina de prueba
+    var consumed = 0;   // cuantos parrafos completos se consumieron
 
-    while (idx < paragraphs.length || rest) {
-      var source = rest || paragraphs[idx];
-      if (!rest) idx++;
-      rest = '';
+    function overflow() {
+      return contentEl.scrollHeight > contentEl.clientHeight;
+    }
 
-      var cand = buf ? buf + '<p>' + source + '</p>' : '<p>' + source + '</p>';
-      var h = mide(cand);
+    // Ir añadiendo parrafos completos mientras quepan
+    while (consumed < paragraphs.length) {
+      var prev = accHTML;
+      accHTML += '<p>' + paragraphs[consumed] + '</p>';
+      contentEl.innerHTML = accHTML;
+      consumed++;
 
-      if (h <= maxH) {
-        buf = cand;
-        continue;
-      }
-
-      // No cabe entero
-      if (buf) {
-        // Pagina parcialmente llena. Añadir palabras una a una.
-        var words = source.split(' ');
-        var added = '';
-        for (var w = 0; w < words.length; w++) {
-          var nextW = added ? added + ' ' + words[w] : words[w];
-          if (mide(buf + '<p>' + nextW + '</p>') <= maxH) {
-            added = nextW;
-          } else {
-            pages.push(makePage(title, buf + (added ? '<p>' + added + '</p>' : ''), startNum + pages.length));
-            buf = '';
-            rest = words.slice(w).join(' ');
-            break;
-          }
+      if (overflow()) {
+        // El ultimo parrafo no cupo. Revertir y guardar pagina.
+        consumed--;
+        accHTML = prev;
+        if (accHTML) {
+          pages.push(makePage(title, accHTML, startNum + pages.length));
+          accHTML = '';
+          contentEl.innerHTML = '';
         }
-        if (!rest && added) {
-          buf += '<p>' + added + '</p>';
-        }
-      } else {
-        // Pagina vacia. Partir palabra por palabra.
-        var ws = source.split(' ');
+        // Intentar llenar el resto de la pagina con palabras del parrafo problematico
+        var words = paragraphs[consumed].split(' ');
         var part = '';
-        for (var w2 = 0; w2 < ws.length; w2++) {
-          var n2 = part ? part + ' ' + ws[w2] : ws[w2];
-          if (mide('<p>' + n2 + '</p>') <= maxH) {
-            part = n2;
+        for (var w = 0; w < words.length; w++) {
+          var test = part ? part + ' ' + words[w] : words[w];
+          contentEl.innerHTML = accHTML + '<p>' + test + '</p>';
+          if (!overflow()) {
+            part = test;
           } else {
-            if (part) pages.push(makePage(title, '<p>' + part + '</p>', startNum + pages.length));
-            rest = ws.slice(w2).join(' ');
-            part = '';
+            // Guardar lo que cupo, si hay algo
+            if (part || accHTML) {
+              pages.push(makePage(title, accHTML + (part ? '<p>' + part + '</p>' : ''), startNum + pages.length));
+            }
+            // Preparar siguiente pagina con lo que sobra del parrafo
+            accHTML = '';
+            contentEl.innerHTML = '<p>' + words.slice(w).join(' ') + '</p>';
+            // Si aun asi no cabe en pagina vacia, seguir partiendo
+            while (overflow()) {
+              var ws2 = contentEl.textContent.split(' ');
+              var partial = '';
+              for (var w2 = 0; w2 < ws2.length; w2++) {
+                var n2 = partial ? partial + ' ' + ws2[w2] : ws2[w2];
+                contentEl.innerHTML = '<p>' + n2 + '</p>';
+                if (overflow()) {
+                  if (partial) pages.push(makePage(title, '<p>' + partial + '</p>', startNum + pages.length));
+                  contentEl.innerHTML = '<p>' + ws2.slice(w2).join(' ') + '</p>';
+                  partial = '';
+                  break;
+                } else {
+                  partial = n2;
+                }
+              }
+              if (partial && !overflow()) break;
+            }
+            consumed++;
+            accHTML = contentEl.innerHTML;
             break;
           }
         }
-        if (!rest && part) buf = '<p>' + part + '</p>';
+        if (!overflow() && part) {
+          // Todas las palabras del parrafo cupieron en el espacio restante
+          accHTML += '<p>' + part + '</p>';
+          // consumed ya fue incrementado antes del revert, falta uno mas?
+          // consumed fue: incrementado, luego decrementado, ahora debe incrementarse de nuevo
+          consumed++;
+        }
       }
     }
 
-    if (buf) pages.push(makePage(title, buf, startNum + pages.length));
+    // Ultima pagina
+    if (accHTML) {
+      pages.push(makePage(title, accHTML, startNum + pages.length));
+    }
 
     document.body.removeChild(tp);
-    document.body.removeChild(m);
     return pages;
   }
 

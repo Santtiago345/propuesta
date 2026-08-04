@@ -56,12 +56,29 @@
 
   /* ======== PAGINADOR ======== */
   /* ======== PAGINADOR GENERALIZADO ======== */
-  function crearPaginaPrueba(wrapper) {
+  function getPageDimensions(wrapper) {
     var r = wrapper.getBoundingClientRect();
+    var isPortrait = window.innerWidth <= 768;
+    var maxW = isPortrait ? r.width : (r.width / 2);
+    var maxH = r.height;
+    var aspect = 520 / 860; // Relación de aspecto de StPageFlip (ancho / alto)
+
+    var w = maxW;
+    var h = w / aspect;
+
+    if (h > maxH) {
+      h = maxH;
+      w = h * aspect;
+    }
+    return { width: w, height: h };
+  }
+
+  function crearPaginaPrueba(wrapper) {
+    var dim = getPageDimensions(wrapper);
     var tp = document.createElement('div');
     tp.className = 'book-page';
     tp.style.cssText = 'position:fixed;top:-9999px;left:-9999px;visibility:hidden;' +
-      'width:' + (r.width / 2) + 'px;height:' + r.height + 'px;';
+      'width:' + dim.width + 'px;height:' + dim.height + 'px;';
     tp.innerHTML =
       '<div class="page-hdr">' +
         '<span class="hdr-left">0</span>' +
@@ -139,7 +156,8 @@
     var innerEl = tp.querySelector('.page-inner');
 
     function checkOverflow() {
-      return innerEl.scrollHeight > innerEl.clientHeight;
+      // Margen de seguridad de 6px para evitar cualquier posible desbordamiento por subpixelado
+      return (innerEl.scrollHeight - innerEl.clientHeight) >= -6;
     }
 
     var items = parseElements(elements, title, isChapter);
@@ -416,6 +434,21 @@
     setTimeout(function () { $('loader').classList.add('done'); }, 400);
   }
 
+  var isBuilding = false;
+  function handleResize() {
+    if (isBuilding || !pageFlip) return;
+    isBuilding = true;
+    var curIdx = pageFlip.getCurrentPageIndex();
+    buildAllPages();
+    buildTocElements();
+    var wrapper = $('bookWrapper');
+    pageFlip.loadFromHTML(wrapper.querySelectorAll('.book-page'));
+    pageFlip.flip(Math.min(curIdx, pageFlip.getPageCount() - 1), 'instant');
+    isBuilding = false;
+  }
+
+  var resizeTimeout;
+
   function setupEvents() {
     ctrlPrev.addEventListener('click', function () { if (pageFlip) pageFlip.flipPrev('bottom'); });
     ctrlNext.addEventListener('click', function () { if (pageFlip) pageFlip.flipNext('bottom'); });
@@ -427,6 +460,10 @@
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); pageFlip.flipNext('bottom'); }
       if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); pageFlip.flipPrev('bottom'); }
       if (e.key === 'Escape' && tocOverlay.classList.contains('open')) closeToc();
+    });
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(handleResize, 300);
     });
   }
 

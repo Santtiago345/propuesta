@@ -94,10 +94,19 @@
     var cs = getComputedStyle(contentEl);
     var padL = parseFloat(cs.paddingLeft) || 0;
     var padR = parseFloat(cs.paddingRight) || 0;
+    var padB = parseFloat(cs.paddingBottom) || 0;
     var maxW = contentEl.clientWidth - padL - padR;
-    var maxH = contentEl.clientHeight;
+    var maxH = contentEl.clientHeight - padB;
 
     if (maxW < 80 || maxH < 80) { maxW = 180; maxH = 380; }
+
+    // Leer font-size real de un <p> en el content
+    var testP = document.createElement('p');
+    testP.textContent = 'X';
+    contentEl.appendChild(testP);
+    var realFontSize = getComputedStyle(testP).fontSize;
+    var realLineHeight = getComputedStyle(testP).lineHeight;
+    contentEl.removeChild(testP);
 
     // Medidor identico: mismo ancho de contenido, misma fuente
     var m = document.createElement('div');
@@ -105,7 +114,7 @@
       'position:fixed;top:-9999px;left:-9999px;visibility:hidden;' +
       'width:' + maxW + 'px;' +
       'font-family:Georgia,"Times New Roman",serif;' +
-      'font-size:0.82rem;line-height:1.65;' +
+      'font-size:' + realFontSize + ';line-height:' + realLineHeight + ';' +
       'word-wrap:break-word;overflow-wrap:break-word;';
     document.body.appendChild(m);
 

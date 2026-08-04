@@ -19,7 +19,6 @@
   var pageFlip = null;
   var pagesLen = 0;
   var pageLabels = [
-    '',
     'Portada',
     'Índice',
     'El día que te conocí',
@@ -46,12 +45,12 @@
   }
 
   var tocItems = [
-    { page: 3, label: 'El día que te conocí' },
-    { page: 4, label: 'Nuestra primera cita' },
-    { page: 5, label: 'Lo que más me gusta de ti' },
-    { page: 6, label: 'Momentos inolvidables' },
-    { page: 7, label: 'Razones para amarte' },
-    { page: 8, label: 'Mi carta para ti' }
+    { page: 2, label: 'El día que te conocí' },
+    { page: 3, label: 'Nuestra primera cita' },
+    { page: 4, label: 'Lo que más me gusta de ti' },
+    { page: 5, label: 'Momentos inolvidables' },
+    { page: 6, label: 'Razones para amarte' },
+    { page: 7, label: 'Mi carta para ti' }
   ];
 
   function buildTocPanel() {
@@ -91,8 +90,7 @@
     var total = pageFlip.getPageCount();
     var label = pageLabels[idx] || '';
 
-    pageIndicator.textContent = (idx + 1) + ' / ' + total +
-      (label ? ' — ' + label : '');
+    pageIndicator.textContent = label + '  (' + (idx + 1) + ' / ' + total + ')';
 
     if (idx <= 0) ctrlPrev.classList.add('disabled');
     else ctrlPrev.classList.remove('disabled');
@@ -130,7 +128,7 @@
       minHeight: 340,
       maxWidth: 1100,
       maxHeight: 800,
-      showCover: false,
+      showCover: true,
       drawShadow: true,
       flippingTime: 800,
       usePortrait: true,

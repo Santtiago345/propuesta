@@ -86,13 +86,13 @@
     var pageEls = wrapper.querySelectorAll('.book-page');
 
     pageFlip = new St.PageFlip(wrapper, {
-      width: 550,
-      height: 710,
+      width: 600,
+      height: 780,
       size: 'stretch',
-      minWidth: 340,
-      minHeight: 440,
-      maxWidth: 900,
-      maxHeight: 740,
+      minWidth: 320,
+      minHeight: 420,
+      maxWidth: 1400,
+      maxHeight: 1000,
       showCover: true,
       drawShadow: true,
       flippingTime: 800,

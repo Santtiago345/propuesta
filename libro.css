@@ -58,10 +58,10 @@ html, body {
 /* ── BOOK WRAPPER ── */
 .book-wrapper {
   position: relative;
-  width: 62vw;
-  max-width: 680px;
-  height: 78vh;
-  max-height: 840px;
+  width: 64vw;
+  max-width: 720px;
+  height: 82vh;
+  max-height: 900px;
   box-shadow: 0 10px 50px rgba(0,0,0,0.5);
   border-radius: 6px;
 }
@@ -138,7 +138,7 @@ html, body {
   color: #5b3a7a;
   line-height: 1.65;
   margin: 0.5rem 0;
-  font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+  font-size: clamp(0.65rem, 1.35vw, 0.82rem);
   text-align: justify;
 }
 
@@ -148,7 +148,7 @@ html, body {
   border-left: 3px solid #d4a855;
   padding-left: 0.8rem;
   margin: 0.7rem 0 !important;
-  font-size: clamp(0.65rem, 1.3vw, 0.82rem) !important;
+  font-size: clamp(0.6rem, 1.15vw, 0.76rem) !important;
 }
 
 .signature {
@@ -290,7 +290,7 @@ html, body {
 .reasons li {
   padding: 0.3rem 0;
   color: #5b3a7a;
-  font-size: clamp(0.65rem, 1.3vw, 0.82rem);
+  font-size: clamp(0.6rem, 1.15vw, 0.76rem);
 }
 
 /* ── CONTROLES ── */
@@ -409,9 +409,9 @@ html, body {
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
   .book-wrapper {
-    width: 72vw;
+    width: 74vw;
     height: 72vh;
-    max-height: 640px;
+    max-height: 680px;
   }
 
   .ctrl-prev { width: 38px; height: 38px; font-size: 1rem; left: 4px; }
@@ -421,9 +421,9 @@ html, body {
 
 @media (max-width: 480px) {
   .book-wrapper {
-    width: 78vw;
+    width: 80vw;
     height: 68vh;
-    max-height: 560px;
+    max-height: 580px;
   }
 
   .ctrl-prev { width: 32px; height: 32px; font-size: 0.85rem; left: 2px; }

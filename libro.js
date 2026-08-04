@@ -14,200 +14,233 @@
     tocOverlay = $('tocOverlay');
   }
 
-  /* ======== TEXTO DE LA INTRODUCCION ======== */
-  var introRaw = [
-    'Antes del año 2025 podia contar los libros que habia leido con dos manos —tal vez tres si tuviese—. Fuera de ensayos rutinarios de literatura estudiantil, un atipico libro de autoayuda o minilibros de recopilatorios de poemas, no mucho mas. Leido lo anterior se que en tu mente habra un pequeño y preocupante panorama a la espectativa de seguir leyendo o cerrar con aburrimiento lo que sea que sea esto y mi intento por darte animo a que sigas leyendo va acompañado de una promesa de amor genuino y si no confiamos en el amor como una fuerza transformadora y la revolucion indomita de nuestros tiempos, estaremos perdidos por la eternidad.',
-    'No se como se empieza a escribir un libro. No se si esto termine en un libro, en tu libro. Contando una historia? O tal vez nuestra historia? O sera tan cliche hacerlo que solo tendria que inventar algunos personajes y contar una historia dramatica en forma de novela, asi venderia mil ejemplares y no solo el tuyo.',
-    'Tengo una esperanza desmedida entre cada pared de mi caja toraxica, diria que la suficiente para distribuirla por el tiempo necesario para escribir un libro o al menos lo que recuerde de nuestra historia por si algun historiador en 100 años quisiese estudiar sobre el amor mas extraordinario pasado por esta tierra y a menos que describa con detalles milimetricos lo bien que combinabas con los primeros lirios rosados que escogi para ti, aun nos falta historia para rellenar un libro gordito y en parte esta esperanza lleva en si esa proyeccion y sentimiento de quererte mucho tiempo para hacerlo y decirle a los niños que ese libro de lomo bonito en la biblioteca lo escribi para su madre. Asi que tal vez si sepa como, este libro comienza contigo.',
-    'Resulta aterrador, no? El concebir la idea de sentarte en una simple silla de un simple cuarto al rededor de unas simples casas e intentar escribir un increible libro para la chica que le encantan los libros, aunque en este punto de los acontecimientos me resulta mas aterrador no tener este porque de hacer. Sabes cuantas palabras tiene un libro? Por ejemplo, una novela en promedio deberia contener aproximadamente entre 60.000 a 90.000 paginas, uno de ficcion de 70.000 a 100.000, uno infantil de 50.000 a 70.000. En 2007 James Pennebaker en la revista Science publico un articulo investigativo donde encontro que las mujeres dicen en promedio 16.200 palabras al dia mientras que los hombres un aproximado de 15.600, resultados esperables dado que participaron varias mujeres con hijos adolescentes, no solo porque las chicas hablen mucho (que suelen hacerlo). Haciendo un vago calculo, si mi vida fuese una constante novela podria redactar todas mis palabras usadas a diario y escribiria una novela en una grandiosa cantidad de tiempo de 4.8 dias, a comparacion de los pocos 4.6 dias que le tomaria a una mujer, asi que si esto existe es resultado de un milagro porque si que esta siendo retador pensar de donde sacar 90.000 palabras.',
-    'Este sera un pequeño o no tan pequeño viaje hacia ese lenguaje que estamos construyendo tan solo tu y yo, el que hablaremos, descubriremos y traduciremos a interesados en conocer lo que prolifera el amor en nuestras vidas y que mas regocijante que hacerlo mediante un libro contando la gran coincidencia que fue conocernos o lo que describira cada capitulo como eje central, el paso a paso certero de mi corazon tejiendo una capa de ti, un recopilatorio a grandes rasgos de esas cosas que guardamos adentro y en un intento de no dejarlas morir las inmortalizo en tinta impresa o en este caso prematuro, algunos cuantos muchos pixeles organizados estrategicamente en una pantalla lcd con el brillo suficiente para transferirte madejas de sentimientos.',
-    'El termino "intento" proviene del latin intentus, participio pasado del verbo intendere, que significa "tender hacia" o bien "dirigir la atencion, esforzarse". En esencia es una direccion consciente de la atencion o la voluntad hacia un objetivo. Voluntariamente estoy sometiendome a tomar direccion en escribir y como objetivo te contemplo presente, en un esfuerzo que prevalece desde las ganas de tocar con la punta de los dedos —los mismos que estan escribiendo—',
+  /* ======== TEXTO INTRODUCCION ======== */
+  var introParagraphs = [
+    'Antes del a\u00f1o 2025 pod\u00eda contar los libros que hab\u00eda le\u00eddo con dos manos \u2014tal vez tres si tuviese\u2014. Fuera de ensayos rutinarios de literatura estudiantil, un at\u00edpico libro de autoayuda o minilibros de recopilatorios de poemas, no mucho m\u00e1s. Le\u00eddo lo anterior s\u00e9 que en tu mente habr\u00e1 un peque\u00f1o y preocupante panorama a la espectativa de seguir leyendo o cerrar con aburrimiento lo que sea que sea esto y mi intento por darte \u00e1nimo a que sigas leyendo va acompa\u00f1ado de una promesa de amor genuino y si no confiamos en el amor como una fuerza transformadora y la revoluci\u00f3n ind\u00f3mita de nuestros tiempos, estaremos perdidos por la eternidad.',
+    'No s\u00e9 c\u00f3mo se empieza a escribir un libro. No s\u00e9 si esto termine en un libro, en tu libro. \u00bfContando una historia? \u00bfO tal vez nuestra historia? \u00bfO ser\u00e1 tan clich\u00e9 hacerlo que solo tendr\u00eda que inventar algunos personajes y contar una historia dram\u00e1tica en forma de novela, as\u00ed vender\u00eda mil ejemplares y no solo el tuyo.',
+    'Tengo una esperanza desmedida entre cada pared de mi caja tor\u00e1xica, dir\u00eda que la suficiente para distribuirla por el tiempo necesario para escribir un libro o al menos lo que recuerde de nuestra historia por si alg\u00fan historiador en 100 a\u00f1os quisiese estudiar sobre el amor m\u00e1s extraordinario pasado por esta tierra y a menos que describa con detalles milim\u00e9tricos lo bien que combinabas con los primeros lirios rosados que escog\u00ed para ti, a\u00fan nos falta historia para rellenar un libro gordito y en parte esta esperanza lleva en s\u00ed esa proyecci\u00f3n y sentimiento de quererte mucho tiempo para hacerlo y decirle a los ni\u00f1os que ese libro de lomo bonito en la biblioteca lo escrib\u00ed para su madre. As\u00ed que tal vez s\u00ed sepa c\u00f3mo, este libro comienza contigo.',
+    'Resulta aterrador, \u00bfno? El concebir la idea de sentarte en una simple silla de un simple cuarto alrededor de unas simples casas e intentar escribir un incre\u00edble libro para la chica que le encantan los libros, aunque en este punto de los acontecimientos me resulta m\u00e1s aterrador no tener este porqu\u00e9 de hacer. \u00bfSabes cu\u00e1ntas palabras tiene un libro? Por ejemplo, una novela en promedio deber\u00eda contener aproximadamente entre 60.000 a 90.000 p\u00e1ginas, uno de ficci\u00f3n de 70.000 a 100.000, uno infantil de 50.000 a 70.000. En 2007 James Pennebaker en la revista Science public\u00f3 un art\u00edculo investigativo donde encontr\u00f3 que las mujeres dicen en promedio 16.200 palabras al d\u00eda mientras que los hombres un aproximado de 15.600, resultados esperables dado que participaron varias mujeres con hijos adolescentes, no solo porque las chicas hablen mucho (que suelen hacerlo). Haciendo un vago c\u00e1lculo, si mi vida fuese una constante novela podr\u00eda redactar todas mis palabras usadas a diario y escribir\u00eda una novela en una grandiosa cantidad de tiempo de 4.8 d\u00edas, a comparaci\u00f3n de los pocos 4.6 d\u00edas que le tomar\u00eda a una mujer, as\u00ed que si esto existe es resultado de un milagro porque s\u00ed que est\u00e1 siendo retador pensar de d\u00f3nde sacar 90.000 palabras.',
+    'Este ser\u00e1 un peque\u00f1o o no tan peque\u00f1o viaje hacia ese lenguaje que estamos construyendo tan solo t\u00fa y yo, el que hablaremos, descubriremos y traduciremos a interesados en conocer lo que prolifera el amor en nuestras vidas y qu\u00e9 m\u00e1s regocijante que hacerlo mediante un libro contando la gran coincidencia que fue conocernos o lo que describir\u00e1 cada cap\u00edtulo como eje central, el paso a paso certero de mi coraz\u00f3n tejiendo una capa de ti, un recopilatorio a grandes rasgos de esas cosas que guardamos adentro y en un intento de no dejarlas morir las inmortalizo en tinta impresa o en este caso prematuro, algunos cuantos muchos p\u00edxeles organizados estrat\u00e9gicamente en una pantalla LCD con el brillo suficiente para transferirte madejas de sentimientos.',
+    'El t\u00e9rmino \u201cintento\u201d proviene del lat\u00edn intentus, participio pasado del verbo intendere, que significa \u201ctender hacia\u201d o bien \u201cdirigir la atenci\u00f3n, esforzarse\u201d. En esencia es una direcci\u00f3n consciente de la atenci\u00f3n o la voluntad hacia un objetivo. Voluntariamente estoy someti\u00e9ndome a tomar direcci\u00f3n en escribir y como objetivo te contemplo presente, en un esfuerzo que prevalece desde las ganas de tocar con la punta de los dedos \u2014los mismos que est\u00e1n escribiendo\u2014',
     'Este es mi intento.'
   ];
 
   /* ======== CAPITULOS FIJOS ======== */
-  var fixedChapters = [
-    { title: 'El dia que te conoci', html:
-      '<p>Recuerdo perfectamente ese momento. El universo conspiro para que nuestros caminos se cruzaran, y desde ese instante supe que mi vida cambiaria para siempre.</p>' +
-      '<p>Tu sonrisa ilumino todo a mi alrededor, y aunque no lo sabias, ya habias robado completamente mi corazon.</p>' +
-      '<p class="quote">"A veces el amor llega sin avisar, como una brisa suave que se convierte en huracan."</p>' },
+  var chapters = [
+    { title: 'El d\u00eda que te conoc\u00ed', html:
+      '<p>Recuerdo perfectamente ese momento. El universo conspir\u00f3 para que nuestros caminos se cruzaran, y desde ese instante supe que mi vida cambiar\u00eda para siempre.</p>' +
+      '<p>Tu sonrisa ilumin\u00f3 todo a mi alrededor, y aunque no lo sab\u00edas, ya hab\u00edas robado completamente mi coraz\u00f3n.</p>' +
+      '<p class="quote">\u201cA veces el amor llega sin avisar, como una brisa suave que se convierte en hurac\u00e1n.\u201d</p>' },
     { title: 'Nuestra primera cita', html:
-      '<p>Los nervios, las mariposas en el estomago, la emocion de verte llegar. Esa primera cita fue el comienzo de algo magico que ni yo mismo podia creer.</p>' +
-      '<p>Cada palabra que dijiste, cada risa que compartimos, se quedo grabada en mi memoria como el dia mas feliz de mi vida... hasta que llego el siguiente a tu lado.</p>' +
-      '<p class="quote">"No fue el lugar, ni la hora, ni el momento. Fuiste tu quien hizo que todo fuera perfecto."</p>' },
-    { title: 'Lo que mas me gusta de ti', html:
-      '<p>Me encanta tu forma de ver el mundo, esa chispa que tienes en los ojos cuando algo te emociona, tu risa contagiosa que alegra hasta los dias mas grises.</p>' +
-      '<p>Admiro tu fortaleza, tu ternura, tu inteligencia y ese corazon tan grande que tienes.</p>' +
-      '<p class="quote">"Eres el tipo de persona que hace que el mundo sea un lugar mejor solo con existir."</p>' },
+      '<p>Los nervios, las mariposas en el est\u00f3mago, la emoci\u00f3n de verte llegar. Esa primera cita fue el comienzo de algo m\u00e1gico que ni yo mismo pod\u00eda creer.</p>' +
+      '<p>Cada palabra que dijiste, cada risa que compartimos, se qued\u00f3 grabada en mi memoria como el d\u00eda m\u00e1s feliz de mi vida... hasta que lleg\u00f3 el siguiente a tu lado.</p>' +
+      '<p class="quote">\u201cNo fue el lugar, ni la hora, ni el momento. Fuiste t\u00fa quien hizo que todo fuera perfecto.\u201d</p>' },
+    { title: 'Lo que m\u00e1s me gusta de ti', html:
+      '<p>Me encanta tu forma de ver el mundo, esa chispa que tienes en los ojos cuando algo te emociona, tu risa contagiosa que alegra hasta los d\u00edas m\u00e1s grises.</p>' +
+      '<p>Admiro tu fortaleza, tu ternura, tu inteligencia y ese coraz\u00f3n tan grande que tienes.</p>' +
+      '<p class="quote">\u201cEres el tipo de persona que hace que el mundo sea un lugar mejor solo con existir.\u201d</p>' },
     { title: 'Momentos inolvidables', html:
-      '<p>Cada recuerdo contigo es un tesoro: las llamadas hasta tarde, los mensajes que me sacan una sonrisa, los planes que hacemos juntos y los sueños que compartimos.</p>' +
-      '<p>No existe un solo dia en el que no agradezca al destino por haberte puesto en mi camino. Eres mi lugar favorito en el mundo entero.</p>' +
-      '<p class="quote">"Los momentos mas simples se vuelven extraordinarios cuando los vivo contigo."</p>' },
+      '<p>Cada recuerdo contigo es un tesoro: las llamadas hasta tarde, los mensajes que me sacan una sonrisa, los planes que hacemos juntos y los sue\u00f1os que compartimos.</p>' +
+      '<p>No existe un solo d\u00eda en el que no agradezca al destino por haberte puesto en mi camino. Eres mi lugar favorito en el mundo entero.</p>' +
+      '<p class="quote">\u201cLos momentos m\u00e1s simples se vuelven extraordinarios cuando los vivo contigo.\u201d</p>' },
     { title: 'Razones para amarte', html:
-      '<p>Podria llenar mil libros con las razones por las que te amo, pero aqui van solo algunas:</p>' +
-      '<ul class="reasons"><li>Porque me haces ser mejor persona cada dia</li><li>Porque tu felicidad es mi felicidad</li><li>Porque contigo todo tiene sentido</li><li>Porque eres mi hogar, mi paz y mi alegria</li><li>Porque simplemente eres tu</li></ul>' +
-      '<p class="quote">"Te amo no por lo que eres, sino por lo que soy yo cuando estoy contigo."</p>' },
+      '<p>Podr\u00eda llenar mil libros con las razones por las que te amo, pero aqu\u00ed van solo algunas:</p>' +
+      '<ul class="reasons"><li>Porque me haces ser mejor persona cada d\u00eda</li><li>Porque tu felicidad es mi felicidad</li><li>Porque contigo todo tiene sentido</li><li>Porque eres mi hogar, mi paz y mi alegr\u00eda</li><li>Porque simplemente eres t\u00fa</li></ul>' +
+      '<p class="quote">\u201cTe amo no por lo que eres, sino por lo que soy yo cuando estoy contigo.\u201d</p>' },
     { title: 'Mi carta para ti', html:
       '<p>Querida Juanita,</p>' +
-      '<p>Escribir esto me hace sentir el hombre mas afortunado del mundo. Cada palabra que lees aqui sale directamente de mi corazon, porque eso es lo que haces tu: sacar lo mejor de mi.</p>' +
-      '<p>Gracias por cada sonrisa, por cada momento, por cada enseñanza. Eres y siempre seras la persona mas importante en mi vida.</p>' +
+      '<p>Escribir esto me hace sentir el hombre m\u00e1s afortunado del mundo. Cada palabra que lees aqu\u00ed sale directamente de mi coraz\u00f3n, porque eso es lo que haces t\u00fa: sacar lo mejor de m\u00ed.</p>' +
+      '<p>Gracias por cada sonrisa, por cada momento, por cada ense\u00f1anza. Eres y siempre ser\u00e1s la persona m\u00e1s importante en mi vida.</p>' +
       '<p class="signature">Con todo mi amor,<br>siempre tuyo</p>' }
   ];
 
-  /* ======== PAGINADOR DINAMICO ======== */
+  /* ======== PAGINADOR ======== */
   function medir() {
     var w = $('bookWrapper');
     var r = w.getBoundingClientRect();
-    var pageW = r.width / 2;
-    var pageH = r.height;
-    if (pageW < 100) { pageW = 250; pageH = 550; }
-    var usableW = pageW * 0.78;
-    var usableH = pageH - 60;
-    return { w: Math.floor(usableW), h: Math.floor(usableH) };
+    var pw = r.width / 2;
+    if (pw < 120) pw = 240;
+    return { usableW: Math.floor(pw * 0.78), usableH: Math.floor(r.height - 58) };
   }
 
-  function hacerPagina(headTitle, bodyHTML, pageNum) {
-    var div = document.createElement('div');
-    div.className = 'book-page';
-    div.innerHTML =
+  function makePage(title, body, pnum) {
+    var d = document.createElement('div');
+    d.className = 'book-page';
+    d.innerHTML =
       '<div class="page-hdr">' +
-        '<span class="hdr-left">' + pageNum + '</span>' +
-        '<span class="hdr-center">' + headTitle + '</span>' +
-        '<span class="hdr-right">' + pageNum + '</span>' +
+        '<span class="hdr-left">' + pnum + '</span>' +
+        '<span class="hdr-center">' + title + '</span>' +
+        '<span class="hdr-right">' + pnum + '</span>' +
       '</div>' +
-      '<div class="page-content">' + bodyHTML + '</div>';
-    return div;
+      '<div class="page-content">' + body + '</div>';
+    return d;
   }
 
-  function paginarTexto(parrafos, chapTitle, startPageNum) {
-    var dims = medir();
-    var pageW = dims.w;
-    var pageH = dims.h;
-    // Header usa ~3rem (~48px), padding es ~8% bottom + 0 top + sides 10%
-    // Area util aproximada
-    var usableW = pageW * 0.8; // 10% padding cada lado
-    var usableH = pageH - 55;  // ~3.5rem header
-
-    // Crear medidor oculto
-    var meas = document.createElement('div');
-    meas.style.cssText =
-      'position:fixed;top:-9999px;left:-9999px;visibility:hidden;width:' + usableW + 'px;' +
-      'font-family:Georgia,"Times New Roman",serif;' +
-      'font-size:0.9rem;line-height:1.65;' +
+  function paginate(paragraphs, title, startNum) {
+    var dim = medir();
+    // Medidor oculto
+    var m = document.createElement('div');
+    m.style.cssText =
+      'position:fixed;top:-9999px;left:-9999px;visibility:hidden;width:' + dim.usableW + 'px;' +
+      'font-family:Georgia,"Times New Roman",serif;font-size:0.82rem;line-height:1.65;' +
       'word-wrap:break-word;overflow-wrap:break-word;';
-    document.body.appendChild(meas);
+    document.body.appendChild(m);
 
+    var maxH = dim.usableH;
     var pages = [];
-    var currentHTML = '';
-    var currentParaIdx = 0;
+    var buf = '';       // HTML acumulado de la pagina actual
+    var bufH = 0;       // altura medida de buf
+    var remWords = '';  // palabras que sobraron del parrafo anterior
+    var idx = 0;
 
-    while (currentParaIdx < parrafos.length) {
-      var testHTML = currentHTML;
-      if (testHTML) testHTML += ' ';
-      testHTML += '<p>' + parrafos[currentParaIdx] + '</p>';
+    function testHTML(h) {
+      m.innerHTML = '<div>' + h + '</div>';
+      return m.firstChild.scrollHeight;
+    }
 
-      meas.innerHTML = testHTML;
-      var overflow = meas.scrollHeight > usableH;
+    while (idx < paragraphs.length || remWords) {
+      var source;
+      if (remWords) {
+        // Continuar con lo que sobro
+        source = remWords;
+        remWords = '';
+      } else {
+        source = paragraphs[idx];
+        idx++;
+      }
 
-      if (!overflow) {
-        // Cabe, añadir
-        currentHTML = testHTML;
-        currentParaIdx++;
-      } else if (!currentHTML) {
-        // El parrafo solo no cabe: partirlo por palabras
-        var words = parrafos[currentParaIdx].split(' ');
-        var partial = '';
+      var wrapP = '<p>' + source + '</p>';
+      var testText = buf ? buf + wrapP : wrapP;
+      var h = testHTML(testText);
+
+      if (h <= maxH) {
+        // Cabe entero
+        buf = testText;
+        bufH = h;
+        continue;
+      }
+
+      // No cabe. Intentar palabra por palabra
+      var words = source.split(' ');
+      var partial = buf ? buf.slice(buf.lastIndexOf('<p>')) : '';
+      // Extraer solo el texto del parrafo actual del buffer
+      if (buf) {
+        // El parrafo que no cupo es source; buf ya tiene parrafos completos previos
+        // Tratar de añadir palabras de source una a una
+        var added = '';
         for (var w = 0; w < words.length; w++) {
-          var next = partial ? partial + ' ' + words[w] : words[w];
-          meas.innerHTML = '<p>' + next + '</p>';
-          if (meas.scrollHeight > usableH) {
-            // Hacer pagina con lo que llevamos
-            pages.push({ html: '<p>' + partial + '</p>' });
-            partial = words[w];
+          var next = added ? added + ' ' + words[w] : words[w];
+          var t = testHTML(buf + '<p>' + next + '</p>');
+          if (t <= maxH) {
+            added = next;
           } else {
-            partial = next;
+            // Agregar lo que cupo como continuacion de pagina y el resto a remWords
+            if (added) {
+              buf += '<p>' + added + '</p>';
+            }
+            // Lo que sobra del parrafo
+            remWords = words.slice(w).join(' ');
+            break;
           }
         }
-        // Lo que sobro del parrafo sigue en la siguiente pagina
-        if (partial) {
-          parrafos[currentParaIdx] = partial;
-        } else {
-          currentParaIdx++;
+        if (!remWords) {
+          // Todas las palabras cupieron
+          buf += '<p>' + source + '</p>';
+          continue;
         }
-        currentHTML = '';
       } else {
-        // La pagina actual esta llena, guardarla y empezar nueva
-        pages.push({ html: currentHTML });
-        currentHTML = '';
+        // Pagina vacia, partir palabra por palabra
+        var partial2 = '';
+        for (var w2 = 0; w2 < words.length; w2++) {
+          var n2 = partial2 ? partial2 + ' ' + words[w2] : words[w2];
+          var t2 = testHTML('<p>' + n2 + '</p>');
+          if (t2 <= maxH) {
+            partial2 = n2;
+          } else {
+            if (partial2) {
+              pages.push(makePage(title, '<p>' + partial2 + '</p>', startNum + pages.length));
+            }
+            remWords = words.slice(w2).join(' ');
+            partial2 = '';
+            break;
+          }
+        }
+        if (!remWords && partial2) {
+          buf = '<p>' + partial2 + '</p>';
+        }
+        if (remWords) continue;
       }
+
+      // Guardar pagina actual y resetear buffer
+      pages.push(makePage(title, buf, startNum + pages.length));
+      buf = '';
     }
 
     // Ultima pagina
-    if (currentHTML) {
-      pages.push({ html: currentHTML });
+    if (buf) {
+      pages.push(makePage(title, buf, startNum + pages.length));
     }
 
-    document.body.removeChild(meas);
-
-    // Convertir a elementos DOM
-    var result = [];
-    for (var p = 0; p < pages.length; p++) {
-      result.push(hacerPagina(chapTitle, pages[p].html, startPageNum + p));
-    }
-    return result;
+    document.body.removeChild(m);
+    return pages;
   }
 
-  /* ======== CONSTRUIR LIBRO ======== */
+  /* ======== CONSTRUIR PAGINAS ======== */
   function buildAllPages() {
     var wrapper = $('bookWrapper');
-    var backCover = $('backCoverPage');
+    var existing = wrapper.querySelectorAll('.book-page');
+    var backHTML = existing[existing.length - 1]; // la contraportada es la ultima
 
-    // Generar paginas de introduccion
-    var introPages = paginarTexto(introRaw, 'Introduccion', 10);
+    // Paginas fijas: 0-9
+    var fixedPages = [];
+    for (var i = 0; i < existing.length - 1; i++) {
+      fixedPages.push(existing[i]);
+    }
+
+    // Generar intro
+    var introPages = paginate(introParagraphs, 'Introducci\u00f3n', 10);
     var introCount = introPages.length;
 
-    // Insertar cada pagina de intro antes de la contraportada
-    for (var i = introPages.length - 1; i >= 0; i--) {
-      wrapper.insertBefore(introPages[i], backCover);
-    }
-
-    // Paginas de capitulos fijos
+    // Generar capitulos
     var chapStart = 10 + introCount;
-    for (var c = 0; c < fixedChapters.length; c++) {
-      var ch = fixedChapters[c];
-      var pg = hacerPagina(ch.title, ch.html, chapStart + c);
-      wrapper.insertBefore(pg, backCover);
+    var chapterPages = [];
+    for (var c = 0; c < chapters.length; c++) {
+      chapterPages.push(makePage(chapters[c].title, chapters[c].html, chapStart + c));
     }
 
-    // Total de paginas: 0-9 (10 staticas) + introCount + fixedChapters.length + 1 (back cover)
-    var total = 10 + introCount + fixedChapters.length + 1;
+    // Ensamblar en orden
+    var allPages = fixedPages.concat(introPages, chapterPages, [backHTML]);
+    var total = allPages.length;
     pagesLen = total;
 
-    // Construir pageLabels
+    // Reconstruir wrapper
+    while (wrapper.firstChild) wrapper.removeChild(wrapper.firstChild);
+    for (var a = 0; a < allPages.length; a++) {
+      wrapper.appendChild(allPages[a]);
+    }
+
+    // pageLabels
     pageLabels = [];
-    for (var idx = 0; idx < total; idx++) {
-      if (idx === 0) pageLabels.push('Portada');
-      else if (idx >= 1 && idx <= 3) pageLabels.push('');
-      else if (idx === 4) pageLabels.push('Titulo');
-      else if (idx === 5) pageLabels.push('');
-      else if (idx === 6) pageLabels.push('Agradecimientos');
-      else if (idx === 7) pageLabels.push('');
-      else if (idx === 8) pageLabels.push('Indice');
-      else if (idx === 9) pageLabels.push('');
-      else if (idx >= 10 && idx < 10 + introCount) pageLabels.push('Introduccion');
-      else if (idx >= 10 + introCount && idx < 10 + introCount + fixedChapters.length)
-        pageLabels.push(fixedChapters[idx - 10 - introCount].title);
-      else if (idx === total - 1) pageLabels.push('Contraportada');
+    for (var pi = 0; pi < total; pi++) {
+      if (pi === 0) pageLabels.push('Portada');
+      else if (pi >= 1 && pi <= 3) pageLabels.push('');
+      else if (pi === 4) pageLabels.push('T\u00edtulo');
+      else if (pi === 5) pageLabels.push('');
+      else if (pi === 6) pageLabels.push('Agradecimientos');
+      else if (pi === 7) pageLabels.push('');
+      else if (pi === 8) pageLabels.push('\u00cdndice');
+      else if (pi === 9) pageLabels.push('');
+      else if (pi >= 10 && pi < 10 + introCount) pageLabels.push('Introducci\u00f3n');
+      else if (pi >= 10 + introCount && pi < total - 1)
+        pageLabels.push(chapters[pi - 10 - introCount].title);
+      else if (pi === total - 1) pageLabels.push('Contraportada');
       else pageLabels.push('');
     }
 
-    // Construir TOC
-    tocItems = [
-      { page: 10, label: 'Introduccion' }
-    ];
-    var cBase = 10 + introCount;
-    for (var ci = 0; ci < fixedChapters.length; ci++) {
-      tocItems.push({ page: cBase + ci, label: fixedChapters[ci].title });
+    // TOC
+    tocItems = [{ page: 10, label: 'Introducci\u00f3n' }];
+    for (var ci = 0; ci < chapters.length; ci++) {
+      tocItems.push({ page: chapStart + ci, label: chapters[ci].title });
     }
   }
 
@@ -215,7 +248,6 @@
   function buildTocElements() {
     var pgBody = $('tocBody');
     var pgProf = $('tocProfesional');
-
     tocItems.forEach(function (item) {
       if (pgBody) {
         var r = document.createElement('div');
@@ -258,9 +290,9 @@
     var pageEls = wrapper.querySelectorAll('.book-page');
 
     pageFlip = new St.PageFlip(wrapper, {
-      width: 500, height: 820,
+      width: 520, height: 860,
       size: 'stretch',
-      minWidth: 280, minHeight: 400,
+      minWidth: 280, minHeight: 420,
       maxWidth: 2000, maxHeight: 2000,
       showCover: true,
       drawShadow: true,

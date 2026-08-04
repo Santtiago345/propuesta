@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tests - Libro Interactivo</title>
+  <title>Tests - Flipbook</title>
   <style>
     * { box-sizing: border-box; }
     html, body {
       margin: 0; padding: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #1a0a2e;
-      color: #e2e8f0;
+      background: #1a0a2e; color: #e2e8f0;
       min-height: 100vh;
     }
     .container { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; }
@@ -20,21 +19,15 @@
     .test-item {
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 10px;
-      padding: 14px 18px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      border-radius: 10px; padding: 14px 18px;
+      display: flex; align-items: center; gap: 12px;
       transition: all 0.3s ease;
     }
     .test-icon {
       width: 34px; height: 34px;
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
     }
     .test-icon.pending { background: rgba(148,163,184,0.2); }
     .test-icon.pass { background: rgba(34,197,94,0.25); }
@@ -42,67 +35,49 @@
     .test-name { flex: 1; font-size: 0.9rem; }
     .test-msg { font-size: 0.78rem; color: #94a3b8; }
     .summary {
-      margin-top: 2rem;
-      padding: 1.5rem;
+      margin-top: 2rem; padding: 1.5rem;
       background: rgba(255,255,255,0.08);
-      border-radius: 12px;
-      text-align: center;
+      border-radius: 12px; text-align: center;
     }
     .summary.passed { border: 2px solid rgba(34,197,94,0.4); }
     .summary.failed  { border: 2px solid rgba(239,68,68,0.4); }
     .btn {
-      display: block;
-      margin: 0 auto 1rem;
-      padding: 12px 36px;
-      border-radius: 50px;
-      border: none;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
+      display: block; margin: 0 auto 1rem;
+      padding: 12px 36px; border-radius: 50px;
+      border: none; font-size: 1rem; font-weight: bold;
+      cursor: pointer; transition: all 0.3s ease;
     }
     .btn-run { background: linear-gradient(135deg, #7c3aed, #9333ea); color: #fff; }
     .btn-run:hover:not(:disabled) { transform: scale(1.05); }
-    .btn-run:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .btn-run:disabled { opacity: 0.4; cursor: not-allowed; }
     .btn-back {
-      background: rgba(255,255,255,0.1);
-      color: #c084fc;
-      text-decoration: none;
-      display: inline-block;
-      padding: 8px 20px;
-      border-radius: 50px;
-      font-size: 0.85rem;
-      margin-bottom: 1rem;
+      background: rgba(255,255,255,0.1); color: #c084fc;
+      text-decoration: none; display: inline-block;
+      padding: 8px 20px; border-radius: 50px; font-size: 0.85rem; margin-bottom: 1rem;
     }
     .test-progress {
       width: 100%; height: 4px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 2px;
-      margin: 1rem 0;
-      overflow: hidden;
+      background: rgba(255,255,255,0.1); border-radius: 2px;
+      margin: 1rem 0; overflow: hidden;
     }
     .test-progress-bar {
       height: 100%;
       background: linear-gradient(90deg, #7c3aed, #a78bfa);
-      border-radius: 2px;
-      transition: width 0.5s ease;
+      border-radius: 2px; transition: width 0.5s ease;
     }
-    .running { color: #fbbf24; font-size: 0.8rem; text-align: center; display: none; }
+    .running { display: none; color: #fbbf24; font-size: 0.8rem; text-align: center; }
   </style>
 </head>
 <body>
   <div class="container">
     <a href="libro.html" class="btn-back">← Volver al libro</a>
-    <h1>🧪 Pruebas del Libro Interactivo</h1>
+    <h1>🧪 Pruebas del Flipbook</h1>
     <p class="subtitle">Verificación automática de funcionalidades</p>
 
     <button class="btn btn-run" id="btnRun" onclick="ejecutarTests()" disabled>Cargando libro...</button>
     <p class="running" id="runningMsg">Ejecutando pruebas...</p>
 
-    <div class="test-progress">
-      <div class="test-progress-bar" id="progressBar" style="width:0%"></div>
-    </div>
-
+    <div class="test-progress"><div class="test-progress-bar" id="progressBar" style="width:0%"></div></div>
     <div class="test-list" id="testList"></div>
     <div class="summary" id="summary" style="display:none"></div>
   </div>
@@ -110,164 +85,99 @@
   <iframe id="testFrame" src="libro.html" style="width:1px;height:1px;position:absolute;opacity:0" onload="onFrameLoaded()"></iframe>
 
   <script>
-    var frameReady = false;
-    var L = null;
-    var testQueue = [];
+    var FB = null;
+    var tests = [];
     var results = [];
-    var totalTests = 0;
+    var total = 0;
 
-    function onFrameLoaded() {
-      setTimeout(function () {
-        try {
-          L = document.getElementById('testFrame').contentWindow.Libro;
-          if (L && typeof L.getCerrado === 'function') {
-            frameReady = true;
-            document.getElementById('btnRun').textContent = 'Ejecutar pruebas ▶';
-            document.getElementById('btnRun').disabled = false;
-            buildTests();
-          }
-        } catch (e) {
-          document.getElementById('btnRun').textContent = 'Error: ' + e.message;
-        }
-      }, 500);
+    function delay(ms) {
+      return new Promise(function(r) { setTimeout(r, ms); });
     }
 
-    function waitLibro() {
-      return new Promise(function (resolve) {
+    function waitForFB() {
+      return new Promise(function(resolve) {
         var maxWait = 5000;
         var start = Date.now();
         function check() {
           try {
-            var f = document.getElementById('testFrame');
-            var w = f.contentWindow;
-            if (w && w.Libro && typeof w.Libro.getCerrado === 'function') {
-              L = w.Libro;
-              resolve(true);
-              return;
+            var w = document.getElementById('testFrame').contentWindow;
+            if (w && w.Flipbook && typeof w.Flipbook.getCerrado === 'function') {
+              FB = w.Flipbook;
+              resolve(true); return;
             }
-          } catch (e) {}
-          if (Date.now() - start > maxWait) {
-            resolve(false);
-            return;
-          }
+          } catch(e) {}
+          if (Date.now() - start > maxWait) { resolve(false); return; }
           setTimeout(check, 100);
         }
         check();
       });
     }
 
-    function delay(ms) {
-      return new Promise(function (resolve) { setTimeout(resolve, ms); });
+    function onFrameLoaded() {
+      setTimeout(function() {
+        waitForFB().then(function(ok) {
+          if (ok) {
+            document.getElementById('btnRun').textContent = 'Ejecutar pruebas ▶';
+            document.getElementById('btnRun').disabled = false;
+            buildTests();
+          } else {
+            document.getElementById('btnRun').textContent = 'Error de carga';
+          }
+        });
+      }, 600);
     }
 
     function buildTests() {
-      testQueue = [
-        {
-          name: '1. El libro inicia cerrado',
-          msg: 'getCerrado() debe devolver true al inicio',
-          fn: function () { return L.getCerrado() === true; }
-        },
-        {
-          name: '2. Abrir el libro cambia el estado',
-          msg: 'Después de abrir(), getCerrado() debe ser false',
-          fn: function () { L.abrir(); return true; },
-          delay: 900
-        },
-        {
-          name: '3. Verificar estado después de abrir',
-          msg: 'Tras la animación, getCerrado() debe ser false',
-          fn: function () { return L.getCerrado() === false; }
-        },
-        {
-          name: '4. El libro abre en el spread 0 (Índice)',
-          msg: 'El índice debe ser el primer spread visible',
-          fn: function () { return L.getSpreadActual() === 0; }
-        },
-        {
-          name: '5. Navegar hacia adelante (spread 0 → 1)',
-          msg: 'siguiente() debe incrementar el spread a 1',
-          fn: function () { L.siguiente(); return L.getSpreadActual() === 1; }
-        },
-        {
-          name: '6. Navegar hacia adelante (spread 1 → 2)',
-          msg: 'Segundo siguiente() debe llevar al spread 2',
-          fn: function () { L.siguiente(); return L.getSpreadActual() === 2; }
-        },
-        {
-          name: '7. Navegar hacia atrás (spread 2 → 1)',
-          msg: 'anterior() debe decrementar el spread a 1',
-          fn: function () { L.anterior(); return L.getSpreadActual() === 1; }
-        },
-        {
-          name: '8. Navegar hacia atrás (spread 1 → 0)',
-          msg: 'Segundo anterior() debe volver al spread 0',
-          fn: function () { L.anterior(); return L.getSpreadActual() === 0; }
-        },
-        {
-          name: '9. No se puede ir antes del spread 0',
-          msg: 'anterior() en spread 0 no debe cambiar nada',
-          fn: function () { L.anterior(); return L.getSpreadActual() === 0; }
-        },
-        {
-          name: '10. Saltar al último spread',
-          msg: 'irASpread debe llegar al último spread (3)',
-          fn: function () { L.irASpread(3); return L.getSpreadActual() === 3; }
-        },
-        {
-          name: '11. No se puede ir después del último spread',
-          msg: 'siguiente() en el último spread no debe cambiar nada',
-          fn: function () { L.siguiente(); return L.getSpreadActual() === 3; }
-        },
-        {
-          name: '12. irAIndice() vuelve al spread 0',
-          msg: 'irAIndice() debe establecer spread en 0',
-          fn: function () { L.irAIndice(); return L.getSpreadActual() === 0; }
-        },
-        {
-          name: '13. irASpread con índice inválido no crashea',
-          msg: 'Llamadas con índices fuera de rango no deben lanzar errores',
-          fn: function () {
-            try { L.irASpread(99); L.irASpread(-1); return true; }
-            catch (e) { return false; }
-          }
-        },
-        {
-          name: '14. El total de spreads es correcto',
-          msg: 'Debe haber exactamente 4 spreads',
-          fn: function () { return L.getTotalSpreads() === 4; }
-        },
-        {
-          name: '15. Cerrar el libro funciona',
-          msg: 'cerrar() debe devolver el estado a cerrado',
-          fn: function () { L.cerrar(); return true; },
-          delay: 700
-        },
-        {
-          name: '16. Verificar estado después de cerrar',
-          msg: 'getCerrado() debe ser true tras cerrar',
-          fn: function () { return L.getCerrado() === true; }
-        },
-        {
-          name: '17. Reabrir el libro',
-          msg: 'El libro debe poder reabrirse después de cerrar',
-          fn: function () { L.abrir(); return true; },
-          delay: 900
-        },
-        {
-          name: '18. Verificar estado tras reabrir',
-          msg: 'getCerrado() debe ser false tras reabrir',
-          fn: function () { return L.getCerrado() === false; }
-        }
+      tests = [
+        { name: '1. El libro inicia cerrado', msg: 'getCerrado() debe ser true al inicio',
+          fn: function() { return FB.getCerrado() === true; } },
+        { name: '2. Abrir el libro', msg: 'abrir() cambia el estado',
+          fn: function() { FB.abrir(); return true; }, delay: 800 },
+        { name: '3. Verificar estado abierto', msg: 'getCerrado() debe ser false',
+          fn: function() { return FB.getCerrado() === false; } },
+        { name: '4. Página inicial correcta', msg: 'getCurrentPage() debe ser 2 (índice | cap1)',
+          fn: function() { return FB.getCurrentPage() === 2; } },
+        { name: '5. Ir a página 4', msg: 'irAPagina(4) debe saltar correctamente',
+          fn: function() { FB.irAPagina(4); return FB.getCurrentPage() === 4; }, delay: 900 },
+        { name: '6. Ir a página 6', msg: 'irAPagina(6) debe saltar correctamente',
+          fn: function() { FB.irAPagina(6); return FB.getCurrentPage() === 6; }, delay: 900 },
+        { name: '7. Ir a página 8', msg: 'irAPagina(8) debe saltar al final',
+          fn: function() { FB.irAPagina(8); return FB.getCurrentPage() === 8; }, delay: 900 },
+        { name: '8. No ir más allá del final', msg: 'irAPagina(10) no debe cambiar',
+          fn: function() { FB.irAPagina(10); return FB.getCurrentPage() === 8; } },
+        { name: '9. No ir a página inválida', msg: 'irAPagina(3) impar debe ser rechazada',
+          fn: function() { FB.irAPagina(3); return FB.getCurrentPage() === 8; } },
+        { name: '10. Navegar hacia atrás', msg: 'anterior() debe retroceder a 6',
+          fn: function() { FB.anterior(); return FB.getCurrentPage() === 6; }, delay: 900 },
+        { name: '11. Segunda navegación atrás', msg: 'anterior() debe retroceder a 4',
+          fn: function() { FB.anterior(); return FB.getCurrentPage() === 4; }, delay: 900 },
+        { name: '12. Tercera navegación atrás', msg: 'anterior() debe retroceder a 2',
+          fn: function() { FB.anterior(); return FB.getCurrentPage() === 2; }, delay: 900 },
+        { name: '13. No ir antes del inicio', msg: 'anterior() desde inicio no cambia',
+          fn: function() { FB.anterior(); return FB.getCurrentPage() === 2; } },
+        { name: '14. Navegar hacia adelante', msg: 'siguiente() debe avanzar a 4',
+          fn: function() { FB.siguiente(); return FB.getCurrentPage() === 4; }, delay: 900 },
+        { name: '15. Total de páginas correcto', msg: 'getTotalPaginas() debe ser 8',
+          fn: function() { return FB.getTotalPaginas() === 8; } },
+        { name: '16. Cerrar el libro', msg: 'cerrar() restaura estado cerrado',
+          fn: function() { FB.cerrar(); return true; }, delay: 700 },
+        { name: '17. Verificar cerrado', msg: 'getCerrado() debe ser true',
+          fn: function() { return FB.getCerrado() === true; } },
+        { name: '18. Reabrir el libro', msg: 'abrir() debe funcionar de nuevo',
+          fn: function() { FB.abrir(); return true; }, delay: 800 },
+        { name: '19. Verificar reapertura', msg: 'getCerrado() debe ser false',
+          fn: function() { return FB.getCerrado() === false; } },
+        { name: '20. No crash con índice negativo', msg: 'irAPagina(-1) debe ser seguro',
+          fn: function() { try { FB.irAPagina(-1); return true; } catch(e) { return false; } } }
       ];
-
-      totalTests = testQueue.length;
-      renderTestUI();
+      total = tests.length;
+      renderTests();
     }
 
-    function renderTestUI() {
+    function renderTests() {
       var list = document.getElementById('testList');
       list.innerHTML = '';
-      testQueue.forEach(function (t, i) {
+      tests.forEach(function(t, i) {
         var div = document.createElement('div');
         div.className = 'test-item';
         div.id = 'test-' + i;
@@ -284,53 +194,40 @@
       document.getElementById('runningMsg').style.display = 'block';
       results = [];
 
-      // Asegurar que L existe
-      var ok = await waitLibro();
+      var ok = await waitForFB();
       if (!ok) {
         document.getElementById('testList').innerHTML =
           '<div class="test-item"><div class="test-icon fail">!</div>' +
           '<div><div class="test-name">Error de carga</div>' +
-          '<div class="test-msg">No se pudo acceder al libro. Abre desde un servidor local: npx serve .</div></div></div>';
+          '<div class="test-msg">Abre desde un servidor: npx serve .</div></div></div>';
         document.getElementById('btnRun').disabled = false;
         return;
       }
 
-      // Reset
-      if (!L.getCerrado()) L.cerrar();
-      await delay(600);
+      if (!FB.getCerrado()) { FB.cerrar(); await delay(700); }
 
-      for (var i = 0; i < testQueue.length; i++) {
-        var t = testQueue[i];
+      for (var i = 0; i < tests.length; i++) {
+        var t = tests[i];
         var icon = document.getElementById('icon-' + i);
         var item = document.getElementById('test-' + i);
         var passed = false;
 
-        try {
-          passed = t.fn();
-        } catch (e) {
-          passed = false;
-        }
+        try { passed = t.fn(); } catch(e) { passed = false; }
 
         results.push({ name: t.name, passed: passed });
 
         icon.classList.remove('pending');
         if (passed) {
-          icon.classList.add('pass');
-          icon.textContent = '\u2713';
+          icon.classList.add('pass'); icon.textContent = '\u2713';
           item.style.borderColor = 'rgba(34,197,94,0.4)';
         } else {
-          icon.classList.add('fail');
-          icon.textContent = '\u2717';
+          icon.classList.add('fail'); icon.textContent = '\u2717';
           item.style.borderColor = 'rgba(239,68,68,0.4)';
         }
 
-        var pct = ((i + 1) / totalTests) * 100;
-        document.getElementById('progressBar').style.width = pct + '%';
+        document.getElementById('progressBar').style.width = ((i + 1) / total * 100) + '%';
 
-        var extraDelay = t.delay || 0;
-        if (extraDelay > 0) {
-          await delay(extraDelay);
-        }
+        if (t.delay) await delay(t.delay);
       }
 
       document.getElementById('runningMsg').style.display = 'none';
@@ -339,35 +236,21 @@
     }
 
     function mostrarResumen() {
-      var passed = results.filter(function (r) { return r.passed; }).length;
-      var failed = results.length - passed;
-      var summary = document.getElementById('summary');
-      var allPassed = failed === 0;
-
-      summary.style.display = 'block';
-      summary.className = 'summary ' + (allPassed ? 'passed' : 'failed');
-
-      var emoji = allPassed ? '\u2705' : '\u274C';
-      var color = allPassed ? '#22c55e' : '#ef4444';
-      var titleText = allPassed ? 'Todas las pruebas pasaron' : 'Hay pruebas fallidas';
-
-      summary.innerHTML =
-        '<h2 style="margin:0 0 0.8rem;color:' + color + '">' +
-        emoji + ' ' + titleText +
+      var p = results.filter(function(r) { return r.passed; }).length;
+      var f = results.length - p;
+      var allOk = f === 0;
+      var s = document.getElementById('summary');
+      s.style.display = 'block';
+      s.className = 'summary ' + (allOk ? 'passed' : 'failed');
+      s.innerHTML =
+        '<h2 style="margin:0 0 0.8rem;color:' + (allOk ? '#22c55e' : '#ef4444') + '">' +
+        (allOk ? '\u2705 Todas las pruebas pasaron' : '\u274C Hay pruebas fallidas') +
         '</h2>' +
         '<p style="margin:0;font-size:0.95rem">' +
-        '<span style="color:#22c55e">\u2713 ' + passed + ' pasaron</span>' +
-        ' &nbsp;|&nbsp; ' +
-        '<span style="color:#ef4444">\u2717 ' + failed + ' fallaron</span>' +
-        ' &nbsp;|&nbsp; Total: ' + results.length +
-        '</p>' +
-        '<p style="margin:0.6rem 0 0;font-size:0.8rem;color:#94a3b8">' +
-        'Abre la consola (F12) si necesitas depurar fallos.' +
+        '<span style="color:#22c55e">\u2713 ' + p + ' pasaron</span> &nbsp;|&nbsp; ' +
+        '<span style="color:#ef4444">\u2717 ' + f + ' fallaron</span> &nbsp;|&nbsp; Total: ' + results.length +
         '</p>';
     }
-
-    document.getElementById('btnRun').textContent = 'Cargando...';
-    document.getElementById('btnRun').disabled = true;
   </script>
 </body>
 </html>

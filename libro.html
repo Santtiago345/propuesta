@@ -4,65 +4,83 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Nuestra Historia 📖</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="libro.css" />
 </head>
 <body>
 
-  <a href="index.html" class="fixed top-4 left-4 z-50 bg-white bg-opacity-80 text-purple-700 px-4 py-2 rounded-full text-sm font-semibold shadow hover:bg-purple-100 transition no-underline">
-    ← Inicio
-  </a>
+  <a href="index.html" class="top-back-link">← Inicio</a>
 
-  <div class="book-scene">
+  <!-- CONTENEDOR PRINCIPAL -->
+  <div class="flipbook-scene" id="scene">
 
-    <!-- ====== LIBRO CERRADO (PORTADA) ====== -->
-    <div class="book-closed" id="bookClosed">
-      <div class="book-3d">
-        <div class="book-spine"></div>
-        <div class="book-cover-front">
-          <div class="cover-inner">
-            <div class="cover-ornament">✦ ✦ ✦</div>
-            <h1 class="cover-title">Nuestra<br>Historia</h1>
-            <div class="cover-divider"></div>
-            <p class="cover-sub">Un libro para ti, Juanita 💜</p>
-            <button class="btn-open" id="btnOpen" onclick="Libro.abrir()">Abrir libro ✨</button>
+    <!-- LIBRO CERRADO (PORTADA) -->
+    <div class="book-closed-wrap" id="bookClosedWrap">
+      <div class="book-3d-closed">
+        <div class="book-spine-3d"></div>
+        <div class="book-cover-3d" id="bookCover3d">
+          <div class="cover-pattern"></div>
+          <div class="cover-content">
+            <div class="cover-stars">✦ ✦ ✦ ✦ ✦</div>
+            <h1 class="cover-main-title">Nuestra<br>Historia</h1>
+            <div class="cover-line"></div>
+            <p class="cover-subtitle">Un libro para ti, Juanita 💜</p>
+            <button class="cover-open-btn" id="btnOpenBook">Abrir libro ✨</button>
           </div>
         </div>
-        <div class="book-pages-edge"></div>
-        <div class="book-back"></div>
+        <div class="book-pages-stack"></div>
       </div>
     </div>
 
-    <!-- ====== LIBRO ABIERTO ====== -->
-    <div class="book-open hidden" id="bookOpen">
+    <!-- LIBRO ABIERTO -->
+    <div class="book-container" id="bookContainer">
       
-      <!-- Página izquierda -->
-      <div class="page page-left" id="pageLeft">
-        <div class="page-inner"></div>
+      <!-- Sombra inferior -->
+      <div class="book-shadow"></div>
+
+      <!-- Lomo -->
+      <div class="book-binding"></div>
+
+      <!-- PÁGINA IZQUIERDA -->
+      <div class="page-left-side" id="pageLeftSide">
+        <div class="page-left-content" id="pageLeftContent"></div>
       </div>
 
-      <!-- Página derecha con flip -->
-      <div class="page page-right" id="pageRight">
-        <div class="page-flip-container" id="flipContainer">
-          <div class="page-flip-front" id="flipFront">
-            <div class="page-inner"></div>
+      <!-- LADO DERECHO (contiene la pila de hojas) -->
+      <div class="page-right-side" id="pageRightSide">
+        <!-- Hojas apiladas visibles desde el borde -->
+        <div class="sheets-stack" id="sheetsStack"></div>
+        <!-- Hoja actual (la que se voltea) -->
+        <div class="sheet-flipper" id="sheetFlipper">
+          <div class="sheet-front" id="sheetFront">
+            <div class="sheet-content" id="sheetFrontContent"></div>
           </div>
-          <div class="page-flip-back" id="flipBack">
-            <div class="page-inner"></div>
+          <div class="sheet-back" id="sheetBack">
+            <div class="sheet-content" id="sheetBackContent"></div>
           </div>
         </div>
+        <!-- Sombra de la hoja al voltear -->
+        <div class="flip-shadow" id="flipShadow"></div>
       </div>
 
-      <!-- Botones de navegación -->
-      <button class="nav-arrow nav-prev" id="navPrev" onclick="Libro.anterior()" title="Anterior">❮</button>
-      <button class="nav-arrow nav-next" id="navNext" onclick="Libro.siguiente()" title="Siguiente">❯</button>
+      <!-- Controles -->
+      <button class="ctrl-btn ctrl-prev" id="ctrlPrev" title="Anterior">❮</button>
+      <button class="ctrl-btn ctrl-next" id="ctrlNext" title="Siguiente">❯</button>
+      <button class="ctrl-btn ctrl-toc" id="ctrlToc" title="Índice">☰</button>
+      <button class="ctrl-btn ctrl-zoom" id="ctrlZoom" title="Pantalla completa">⛶</button>
 
-      <!-- Botón índice -->
-      <button class="nav-index-btn" id="navIndex" onclick="Libro.irAIndice()" title="Índice">📑</button>
+      <!-- Indicador de página -->
+      <div class="page-counter" id="pageCounter">1 / 8</div>
 
-      <!-- Indicador -->
-      <div class="page-label" id="pageLabel">1 / 6</div>
-
+      <!-- Panel de Índice (overlay) -->
+      <div class="toc-overlay" id="tocOverlay">
+        <div class="toc-panel">
+          <div class="toc-header">
+            <h2>📑 Índice</h2>
+            <button class="toc-close" id="tocClose">✕</button>
+          </div>
+          <div class="toc-list" id="tocList"></div>
+        </div>
+      </div>
     </div>
   </div>
 

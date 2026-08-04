@@ -121,6 +121,47 @@ html, body {
 }
 
 /* ── PÁGINA COVER ── */
+.blank-page {
+  background: #f5efe4;
+}
+
+.title-page {
+  background: #fdf8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title-deco {
+  text-align: center;
+}
+
+.title-main {
+  color: #3b1f5c;
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  letter-spacing: 2px;
+}
+
+.title-line {
+  width: 60px; height: 1px;
+  background: #3b1f5c;
+  margin: 0 auto 1rem;
+}
+
+.title-author {
+  color: #5b3a7a;
+  font-size: clamp(0.8rem, 1.5vw, 1rem);
+  margin-bottom: 0.3rem;
+  font-style: italic;
+}
+
+.title-year {
+  color: #8b6baa;
+  font-size: clamp(0.7rem, 1.3vw, 0.9rem);
+}
+
 .cover-deco {
   position: absolute;
   top: 50%;
@@ -172,45 +213,36 @@ html, body {
 }
 .end-btn:hover { transform: scale(1.05); background: #fef3c7; }
 
-/* ── ÍNDICE ── */
-.index-list {
-  list-style: none;
-  padding: 0;
-  margin: 0.4rem 0;
+/* ── ÍNDICE PROFESIONAL ── */
+.toc-profesional {
+  margin: 0.6rem 0;
 }
 
-.index-list li {
-  padding: 0.55rem 0.8rem;
-  margin: 0.2rem 0;
-  background: rgba(147,51,234,0.05);
-  border-radius: 7px;
+.toc-profesional .toc-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.35rem 0;
+  border-bottom: 1px dotted #d4c8a0;
   cursor: pointer;
   transition: 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #3b1f5c;
-  font-size: clamp(0.65rem, 1.3vw, 0.82rem);
-  border: 1px solid transparent;
-  font-family: 'Segoe UI', sans-serif;
-}
-.index-list li:hover {
-  background: rgba(147,51,234,0.12);
-  transform: translateX(4px);
-  border-color: rgba(147,51,234,0.2);
 }
 
-.idx-badge {
-  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
-  color: #fff;
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.7rem;
-  font-weight: 700;
-  flex-shrink: 0;
+.toc-profesional .toc-row:hover {
+  color: #7c3aed;
+}
+
+.toc-profesional .toc-label {
+  color: #3b1f5c;
+  font-size: clamp(0.7rem, 1.3vw, 0.88rem);
+}
+
+.toc-profesional .toc-num {
+  color: #8b6baa;
+  font-size: clamp(0.65rem, 1.1vw, 0.8rem);
+  font-style: italic;
+  min-width: 24px;
+  text-align: right;
 }
 
 /* ── RAZONES ── */
@@ -258,37 +290,6 @@ html, body {
   padding: 4px 14px;
   border-radius: 12px;
   z-index: 100;
-}
-
-/* ── HINT OVERLAY ── */
-.hint-overlay {
-  position: fixed;
-  bottom: 12%;
-  right: 8%;
-  z-index: 50;
-  opacity: 0.9;
-  transition: opacity 1.5s;
-  pointer-events: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-.hint-overlay.faded { opacity: 0; }
-
-.hint-text {
-  color: rgba(255,255,255,0.5);
-  font-size: 0.7rem;
-  font-family: 'Segoe UI', sans-serif;
-}
-.hint-arrow {
-  color: rgba(255,255,255,0.3);
-  font-size: 1.6rem;
-  animation: hintBounce 1.5s ease-in-out infinite;
-}
-@keyframes hintBounce {
-  0%,100% { transform: translate(0,0); }
-  50% { transform: translate(-6px,-6px); }
 }
 
 /* ── TOC OVERLAY ── */
@@ -340,24 +341,29 @@ html, body {
 
 .toc-body { padding: 0.8rem 1.3rem 1.3rem; }
 
-.toc-body .toc-item {
-  padding: 0.6rem 0.8rem;
-  margin: 0.15rem 0;
-  background: rgba(147,51,234,0.04);
-  border-radius: 7px;
+.toc-body .toc-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.45rem 0.5rem;
+  border-bottom: 1px dotted rgba(0,0,0,0.08);
   cursor: pointer;
   transition: 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+}
+.toc-body .toc-row:hover {
+  color: #7c3aed;
+  background: rgba(147,51,234,0.04);
+}
+.toc-body .toc-label {
   color: #3b1f5c;
   font-size: 0.85rem;
-  font-family: 'Segoe UI', sans-serif;
-  border: 1px solid transparent;
 }
-.toc-body .toc-item:hover {
-  background: rgba(147,51,234,0.12);
-  border-color: rgba(147,51,234,0.2);
+.toc-body .toc-num {
+  color: #8b6baa;
+  font-size: 0.8rem;
+  font-style: italic;
+  min-width: 20px;
+  text-align: right;
 }
 
 /* ── RESPONSIVE ── */

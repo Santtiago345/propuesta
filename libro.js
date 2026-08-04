@@ -4,61 +4,76 @@
   var pageFlip = null, pagesLen = 0;
 
   var pageLabels = [
-    'Portada', 'Índice',
-    'El día que te conocí', 'Nuestra primera cita',
-    'Lo que más me gusta de ti', 'Momentos inolvidables',
-    'Razones para amarte', 'Mi carta para ti', 'Contraportada'
+    'Portada',        // 0
+    '',               // 1 (blank)
+    'Titulo',         // 2
+    'Agradecimientos',// 3
+    'Indice',         // 4
+    'Introduccion',   // 5
+    'El dia que te conoci',     // 6
+    'Nuestra primera cita',     // 7
+    'Lo que mas me gusta de ti',// 8
+    'Momentos inolvidables',    // 9
+    'Razones para amarte',      // 10
+    'Mi carta para ti',         // 11
+    'Contraportada'             // 12
   ];
 
-  var ctrlPrev, ctrlNext, ctrlToc, pageIndicator, tocOverlay, hintOverlay;
+  var tocItems = [
+    { page: 5, label: 'Introduccion' },
+    { page: 6, label: 'El dia que te conoci' },
+    { page: 7, label: 'Nuestra primera cita' },
+    { page: 8, label: 'Lo que mas me gusta de ti' },
+    { page: 9, label: 'Momentos inolvidables' },
+    { page: 10, label: 'Razones para amarte' },
+    { page: 11, label: 'Mi carta para ti' }
+  ];
+
+  var ctrlPrev, ctrlNext, pageIndicator, tocOverlay;
 
   function $(id) { return document.getElementById(id); }
 
   function cacheDom() {
     ctrlPrev      = $('ctrlPrev');
     ctrlNext      = $('ctrlNext');
-    ctrlToc       = $('ctrlToc');
     pageIndicator = $('pageIndicator');
     tocOverlay    = $('tocOverlay');
-    hintOverlay   = $('hintOverlay');
   }
 
-  /* ─── TOC PANEL ─── */
-  var tocItems = [
-    { page: 2, label: 'El día que te conocí' },
-    { page: 3, label: 'Nuestra primera cita' },
-    { page: 4, label: 'Lo que más me gusta de ti' },
-    { page: 5, label: 'Momentos inolvidables' },
-    { page: 6, label: 'Razones para amarte' },
-    { page: 7, label: 'Mi carta para ti' }
-  ];
+  function goTo(p) {
+    if (pageFlip) pageFlip.flip(p, 'bottom');
+  }
 
-  function buildTocPanel() {
-    var body = $('tocBody'), html = '';
+  /* ─── BUILD TOC ─── */
+  function buildTocElements() {
+    var pgBody = $('tocBody');
+    var pgProf = $('tocProfesional');
+    if (!pgBody && !pgProf) return;
+
     tocItems.forEach(function (item, i) {
-      html += '<div class="toc-item" data-p="' + item.page + '">' +
-        '<span class="idx-badge">' + (i + 1) + '</span>' + item.label + '</div>';
-    });
-    body.innerHTML = html;
-    body.querySelectorAll('.toc-item').forEach(function (el) {
-      el.addEventListener('click', function () {
-        closeToc();
-        if (pageFlip) pageFlip.flip(parseInt(el.getAttribute('data-p')), 'bottom');
-      });
-    });
-  }
+      // Panel overlay
+      if (pgBody) {
+        var overlayRow = document.createElement('div');
+        overlayRow.className = 'toc-row';
+        overlayRow.innerHTML =
+          '<span class="toc-label">' + item.label + '</span>' +
+          '<span class="toc-num">' + item.page + '</span>';
+        overlayRow.addEventListener('click', function () { closeToc(); goTo(item.page); });
+        pgBody.appendChild(overlayRow);
+      }
 
-  /* ─── INDEX PAGE CLICKS ─── */
-  function setupIndexClicks() {
-    setTimeout(function () {
-      document.querySelectorAll('.index-list li').forEach(function (li) {
-        li.addEventListener('click', function (e) {
-          e.stopPropagation();
-          var p = parseInt(li.getAttribute('data-page'), 10);
-          if (!isNaN(p) && pageFlip) pageFlip.flip(p, 'bottom');
-        });
-      });
-    }, 600);
+      // Pagina de indice
+      if (pgProf) {
+        var pageRow = document.createElement('div');
+        pageRow.className = 'toc-row';
+        pageRow.innerHTML =
+          '<span class="toc-label">' + item.label +
+          ' <span style="color:#aaa;font-size:0.7rem;">....................</span></span>' +
+          '<span class="toc-num">' + item.page + '</span>';
+        pageRow.addEventListener('click', function () { goTo(item.page); });
+        pgProf.appendChild(pageRow);
+      }
+    });
   }
 
   /* ─── UI ─── */
@@ -67,14 +82,9 @@
     var idx = pageFlip.getCurrentPageIndex();
     var total = pageFlip.getPageCount();
     var label = pageLabels[idx] || '';
-    pageIndicator.textContent = label + '  (' + (idx + 1) + ' / ' + total + ')';
+    pageIndicator.textContent = (label ? label + '  |  ' : '') + (idx + 1) + ' / ' + total;
     ctrlPrev.classList.toggle('disabled', idx <= 0);
     ctrlNext.classList.toggle('disabled', idx >= total - 1);
-  }
-
-  function hideHint() {
-    hintOverlay.classList.add('faded');
-    setTimeout(function () { hintOverlay.style.display = 'none'; }, 1500);
   }
 
   function openToc() { tocOverlay.classList.add('open'); }
@@ -106,26 +116,24 @@
     pageFlip.loadFromHTML(pageEls);
     pagesLen = pageFlip.getPageCount();
 
-    pageFlip.on('flip', function () { updateControls(); hideHint(); });
-    pageFlip.on('changeOrientation', function () { updateControls(); });
-    pageFlip.on('changeState', function (e) {
-      if (e.data === 'user_fold' || e.data === 'flipping') hideHint();
-    });
+    pageFlip.on('flip', updateControls);
+    pageFlip.on('changeOrientation', updateControls);
 
     updateControls();
-    setupIndexClicks();
+
     setTimeout(function () { $('loader').classList.add('done'); }, 300);
   }
 
   /* ─── EVENTS ─── */
   function setupEvents() {
     ctrlPrev.addEventListener('click', function () {
-      if (pageFlip) { pageFlip.flipPrev('bottom'); hideHint(); }
+      if (pageFlip) pageFlip.flipPrev('bottom');
     });
     ctrlNext.addEventListener('click', function () {
-      if (pageFlip) { pageFlip.flipNext('bottom'); hideHint(); }
+      if (pageFlip) pageFlip.flipNext('bottom');
     });
-    ctrlToc.addEventListener('click', openToc);
+
+    $('ctrlToc').addEventListener('click', openToc);
     $('tocClose').addEventListener('click', closeToc);
 
     tocOverlay.addEventListener('click', function (e) {
@@ -135,15 +143,13 @@
     document.addEventListener('keydown', function (e) {
       if (!pageFlip) return;
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        e.preventDefault(); pageFlip.flipNext('bottom'); hideHint();
+        e.preventDefault(); pageFlip.flipNext('bottom');
       }
       if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        e.preventDefault(); pageFlip.flipPrev('bottom'); hideHint();
+        e.preventDefault(); pageFlip.flipPrev('bottom');
       }
       if (e.key === 'Escape' && tocOverlay.classList.contains('open')) closeToc();
     });
-
-    $('bookWrapper').addEventListener('click', hideHint);
   }
 
   /* ─── INIT ─── */
@@ -158,7 +164,7 @@
   }
 
   cacheDom();
-  buildTocPanel();
+  buildTocElements();
 
   waitForLib(function () {
     createFlipbook();

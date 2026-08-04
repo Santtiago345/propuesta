@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <title>Nuestra Historia 📖</title>
+  <title>Nuestra Historia</title>
   <link rel="stylesheet" href="libro.css" />
 </head>
 <body>
@@ -18,123 +18,145 @@
       <!-- Página 0: Portada (hard) -->
       <div class="book-page cover-page">
         <div class="cover-deco">
-          <div class="cover-ornament">✦ ✦ ✦</div>
           <h1 class="cover-main-title">Nuestra<br>Historia</h1>
           <div class="cover-line"></div>
-          <p class="cover-subtitle">Un libro para ti, Juanita 💜</p>
+          <p class="cover-subtitle">Un libro para ti, Juanita</p>
         </div>
       </div>
 
-      <!-- Página 1: Índice (izquierda del primer spread) -->
-      <div class="book-page">
-        <div class="page-content">
-          <h2 class="ch-title">📑 Índice</h2>
-          <ul class="index-list">
-            <li data-page="3"><span class="idx-badge">1</span> El día que te conocí</li>
-            <li data-page="4"><span class="idx-badge">2</span> Nuestra primera cita</li>
-            <li data-page="4"><span class="idx-badge">3</span> Lo que más me gusta de ti</li>
-            <li data-page="5"><span class="idx-badge">4</span> Momentos inolvidables</li>
-            <li data-page="5"><span class="idx-badge">5</span> Razones para amarte</li>
-            <li data-page="6"><span class="idx-badge">6</span> Mi carta para ti</li>
-          </ul>
+      <!-- Página 1: Hoja en blanco -->
+      <div class="book-page blank-page"></div>
+
+      <!-- Página 2: Título del libro -->
+      <div class="book-page title-page">
+        <div class="title-deco">
+          <h1 class="title-main">Nuestra Historia</h1>
+          <div class="title-line"></div>
+          <p class="title-author">Escrito para Juanita</p>
+          <p class="title-year">2025</p>
         </div>
       </div>
 
-      <!-- Página 2: El día que te conocí (derecha) -->
+      <!-- Página 3: Agradecimientos -->
       <div class="book-page">
         <div class="page-content">
-          <h2 class="ch-title">✨ El día que te conocí</h2>
-          <p>Recuerdo perfectamente ese momento. El universo conspiró para que nuestros caminos se cruzaran, y desde ese instante supe que mi vida cambiaría para siempre.</p>
-          <p>Tu sonrisa iluminó todo a mi alrededor, y aunque no lo sabías, ya habías robado completamente mi corazón.</p>
-          <p class="quote">"A veces el amor llega sin avisar, como una brisa suave que se convierte en huracán."</p>
+          <h2 class="ch-title">Agradecimientos</h2>
+          <p>En construccion.</p>
         </div>
       </div>
 
-      <!-- Página 3: Nuestra primera cita (izquierda) -->
+      <!-- Página 4: Índice -->
       <div class="book-page">
         <div class="page-content">
-          <h2 class="ch-title">🌸 Nuestra primera cita</h2>
-          <p>Los nervios, las mariposas en el estómago, la emoción de verte llegar. Esa primera cita fue el comienzo de algo mágico que ni yo mismo podía creer.</p>
-          <p>Cada palabra que dijiste, cada risa que compartimos, se quedó grabada en mi memoria como el día más feliz de mi vida... hasta que llegó el siguiente a tu lado.</p>
-          <p class="quote">"No fue el lugar, ni la hora, ni el momento. Fuiste tú quien hizo que todo fuera perfecto."</p>
+          <h2 class="ch-title">Indice</h2>
+          <div class="toc-profesional" id="tocProfesional"></div>
         </div>
       </div>
 
-      <!-- Página 4: Lo que más me gusta de ti (derecha) -->
+      <!-- Página 5: Introduccion -->
       <div class="book-page">
         <div class="page-content">
-          <h2 class="ch-title">💖 Lo que más me gusta de ti</h2>
-          <p>Me encanta tu forma de ver el mundo, esa chispa que tienes en los ojos cuando algo te emociona, tu risa contagiosa que alegra hasta los días más grises.</p>
-          <p>Admiro tu fortaleza, tu ternura, tu inteligencia y ese corazón tan grande que tienes.</p>
+          <h2 class="ch-title">Introduccion</h2>
+          <p>Antes del año 2025 podia contar los libros que habia leido con dos manos —tal vez tres si tuviese—. Fuera de ensayos rutinarios de literatura estudiantil, un atipico libro de autoayuda o minilibros de recopilatorios de poemas, no mucho mas. Leido lo anterior se que en tu mente habra un pequeño y preocupante panorama a la espectativa de seguir leyendo o cerrar con aburrimiento lo que sea que sea esto y mi intento por darte animo a que sigas leyendo va acompañado de una promesa de amor genuino y si no confiamos en el amor como una fuerza transformadora y la revolucion indomita de nuestros tiempos, estaremos perdidos por la eternidad.</p>
+          <p>No se como se empieza a escribir un libro.<br>No se si esto termine en un libro,<br>en tu libro.<br>Contando una historia?<br>O tal vez nuestra historia?<br>O sera tan cliche hacerlo que solo tendria que inventar algunos personajes y contar una historia dramatica en forma de novela, asi venderia mil ejemplares y no solo el tuyo.</p>
+          <p>Tengo una esperanza desmedida entre cada pared de mi caja toraxica, diria que la suficiente para distribuirla por el tiempo necesario para escribir un libro o al menos lo que recuerde de nuestra historia por si algun historiador en 100 años quisiese estudiar sobre el amor mas extraordinario pasado por esta tierra y a menos que describa con detalles milimetricos lo bien que combinabas con los primeros lirios rosados que escogi para ti, aun nos falta historia para rellenar un libro gordito y en parte esta esperanza lleva en si esa proyeccion y sentimiento de quererte mucho tiempo para hacerlo y decirle a los niños que ese libro de lomo bonito en la biblioteca lo escribi para su madre. Asi que tal vez si sepa como, este libro comienza contigo.</p>
+          <p>Resulta aterrador, no? El concebir la idea de sentarte en una simple silla de un simple cuarto al rededor de unas simples casas e intentar escribir un increible libro para la chica que le encantan los libros, aunque en este punto de los acontecimientos me resulta mas aterrador no tener este porque de hacer. Sabes cuantas palabras tiene un libro? Por ejemplo, una novela en promedio deberia contener aproximadamente entre 60.000 a 90.000 paginas, uno de ficcion de 70.000 a 100.000, uno infantil de 50.000 a 70.000. En 2007 James Pennebaker en la revista Science publico un articulo investigativo donde encontro que las mujeres dicen en promedio 16.200 palabras al dia mientras que los hombres un aproximado de 15.600, resultados esperables dado que participaron varias mujeres con hijos adolescentes, no solo porque las chicas hablen mucho (que suelen hacerlo). Haciendo un vago calculo, si mi vida fuese una constante novela podria redactar todas mis palabras usadas a diario y escribiria una novela en una grandiosa cantidad de tiempo de 4.8 dias, a comparacion de los pocos 4.6 dias que le tomaria a una mujer, asi que si esto existe es resultado de un milagro porque si que esta siendo retador pensar de donde sacar 90.000 palabras.</p>
+          <p>Este sera un pequeño o no tan pequeño viaje hacia ese lenguaje que estamos construyendo tan solo tu y yo, el que hablaremos, descubriremos y traduciremos a interesados en conocer lo que prolifera el amor en nuestras vidas y que mas regocijante que hacerlo mediante un libro contando la gran coincidencia que fue conocernos o lo que describira cada capitulo como eje central, el paso a paso certero de mi corazon tejiendo una capa de ti, un recopilatorio a grandes rasgos de esas cosas que guardamos adentro y en un intento de no dejarlas morir las inmortalizo en tinta impresa o en este caso prematuro, algunos cuantos muchos pixeles organizados estrategicamente en una pantalla lcd con el brillo suficiente para transferirte madejas de sentimientos.</p>
+          <p>El termino "intento" proviene del latin intentus, participio pasado del verbo intendere, que significa "tender hacia" o bien "dirigir la atencion, esforzarse". En esencia es una direccion consciente de la atencion o la voluntad hacia un objetivo.<br>Voluntariamente estoy sometiendome a tomar direccion en escribir y como objetivo te contemplo presente, en un esfuerzo que prevalece desde las ganas de tocar con la punta de los dedos —los mismos que estan escribiendo—</p>
+          <p>Este es mi intento.</p>
+        </div>
+      </div>
+
+      <!-- Página 6: El día que te conocí -->
+      <div class="book-page">
+        <div class="page-content">
+          <h2 class="ch-title">El dia que te conoci</h2>
+          <p>Recuerdo perfectamente ese momento. El universo conspiro para que nuestros caminos se cruzaran, y desde ese instante supe que mi vida cambiaria para siempre.</p>
+          <p>Tu sonrisa ilumino todo a mi alrededor, y aunque no lo sabias, ya habias robado completamente mi corazon.</p>
+          <p class="quote">"A veces el amor llega sin avisar, como una brisa suave que se convierte en huracan."</p>
+        </div>
+      </div>
+
+      <!-- Página 7: Nuestra primera cita -->
+      <div class="book-page">
+        <div class="page-content">
+          <h2 class="ch-title">Nuestra primera cita</h2>
+          <p>Los nervios, las mariposas en el estomago, la emocion de verte llegar. Esa primera cita fue el comienzo de algo magico que ni yo mismo podia creer.</p>
+          <p>Cada palabra que dijiste, cada risa que compartimos, se quedo grabada en mi memoria como el dia mas feliz de mi vida... hasta que llego el siguiente a tu lado.</p>
+          <p class="quote">"No fue el lugar, ni la hora, ni el momento. Fuiste tu quien hizo que todo fuera perfecto."</p>
+        </div>
+      </div>
+
+      <!-- Página 8: Lo que más me gusta de ti -->
+      <div class="book-page">
+        <div class="page-content">
+          <h2 class="ch-title">Lo que mas me gusta de ti</h2>
+          <p>Me encanta tu forma de ver el mundo, esa chispa que tienes en los ojos cuando algo te emociona, tu risa contagiosa que alegra hasta los dias mas grises.</p>
+          <p>Admiro tu fortaleza, tu ternura, tu inteligencia y ese corazon tan grande que tienes.</p>
           <p class="quote">"Eres el tipo de persona que hace que el mundo sea un lugar mejor solo con existir."</p>
         </div>
       </div>
 
-      <!-- Página 5: Momentos inolvidables (izquierda) -->
+      <!-- Página 9: Momentos inolvidables -->
       <div class="book-page">
         <div class="page-content">
-          <h2 class="ch-title">🌟 Momentos inolvidables</h2>
+          <h2 class="ch-title">Momentos inolvidables</h2>
           <p>Cada recuerdo contigo es un tesoro: las llamadas hasta tarde, los mensajes que me sacan una sonrisa, los planes que hacemos juntos y los sueños que compartimos.</p>
-          <p>No existe un solo día en el que no agradezca al destino por haberte puesto en mi camino. Eres mi lugar favorito en el mundo entero.</p>
-          <p class="quote">"Los momentos más simples se vuelven extraordinarios cuando los vivo contigo."</p>
+          <p>No existe un solo dia en el que no agradezca al destino por haberte puesto en mi camino. Eres mi lugar favorito en el mundo entero.</p>
+          <p class="quote">"Los momentos mas simples se vuelven extraordinarios cuando los vivo contigo."</p>
         </div>
       </div>
 
-      <!-- Página 6: Razones para amarte (derecha) -->
+      <!-- Página 10: Razones para amarte -->
       <div class="book-page">
         <div class="page-content">
-          <h2 class="ch-title">💌 Razones para amarte</h2>
-          <p>Podría llenar mil libros con las razones por las que te amo, pero aquí van solo algunas:</p>
+          <h2 class="ch-title">Razones para amarte</h2>
+          <p>Podria llenar mil libros con las razones por las que te amo, pero aqui van solo algunas:</p>
           <ul class="reasons">
-            <li>💜 Porque me haces ser mejor persona cada día</li>
-            <li>💜 Porque tu felicidad es mi felicidad</li>
-            <li>💜 Porque contigo todo tiene sentido</li>
-            <li>💜 Porque eres mi hogar, mi paz y mi alegría</li>
-            <li>💜 Porque simplemente eres tú</li>
+            <li>Porque me haces ser mejor persona cada dia</li>
+            <li>Porque tu felicidad es mi felicidad</li>
+            <li>Porque contigo todo tiene sentido</li>
+            <li>Porque eres mi hogar, mi paz y mi alegria</li>
+            <li>Porque simplemente eres tu</li>
           </ul>
           <p class="quote">"Te amo no por lo que eres, sino por lo que soy yo cuando estoy contigo."</p>
         </div>
       </div>
 
-      <!-- Página 7: Mi carta para ti (izquierda) -->
+      <!-- Página 11: Mi carta para ti -->
       <div class="book-page">
         <div class="page-content">
-          <h2 class="ch-title">💌 Mi carta para ti</h2>
+          <h2 class="ch-title">Mi carta para ti</h2>
           <p>Querida Juanita,</p>
-          <p>Escribir esto me hace sentir el hombre más afortunado del mundo. Cada palabra que lees aquí sale directamente de mi corazón, porque eso es lo que haces tú: sacar lo mejor de mí.</p>
-          <p>Gracias por cada sonrisa, por cada momento, por cada enseñanza. Eres y siempre serás la persona más importante en mi vida.</p>
-          <p class="signature">Con todo mi amor,<br>siempre tuyo 💜</p>
+          <p>Escribir esto me hace sentir el hombre mas afortunado del mundo. Cada palabra que lees aqui sale directamente de mi corazon, porque eso es lo que haces tu: sacar lo mejor de mi.</p>
+          <p>Gracias por cada sonrisa, por cada momento, por cada enseñanza. Eres y siempre seras la persona mas importante en mi vida.</p>
+          <p class="signature">Con todo mi amor,<br>siempre tuyo</p>
         </div>
       </div>
 
-      <!-- Página 8: Contraportada (hard) -->
+      <!-- Página 12: Contraportada (hard) -->
       <div class="book-page cover-page">
         <div class="cover-deco">
           <h2 style="color:#fff;font-size:1.6rem;margin-bottom:1rem;border-bottom:2px solid rgba(255,215,0,0.5);padding-bottom:0.5rem">Y esta historia...</h2>
-          <p style="color:rgba(255,255,255,0.9);font-size:1.1rem;margin-bottom:0.5rem">...apenas comienza ✨</p>
-          <p style="color:rgba(255,255,255,0.8)">Porque lo mejor está por venir,<br>y quiero vivirlo todo a tu lado.</p>
-          <a href="index.html" class="end-btn">Volver al inicio 🏠</a>
+          <p style="color:rgba(255,255,255,0.9);font-size:1.1rem;margin-bottom:0.5rem">...apenas comienza</p>
+          <p style="color:rgba(255,255,255,0.8)">Porque lo mejor esta por venir,<br>y quiero vivirlo todo a tu lado.</p>
+          <a href="index.html" class="end-btn">Volver al inicio</a>
         </div>
       </div>
 
     </div>
 
-    <div class="hint-overlay" id="hintOverlay">
-      <div class="hint-text">Arrastra la esquina o presiona las flechas</div>
-      <div class="hint-arrow">↗</div>
-    </div>
-
-    <button class="ctrl ctrl-prev" id="ctrlPrev" title="Anterior">❮</button>
-    <button class="ctrl ctrl-next" id="ctrlNext" title="Siguiente">❯</button>
-    <button class="ctrl ctrl-toc" id="ctrlToc" title="Índice">☰</button>
+    <button class="ctrl ctrl-prev" id="ctrlPrev" title="Anterior">&#10094;</button>
+    <button class="ctrl ctrl-next" id="ctrlNext" title="Siguiente">&#10095;</button>
+    <button class="ctrl ctrl-toc" id="ctrlToc" title="Indice">&#9776;</button>
 
     <div class="page-indicator" id="pageIndicator">Portada</div>
 
     <div class="toc-overlay" id="tocOverlay">
       <div class="toc-panel">
         <div class="toc-bar">
-          <h2>📑 Índice</h2>
-          <button class="toc-close" id="tocClose">✕</button>
+          <h2>Indice</h2>
+          <button class="toc-close" id="tocClose">&#10005;</button>
         </div>
         <div class="toc-body" id="tocBody"></div>
       </div>

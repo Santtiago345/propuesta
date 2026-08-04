@@ -458,22 +458,115 @@ html, body {
   pointer-events: none;
 }
 
-.dev-mode .book-wrapper .page-inner {
-  pointer-events: none;
-}
-
-.dev-mode .dev-edit-area {
-  pointer-events: auto;
-  cursor: text;
-  outline: 2px dashed rgba(124,58,237,0.3);
-  outline-offset: -2px;
+.dev-edit-container {
   position: fixed;
   z-index: 500;
   background: #fdf8f0;
-  overflow-y: auto;
-  box-sizing: border-box;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: Georgia, 'Times New Roman', serif;
 }
 
-.dev-mode .dev-edit-area:focus {
-  outline: 2px solid rgba(124,58,237,0.6);
+.dev-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: #2d1b4e;
+  border-bottom: 2px solid #7c3aed;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.dev-toolbar button {
+  background: rgba(255,255,255,0.1);
+  color: #e9d5ff;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-family: 'Segoe UI', sans-serif;
+  transition: 0.2s;
+  white-space: nowrap;
+}
+.dev-toolbar button:hover { background: rgba(255,255,255,0.2); }
+.dev-toolbar button.active { background: #7c3aed; color: #fff; }
+
+.dev-toolbar .dev-sep {
+  width: 1px; height: 20px;
+  background: rgba(255,255,255,0.2);
+  margin: 0 4px;
+}
+
+.dev-toolbar .dev-close {
+  margin-left: auto;
+  background: rgba(239,68,68,0.3);
+  border-color: rgba(239,68,68,0.4);
+  font-weight: bold;
+}
+.dev-toolbar .dev-close:hover { background: rgba(239,68,68,0.5); }
+
+.dev-title-input {
+  padding: 0.8rem 1.4rem 0.3rem;
+  font-size: 0.75rem;
+  color: #5b3a7a;
+  border-bottom: 1px solid #e9d5ff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+  min-height: 2.2rem;
+  outline: none;
+}
+.dev-title-input:empty::before {
+  content: 'Titulo del capitulo...';
+  color: #c4b5d0;
+}
+.dev-title-input:focus { background: rgba(124,58,237,0.04); }
+
+.dev-content-area {
+  flex: 1;
+  padding: 0.5rem 10% 8% 10%;
+  overflow-y: auto;
+  outline: none;
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: #5b3a7a;
+}
+.dev-content-area p {
+  margin: 0.5rem 0;
+  text-align: justify;
+}
+.dev-content-area:focus { background: rgba(124,58,237,0.02); }
+
+.dev-content-area .quote {
+  color: #7c3aed !important;
+  font-style: italic;
+  border-left: 3px solid #d4a855;
+  padding-left: 0.8rem;
+  margin: 0.7rem 0;
+}
+.dev-content-area .signature {
+  text-align: right !important;
+  font-style: italic;
+  margin-top: 1rem;
+}
+.dev-content-area ul.reasons {
+  list-style: none; padding: 0; margin: 0.4rem 0;
+}
+.dev-content-area ul.reasons li { padding: 0.3rem 0; }
+
+.dev-size-label {
+  color: #a78bfa;
+  font-size: 0.7rem;
+  min-width: 30px;
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .dev-toolbar button { padding: 3px 7px; font-size: 0.7rem; }
+  .dev-toolbar { padding: 4px 6px; gap: 2px; }
 }

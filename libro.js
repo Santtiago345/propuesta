@@ -461,22 +461,21 @@
   /* ======== DEV MODE ======== */
   var devMode = false;
   var devDebounce = null;
-  var activeEditArea = null;
+  var editContainer = null;
 
   function toggleDevMode() {
     devMode = !devMode;
     var scene = document.getElementById('scene');
     var btnDev = $('ctrlDev');
-    var wrapper = $('bookWrapper');
 
     if (devMode) {
       scene.classList.add('dev-mode');
       btnDev.classList.add('active');
       document.addEventListener('click', onDevClick, true);
     } else {
+      removeEditContainer();
       scene.classList.remove('dev-mode');
       btnDev.classList.remove('active');
-      removeEditArea();
       document.removeEventListener('click', onDevClick, true);
       rebuildAndReload();
     }
@@ -484,100 +483,157 @@
 
   function onDevClick(e) {
     if (!devMode) return;
-    // Ignorar clicks en controles
     if (e.target.closest('.ctrl') || e.target.closest('.toc-overlay') ||
-        e.target.closest('.dev-edit-area') || e.target.closest('.top-back-link')) return;
+        e.target.closest('.dev-edit-container') || e.target.closest('.top-back-link')) return;
 
     e.preventDefault();
     e.stopPropagation();
 
     var wrapper = $('bookWrapper');
     var rect = wrapper.getBoundingClientRect();
-    var cx = e.clientX;
-    var cy = e.clientY;
-
-    // Verificar que el click esta dentro del libro
+    var cx = e.clientX, cy = e.clientY;
     if (cx < rect.left || cx > rect.right || cy < rect.top || cy > rect.bottom) return;
 
-    // Buscar page-inner usando coordenadas relativas
     var pages = wrapper.querySelectorAll('.book-page');
-    var targetInner = null;
     var targetPage = null;
-
     for (var i = 0; i < pages.length; i++) {
       var pr = pages[i].getBoundingClientRect();
-      // StPageFlip usa transform, el rect refleja la posicion real
       if (cx >= pr.left && cx <= pr.right && cy >= pr.top && cy <= pr.bottom) {
-        var inner = pages[i].querySelector('.page-inner');
-        if (inner && !pages[i].classList.contains('cover-page') &&
-            !pages[i].classList.contains('blank-page') && !pages[i].classList.contains('title-page')) {
-          targetInner = inner;
+        if (!pages[i].classList.contains('cover-page') &&
+            !pages[i].classList.contains('blank-page') &&
+            !pages[i].classList.contains('title-page')) {
           targetPage = pages[i];
           break;
         }
       }
     }
+    if (!targetPage) return;
 
-    if (!targetInner) return;
-
-    removeEditArea();
-    createEditArea(targetInner, targetPage);
+    flushCurrentEdit();
+    openEditContainer(targetPage);
   }
 
-  function createEditArea(inner, page) {
-    var ir = inner.getBoundingClientRect();
+  function openEditContainer(page) {
+    var pr = page.getBoundingClientRect();
+    var inner = page.querySelector('.page-inner');
+    var hdr = page.querySelector('.hdr-center');
+    var pageTitle = hdr ? hdr.textContent.trim() : '';
+    var pageNum = page.getAttribute('data-r') || '';
+    var contentHTML = inner ? inner.innerHTML : '';
 
-    var ea = document.createElement('div');
-    ea.className = 'dev-edit-area';
-    ea.contentEditable = 'true';
-    ea.innerHTML = inner.innerHTML;
-    ea.style.cssText =
-      'position:fixed;' +
-      'left:' + ir.left + 'px;top:' + ir.top + 'px;' +
-      'width:' + ir.width + 'px;height:' + ir.height + 'px;' +
-      'padding:' + getComputedStyle(inner).padding + ';' +
-      'font-family:Georgia,"Times New Roman",serif;' +
-      'font-size:' + getComputedStyle(inner).fontSize + ';' +
-      'line-height:' + getComputedStyle(inner).lineHeight + ';';
-    ea.setAttribute('data-source-page', page.getAttribute('data-r') || '');
+    var cont = document.createElement('div');
+    cont.className = 'dev-edit-container';
+    cont.setAttribute('data-page-num', pageNum);
+    cont.style.cssText =
+      'left:' + pr.left + 'px;top:' + pr.top + 'px;' +
+      'width:' + pr.width + 'px;height:' + pr.height + 'px;';
 
-    document.body.appendChild(ea);
-    activeEditArea = ea;
+    // Toolbar
+    var tb = document.createElement('div');
+    tb.className = 'dev-toolbar';
+    tb.innerHTML =
+      '<button data-cmd="bold" title="Negrita"><b>N</b></button>' +
+      '<button data-cmd="italic" title="Cursiva"><i>C</i></button>' +
+      '<span class="dev-sep"></span>' +
+      '<button data-cmd="fontSize-" title="Reducir fuente">A-</button>' +
+      '<span class="dev-size-label">100%</span>' +
+      '<button data-cmd="fontSize+" title="Aumentar fuente">A+</button>' +
+      '<span class="dev-sep"></span>' +
+      '<button class="dev-close" title="Cerrar">X</button>';
+    cont.appendChild(tb);
 
-    ea.addEventListener('input', function () {
+    // Title input
+    var ti = document.createElement('div');
+    ti.className = 'dev-title-input';
+    ti.contentEditable = 'true';
+    ti.textContent = pageTitle;
+    cont.appendChild(ti);
+
+    // Content area
+    var ca = document.createElement('div');
+    ca.className = 'dev-content-area';
+    ca.contentEditable = 'true';
+    ca.innerHTML = contentHTML;
+    cont.appendChild(ca);
+
+    document.body.appendChild(cont);
+    editContainer = cont;
+
+    // Toolbar events
+    tb.querySelectorAll('button[data-cmd]').forEach(function (btn) {
+      btn.addEventListener('mousedown', function (e) { e.preventDefault(); });
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        var cmd = btn.getAttribute('data-cmd');
+        if (cmd === 'bold') { document.execCommand('bold', false); updateToolbarState(); }
+        else if (cmd === 'italic') { document.execCommand('italic', false); updateToolbarState(); }
+        else if (cmd === 'fontSize+') changeFontSize(1);
+        else if (cmd === 'fontSize-') changeFontSize(-1);
+      });
+    });
+
+    tb.querySelector('.dev-close').addEventListener('click', function () {
+      flushCurrentEdit();
+      removeEditContainer();
+    });
+
+    // Sync toolbar on selection change
+    document.addEventListener('selectionchange', updateToolbarState);
+
+    // Auto-save on input
+    cont.addEventListener('input', function () {
       clearTimeout(devDebounce);
       devDebounce = setTimeout(function () {
-        flushEditAndRepaginate();
-      }, 600);
+        flushCurrentEdit();
+        rebuildAndReload();
+      }, 800);
     });
 
-    ea.addEventListener('blur', function () {
-      clearTimeout(devDebounce);
-      flushEditAndRepaginate();
-    });
-
-    setTimeout(function () { ea.focus(); }, 50);
+    setTimeout(function () { ca.focus(); }, 60);
   }
 
-  function removeEditArea() {
-    if (activeEditArea) {
-      activeEditArea.remove();
-      activeEditArea = null;
+  var devFontLevel = 0;
+  function changeFontSize(dir) {
+    devFontLevel += dir;
+    var pct = 100 + devFontLevel * 10;
+    var label = cont.querySelector('.dev-size-label');
+    var area = cont.querySelector('.dev-content-area');
+    if (label) label.textContent = pct + '%';
+    if (area) area.style.fontSize = (0.82 * (pct / 100)) + 'rem';
+  }
+
+  function updateToolbarState() {
+    if (!editContainer) return;
+    var tb = editContainer.querySelector('.dev-toolbar');
+    if (!tb) return;
+    var boldBtn = tb.querySelector('[data-cmd="bold"]');
+    var italicBtn = tb.querySelector('[data-cmd="italic"]');
+    if (boldBtn) boldBtn.classList.toggle('active', document.queryCommandState('bold'));
+    if (italicBtn) italicBtn.classList.toggle('active', document.queryCommandState('italic'));
+  }
+
+  function flushCurrentEdit() {
+    if (!editContainer) return;
+    var pageNum = editContainer.getAttribute('data-page-num');
+    var titleInput = editContainer.querySelector('.dev-title-input');
+    var contentArea = editContainer.querySelector('.dev-content-area');
+    if (!pageNum) return;
+
+    var pages = document.querySelectorAll('.book-page[data-r="' + pageNum + '"]');
+    for (var i = 0; i < pages.length; i++) {
+      var hdr = pages[i].querySelector('.hdr-center');
+      var inner = pages[i].querySelector('.page-inner');
+      if (hdr && titleInput) hdr.textContent = titleInput.textContent.trim();
+      if (inner && contentArea) inner.innerHTML = contentArea.innerHTML;
     }
   }
 
-  function flushEditAndRepaginate() {
-    if (!activeEditArea || !pageFlip) return;
-    var dataPage = activeEditArea.getAttribute('data-source-page');
-    if (dataPage) {
-      var pages = document.querySelectorAll('.book-page[data-r="' + dataPage + '"]');
-      for (var p = 0; p < pages.length; p++) {
-        var inner = pages[p].querySelector('.page-inner');
-        if (inner) { inner.innerHTML = activeEditArea.innerHTML; break; }
-      }
+  function removeEditContainer() {
+    if (editContainer) {
+      document.removeEventListener('selectionchange', updateToolbarState);
+      editContainer.remove();
+      editContainer = null;
     }
-    removeEditArea();
-    rebuildAndReload();
   }
 
   function rebuildAndReload() {

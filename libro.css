@@ -83,8 +83,46 @@ html, body {
   background: linear-gradient(140deg, #7c3aed, #5b21b6, #4c1d95);
 }
 
+/* ── PAGE HEADER ── */
+.page-hdr {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0.6rem 1.2rem 0.2rem;
+  font-family: 'Georgia', serif;
+  font-size: clamp(0.6rem, 1.1vw, 0.75rem);
+  color: #8b6baa;
+}
+
+.hdr-left, .hdr-right {
+  min-width: 24px;
+  font-style: italic;
+}
+
+.hdr-center {
+  text-align: center;
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: clamp(0.55rem, 1vw, 0.7rem);
+  color: #5b3a7a;
+}
+
+/* Paginas derechas (impar en DOM): numero a la derecha */
+.book-page:nth-child(odd) .hdr-left  { visibility: hidden; }
+.book-page:nth-child(odd) .hdr-right { visibility: visible; }
+
+/* Paginas izquierdas (par en DOM): numero a la izquierda */
+.book-page:nth-child(even) .hdr-left  { visibility: visible; }
+.book-page:nth-child(even) .hdr-right { visibility: hidden; }
+
+/* Cover no necesita header */
+.cover-page .page-hdr,
+.blank-page .page-hdr,
+.title-page .page-hdr { display: none; }
+
 .page-content {
-  padding: 10%;
+  padding: 0 10% 8% 10%;
   height: 100%;
 }
 

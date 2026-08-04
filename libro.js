@@ -4,36 +4,37 @@
   var pageFlip = null, pagesLen = 0;
 
   var pageLabels = [
-    'Portada',          // 0
-    '',                 // 1
-    '',                 // 2
-    '',                 // 3
-    'Titulo',           // 4
-    '',                 // 5
-    'Agradecimientos',  // 6
-    '',                 // 7
-    'Indice',           // 8
-    '',                 // 9
-    'Introduccion',     // 10
-    'Introduccion',     // 11
-    'Introduccion',     // 12
-    'El dia que te conoci',       // 13
-    'Nuestra primera cita',       // 14
-    'Lo que mas me gusta de ti',  // 15
-    'Momentos inolvidables',      // 16
-    'Razones para amarte',        // 17
-    'Mi carta para ti',           // 18
-    'Contraportada'               // 19
+    'Portada',           // 0
+    '',                  // 1
+    '',                  // 2
+    '',                  // 3
+    'Titulo',            // 4
+    '',                  // 5
+    'Agradecimientos',   // 6
+    '',                  // 7
+    'Indice',            // 8
+    '',                  // 9
+    'Introduccion',      // 10
+    'Introduccion',      // 11
+    'Introduccion',      // 12
+    'Introduccion',      // 13
+    'El dia que te conoci',       // 14
+    'Nuestra primera cita',       // 15
+    'Lo que mas me gusta de ti',  // 16
+    'Momentos inolvidables',      // 17
+    'Razones para amarte',        // 18
+    'Mi carta para ti',           // 19
+    'Contraportada'               // 20
   ];
 
   var tocItems = [
     { page: 10, label: 'Introduccion' },
-    { page: 13, label: 'El dia que te conoci' },
-    { page: 14, label: 'Nuestra primera cita' },
-    { page: 15, label: 'Lo que mas me gusta de ti' },
-    { page: 16, label: 'Momentos inolvidables' },
-    { page: 17, label: 'Razones para amarte' },
-    { page: 18, label: 'Mi carta para ti' }
+    { page: 14, label: 'El dia que te conoci' },
+    { page: 15, label: 'Nuestra primera cita' },
+    { page: 16, label: 'Lo que mas me gusta de ti' },
+    { page: 17, label: 'Momentos inolvidables' },
+    { page: 18, label: 'Razones para amarte' },
+    { page: 19, label: 'Mi carta para ti' }
   ];
 
   var ctrlPrev, ctrlNext, pageIndicator, tocOverlay;
@@ -47,9 +48,7 @@
     tocOverlay    = $('tocOverlay');
   }
 
-  function goTo(p) {
-    if (pageFlip) pageFlip.flip(p, 'bottom');
-  }
+  function goTo(p) { if (pageFlip) pageFlip.flip(p, 'bottom'); }
 
   function buildTocElements() {
     var pgBody = $('tocBody');
@@ -63,11 +62,10 @@
         r.addEventListener('click', function () { closeToc(); goTo(item.page); });
         pgBody.appendChild(r);
       }
-
       if (pgProf) {
         var p = document.createElement('div');
         p.className = 'toc-row';
-        p.innerHTML = '<span class="toc-label">' + item.label + ' <span style="color:#ccc;font-size:0.65rem;">............................................</span></span><span class="toc-num">' + item.page + '</span>';
+        p.innerHTML = '<span class="toc-label">' + item.label + ' <span style="color:#ccc;font-size:0.6rem;">..................................................</span></span><span class="toc-num">' + item.page + '</span>';
         p.addEventListener('click', function () { goTo(item.page); });
         pgProf.appendChild(p);
       }
@@ -92,13 +90,10 @@
     var pageEls = wrapper.querySelectorAll('.book-page');
 
     pageFlip = new St.PageFlip(wrapper, {
-      width: 600,
-      height: 780,
+      width: 600, height: 780,
       size: 'stretch',
-      minWidth: 300,
-      minHeight: 400,
-      maxWidth: 2000,
-      maxHeight: 2000,
+      minWidth: 300, minHeight: 400,
+      maxWidth: 2000, maxHeight: 2000,
       showCover: true,
       drawShadow: true,
       flippingTime: 800,
@@ -115,22 +110,15 @@
     pageFlip.on('flip', updateControls);
     pageFlip.on('changeOrientation', updateControls);
     updateControls();
-
     setTimeout(function () { $('loader').classList.add('done'); }, 300);
   }
 
   function setupEvents() {
-    ctrlPrev.addEventListener('click', function () {
-      if (pageFlip) pageFlip.flipPrev('bottom');
-    });
-    ctrlNext.addEventListener('click', function () {
-      if (pageFlip) pageFlip.flipNext('bottom');
-    });
+    ctrlPrev.addEventListener('click', function () { if (pageFlip) pageFlip.flipPrev('bottom'); });
+    ctrlNext.addEventListener('click', function () { if (pageFlip) pageFlip.flipNext('bottom'); });
     $('ctrlToc').addEventListener('click', openToc);
     $('tocClose').addEventListener('click', closeToc);
-    tocOverlay.addEventListener('click', function (e) {
-      if (e.target === tocOverlay) closeToc();
-    });
+    tocOverlay.addEventListener('click', function (e) { if (e.target === tocOverlay) closeToc(); });
     document.addEventListener('keydown', function (e) {
       if (!pageFlip) return;
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); pageFlip.flipNext('bottom'); }
@@ -152,10 +140,7 @@
   cacheDom();
   buildTocElements();
 
-  waitForLib(function () {
-    createFlipbook();
-    setupEvents();
-  });
+  waitForLib(function () { createFlipbook(); setupEvents(); });
 
   window.Flipbook = {
     getCurrentPage: function () { return pageFlip ? pageFlip.getCurrentPageIndex() : -1; },

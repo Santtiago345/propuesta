@@ -7,7 +7,7 @@
 html, body {
   width: 100vw; height: 100vh;
   overflow: hidden;
-  font-family: 'Georgia', 'Times New Roman', serif;
+  font-family: 'Libre Baskerville', Georgia, 'Times New Roman', serif;
   background: #0d0618;
   -webkit-tap-highlight-color: transparent;
   -webkit-user-select: none;
@@ -92,7 +92,7 @@ html, body {
   align-items: baseline;
   justify-content: space-between;
   padding: 1.2rem 1.4rem 0.4rem;
-  font-family: 'Georgia', serif;
+  font-family: 'Libre Baskerville', Georgia, serif;
   font-size: clamp(0.6rem, 1.1vw, 0.75rem);
   color: #8b6baa;
 }
@@ -147,7 +147,7 @@ html, body {
 
 .section-cover-title {
   color: #3b1f5c;
-  font-family: 'Georgia', 'Times New Roman', serif;
+  font-family: 'Libre Baskerville', Georgia, 'Times New Roman', serif;
   font-size: clamp(1.4rem, 3vw, 2rem);
   font-weight: 700;
   text-align: center;
@@ -162,6 +162,11 @@ html, body {
 
 .section-cover-body .page-inner {
   height: 100%;
+  padding: 0 10%;
+}
+
+.section-cover-head + .section-cover-body .page-inner {
+  padding-top: 0;
 }
 
 .page-content {
@@ -507,7 +512,7 @@ html, body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: 'Libre Baskerville', Georgia, 'Times New Roman', serif;
 }
 
 .dev-toolbar {

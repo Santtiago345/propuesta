@@ -458,10 +458,42 @@
     });
   }
 
-  /* ======== DEV MODE ======== */
+  /* ======== DEV MODE Y ALMACENAMIENTO PERSISTENTE ======== */
   var devMode = false;
   var devDebounce = null;
   var editContainer = null;
+
+  function saveToLocalStorage() {
+    try {
+      localStorage.setItem('flipbook_intro_v2', JSON.stringify(introParagraphs));
+      localStorage.setItem('flipbook_chapters_v2', JSON.stringify(chapters));
+    } catch (e) {}
+  }
+
+  function loadFromLocalStorage() {
+    try {
+      var savedIntro = localStorage.getItem('flipbook_intro_v2');
+      var savedChap = localStorage.getItem('flipbook_chapters_v2');
+      if (savedIntro) {
+        var parsedI = JSON.parse(savedIntro);
+        if (Array.isArray(parsedI) && parsedI.length > 0) introParagraphs = parsedI;
+      }
+      if (savedChap) {
+        var parsedC = JSON.parse(savedChap);
+        if (Array.isArray(parsedC) && parsedC.length > 0) chapters = parsedC;
+      }
+    } catch (e) {}
+  }
+
+  function resetToOriginal() {
+    try {
+      localStorage.removeItem('flipbook_intro_v2');
+      localStorage.removeItem('flipbook_chapters_v2');
+      localStorage.removeItem('flipbook_intro');
+      localStorage.removeItem('flipbook_chapters');
+    } catch (e) {}
+    location.reload();
+  }
 
   function toggleDevMode() {
     devMode = !devMode;
@@ -473,12 +505,44 @@
       btnDev.classList.add('active');
       document.addEventListener('click', onDevClick, true);
     } else {
+      flushCurrentEdit();
       removeEditContainer();
       scene.classList.remove('dev-mode');
       btnDev.classList.remove('active');
       document.removeEventListener('click', onDevClick, true);
-      rebuildAndReload();
+      rebuildAllPages();
     }
+  }
+
+  function getSectionForPage(page) {
+    var wrapper = $('bookWrapper');
+    var allPages = Array.from(wrapper.querySelectorAll('.book-page'));
+    var idx = allPages.indexOf(page);
+    if (idx < 0) return null;
+    
+    var label = pageLabels[idx] || '';
+    if (!label) return null;
+    if (label === 'Portada' || label === 'Título' || label === 'Contraportada' || label === 'Agradecimientos' || label === 'Índice') return null;
+
+    if (label === 'Introducción' || label === 'Introduccion') {
+      return { type: 'intro', index: -1, title: 'Introducción' };
+    }
+
+    for (var c = 0; c < chapters.length; c++) {
+      if (chapters[c].title === label) {
+        return { type: 'chapter', index: c, title: chapters[c].title };
+      }
+    }
+    return null;
+  }
+
+  function getSectionHTML(sec) {
+    if (sec.type === 'intro') {
+      return introParagraphs.map(function(p) { return '<p>' + p + '</p>'; }).join('\n');
+    } else if (sec.type === 'chapter' && sec.index >= 0 && sec.index < chapters.length) {
+      return chapters[sec.index].html;
+    }
+    return '';
   }
 
   function onDevClick(e) {
@@ -509,21 +573,25 @@
     }
     if (!targetPage) return;
 
+    var sec = getSectionForPage(targetPage);
+    if (!sec) return;
+
     flushCurrentEdit();
-    openEditContainer(targetPage);
+    openEditContainer(targetPage, sec);
   }
 
-  function openEditContainer(page) {
+  function openEditContainer(page, sec) {
+    if (editContainer) {
+      removeEditContainer();
+    }
+
     var pr = page.getBoundingClientRect();
-    var inner = page.querySelector('.page-inner');
-    var hdr = page.querySelector('.hdr-center');
-    var pageTitle = hdr ? hdr.textContent.trim() : '';
-    var pageNum = page.getAttribute('data-r') || '';
-    var contentHTML = inner ? inner.innerHTML : '';
+    var contentHTML = getSectionHTML(sec);
 
     var cont = document.createElement('div');
     cont.className = 'dev-edit-container';
-    cont.setAttribute('data-page-num', pageNum);
+    cont.setAttribute('data-sec-type', sec.type);
+    cont.setAttribute('data-sec-idx', sec.index);
     cont.style.cssText =
       'left:' + pr.left + 'px;top:' + pr.top + 'px;' +
       'width:' + pr.width + 'px;height:' + pr.height + 'px;';
@@ -539,14 +607,16 @@
       '<span class="dev-size-label">100%</span>' +
       '<button data-cmd="fontSize+" title="Aumentar fuente">A+</button>' +
       '<span class="dev-sep"></span>' +
-      '<button class="dev-close" title="Cerrar">X</button>';
+      '<button class="dev-reset" title="Restaurar texto original" style="font-size:0.7rem;padding:2px 6px;">Restaurar Original</button>' +
+      '<span class="dev-sep"></span>' +
+      '<button class="dev-close" title="Guardar y cerrar">✔ Guardar</button>';
     cont.appendChild(tb);
 
     // Title input
     var ti = document.createElement('div');
     ti.className = 'dev-title-input';
     ti.contentEditable = 'true';
-    ti.textContent = pageTitle;
+    ti.textContent = sec.title;
     cont.appendChild(ti);
 
     // Content area
@@ -572,21 +642,29 @@
       });
     });
 
+    var resetBtn = tb.querySelector('.dev-reset');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (confirm('\u00bfDeseas restaurar todo el texto original del libro?')) {
+          resetToOriginal();
+        }
+      });
+    }
+
     tb.querySelector('.dev-close').addEventListener('click', function () {
       flushCurrentEdit();
       removeEditContainer();
     });
 
-    // Sync toolbar on selection change
     document.addEventListener('selectionchange', updateToolbarState);
 
-    // Auto-save on input
+    // Auto-save on input with 600ms debounce
     cont.addEventListener('input', function () {
       clearTimeout(devDebounce);
       devDebounce = setTimeout(function () {
         flushCurrentEdit();
-        rebuildAndReload();
-      }, 800);
+      }, 600);
     });
 
     setTimeout(function () { ca.focus(); }, 60);
@@ -614,18 +692,39 @@
 
   function flushCurrentEdit() {
     if (!editContainer) return;
-    var pageNum = editContainer.getAttribute('data-page-num');
+    var secType = editContainer.getAttribute('data-sec-type');
+    var secIdx = parseInt(editContainer.getAttribute('data-sec-idx'), 10);
     var titleInput = editContainer.querySelector('.dev-title-input');
     var contentArea = editContainer.querySelector('.dev-content-area');
-    if (!pageNum) return;
+    if (!secType) return;
 
-    var pages = document.querySelectorAll('.book-page[data-r="' + pageNum + '"]');
-    for (var i = 0; i < pages.length; i++) {
-      var hdr = pages[i].querySelector('.hdr-center');
-      var inner = pages[i].querySelector('.page-inner');
-      if (hdr && titleInput) hdr.textContent = titleInput.textContent.trim();
-      if (inner && contentArea) inner.innerHTML = contentArea.innerHTML;
+    var newTitle = titleInput ? titleInput.textContent.trim() : '';
+    var newHTML = contentArea ? contentArea.innerHTML : '';
+
+    if (secType === 'intro') {
+      var tmp = document.createElement('div');
+      tmp.innerHTML = newHTML;
+      var newParas = [];
+      var pEls = tmp.querySelectorAll('p');
+      if (pEls.length > 0) {
+        pEls.forEach(function(p) {
+          if (p.textContent.trim()) newParas.push(p.textContent.trim());
+        });
+      } else if (tmp.textContent.trim()) {
+        tmp.textContent.trim().split(/\n+/).forEach(function(line) {
+          if (line.trim()) newParas.push(line.trim());
+        });
+      }
+      if (newParas.length > 0) {
+        introParagraphs = newParas;
+      }
+    } else if (secType === 'chapter' && secIdx >= 0 && secIdx < chapters.length) {
+      if (newTitle) chapters[secIdx].title = newTitle;
+      if (newHTML) chapters[secIdx].html = newHTML;
     }
+
+    saveToLocalStorage();
+    rebuildAllPages();
   }
 
   function removeEditContainer() {
@@ -636,110 +735,17 @@
     }
   }
 
-  function rebuildAndReload() {
+  function rebuildAllPages() {
     if (!pageFlip) return;
     var curIdx = pageFlip.getCurrentPageIndex();
-    var wrapper = $('bookWrapper');
-    var allPages = wrapper.querySelectorAll('.book-page');
-    var fixedCount = 10;
-    var total = allPages.length;
-
-    var sections = [];
-    var currentSection = null;
-
-    for (var i = fixedCount; i < total - 1; i++) {
-      var page = allPages[i];
-      if (page.classList.contains('blank-page')) continue;
-      if (page.classList.contains('cover-page')) continue;
-      var inner = page.querySelector('.page-inner');
-      if (!inner) continue;
-      var hdr = page.querySelector('.hdr-center');
-      var secTitle = hdr ? hdr.textContent.trim() : '';
-      if (!currentSection || currentSection.title !== secTitle) {
-        currentSection = { title: secTitle, pagesHTML: [] };
-        sections.push(currentSection);
-      }
-      currentSection.pagesHTML.push(inner.innerHTML);
-    }
-
-    var allNewPages = [];
-    var newToc = [];
-    var pageNum = 10;
-
-    for (var s = 0; s < sections.length; s++) {
-      var sec = sections[s];
-      var combinedHTML = sec.pagesHTML.join('');
-      var tmp = document.createElement('div');
-      tmp.innerHTML = combinedHTML;
-      var h2 = tmp.querySelector('h2.ch-title');
-      if (h2) h2.remove();
-
-      // Solo extraer <p> y <ul> para el paginador
-      var elements = [];
-      tmp.querySelectorAll('p, ul').forEach(function (el) {
-        elements.push(el.outerHTML);
-      });
-      // Si no hay elementos estructurados, tomar texto plano como parrafos
-      if (elements.length === 0 && tmp.textContent.trim()) {
-        tmp.textContent.trim().split(/\n+/).forEach(function (line) {
-          if (line.trim()) elements.push('<p>' + line.trim() + '</p>');
-        });
-      }
-
-      var isChapter = sec.title !== 'Introducci\u00f3n' && sec.title !== 'Introduccion';
-      var newPages = paginateSection(sec.title, elements, pageNum, isChapter);
-      allNewPages = allNewPages.concat(newPages);
-      newToc.push({ page: pageNum, label: sec.title });
-      pageNum += newPages.length;
-    }
-
-    var existing = wrapper.querySelectorAll('.book-page');
-    var fixedPages = [];
-    for (var fi = 0; fi < fixedCount; fi++) { fixedPages.push(existing[fi]); }
-    var backCover = existing[existing.length - 1];
-
-    var fillerPages = [];
-    if ((fixedCount + allNewPages.length + 1) % 2 !== 0) {
-      var bp = document.createElement('div');
-      bp.className = 'book-page blank-page';
-      fillerPages.push(bp);
-    }
-
-    var assembled = fixedPages.concat(allNewPages, fillerPages, [backCover]);
-    pagesLen = assembled.length;
-
-    while (wrapper.firstChild) wrapper.removeChild(wrapper.firstChild);
-    for (var ai = 0; ai < assembled.length; ai++) { wrapper.appendChild(assembled[ai]); }
-
-    pageLabels = [];
-    for (var pi = 0; pi < pagesLen; pi++) {
-      if (pi === 0) pageLabels.push('Portada');
-      else if (pi >= 1 && pi <= 3) pageLabels.push('');
-      else if (pi === 4) pageLabels.push('T\u00edtulo');
-      else if (pi === 5) pageLabels.push('');
-      else if (pi === 6) pageLabels.push('Agradecimientos');
-      else if (pi === 7) pageLabels.push('');
-      else if (pi === 8) pageLabels.push('\u00cdndice');
-      else if (pi >= fixedCount && pi < pagesLen - (fillerPages.length + 1)) {
-        var found = '';
-        for (var ti = 0; ti < newToc.length; ti++) {
-          var ns = (ti + 1 < newToc.length) ? newToc[ti + 1].page : (pagesLen - (fillerPages.length + 1));
-          if (pi >= newToc[ti].page && pi < ns) { found = newToc[ti].label; break; }
-        }
-        pageLabels.push(found);
-      } else if (pi === pagesLen - 1) pageLabels.push('Contraportada');
-      else pageLabels.push('');
-    }
-
-    tocItems = newToc;
+    buildAllPages();
     buildTocElements();
-
+    var wrapper = $('bookWrapper');
     pageFlip.loadFromHTML(wrapper.querySelectorAll('.book-page'));
     pagesLen = pageFlip.getPageCount();
-
-    var target = Math.min(curIdx, pageFlip.getPageCount() - 1);
     updateControls();
-    setTimeout(function () { if (target >= 0) pageFlip.flip(target, 'bottom'); }, 100);
+    var target = Math.min(curIdx, pageFlip.getPageCount() - 1);
+    if (target >= 0) setTimeout(function () { pageFlip.flip(target, 'bottom'); }, 50);
   }
 
   /* ======== INIT ======== */
@@ -757,6 +763,7 @@
 
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
+      loadFromLocalStorage();
       buildAllPages();
       buildTocElements();
       waitForLib(function () { createFlipbook(); setupEvents(); });

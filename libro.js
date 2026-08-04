@@ -56,12 +56,17 @@
 
   /* ======== PAGINADOR ======== */
   /* ======== PAGINADOR GENERALIZADO ======== */
+  /* ======== PAGINADOR GENERALIZADO ======== */
   function getPageDimensions(wrapper) {
     var r = wrapper.getBoundingClientRect();
     var isPortrait = window.innerWidth <= 768;
     var maxW = isPortrait ? r.width : (r.width / 2);
     var maxH = r.height;
-    var aspect = 520 / 860; // Relación de aspecto de StPageFlip (ancho / alto)
+
+    if (!maxW || maxW <= 0) maxW = isPortrait ? (window.innerWidth * 0.8) : (window.innerWidth * 0.32);
+    if (!maxH || maxH <= 0) maxH = window.innerHeight * 0.82;
+
+    var aspect = 520 / 860;
 
     var w = maxW;
     var h = w / aspect;
@@ -70,7 +75,7 @@
       h = maxH;
       w = h * aspect;
     }
-    return { width: w, height: h };
+    return { width: Math.round(w), height: Math.round(h) };
   }
 
   function crearPaginaPrueba(wrapper) {
@@ -152,12 +157,20 @@
 
   function paginateSection(title, elements, startNum, isChapter) {
     var wrapper = $('bookWrapper');
+    var dim = getPageDimensions(wrapper);
     var tp = crearPaginaPrueba(wrapper);
     var innerEl = tp.querySelector('.page-inner');
 
+    function getTargetHeight() {
+      var h = innerEl.clientHeight;
+      if (!h || h <= 50) {
+        h = Math.max(200, dim.height - 90);
+      }
+      return h;
+    }
+
     function checkOverflow() {
-      // Margen de seguridad de 6px para evitar cualquier posible desbordamiento por subpixelado
-      return (innerEl.scrollHeight - innerEl.clientHeight) >= -6;
+      return innerEl.scrollHeight > getTargetHeight();
     }
 
     var items = parseElements(elements, title, isChapter);

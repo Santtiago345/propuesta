@@ -90,7 +90,7 @@
     return d;
   }
 
-  function makeSectionCoverPage(title, pnum) {
+  function makeSectionCoverPage(title, pnum, bodyHTML) {
     var d = document.createElement('div');
     d.className = 'book-page section-cover-page';
     d.setAttribute('data-r', pnum);
@@ -100,9 +100,12 @@
         '<span class="hdr-center"></span>' +
         '<span class="hdr-right"></span>' +
       '</div>' +
-      '<div class="page-content"><div class="page-inner">' +
-        '<h1 class="section-cover-title">' + title + '</h1>' +
-      '</div></div>';
+      '<div class="page-content">' +
+        '<div class="section-cover-head">' +
+          '<h1 class="section-cover-title">' + title + '</h1>' +
+        '</div>' +
+        '<div class="section-cover-body"><div class="page-inner">' + (bodyHTML || '') + '</div></div>' +
+      '</div>';
     return d;
   }
 
@@ -307,13 +310,17 @@
       fixedPages.push(existing[i]);
     }
 
-    // Página portada de sección Introducción (sin header, título centrado)
-    var introCover = makeSectionCoverPage('Introducci\u00f3n', 10);
+    // Pagina portada de seccion Introduccion (titulo en 1/3 superior, texto desde 2/3)
+    var firstParaHTML = introParagraphs.length > 0 ? '<p>' + introParagraphs[0] + '</p>' : '';
+    var introCover = makeSectionCoverPage('Introducci\u00f3n', 10, firstParaHTML);
 
-    // Paginación contenido Introducción (páginas con header normal)
-    var introContentPages = paginateSection('Introducci\u00f3n', introParagraphs, 11, false);
+    // Resto de parrafos con paginacion normal desde pagina 11
+    var restParas = introParagraphs.slice(1);
+    var introContentPages = restParas.length > 0
+      ? paginateSection('Introducci\u00f3n', restParas, 11, false)
+      : [];
 
-    // Combinar: portada de sección + páginas de contenido
+    // Combinar: portada de seccion + paginas de contenido
     var introPages = [introCover].concat(introContentPages);
     
     // Paginación Capítulos

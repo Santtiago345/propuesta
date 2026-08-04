@@ -133,13 +133,15 @@ html, body {
 .section-cover-page .page-content {
   height: 100%;
   padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.section-cover-page .page-inner {
+.section-cover-head {
+  flex: 0 0 33%;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 75%;
   padding: 0 12%;
 }
 
@@ -151,6 +153,15 @@ html, body {
   text-align: center;
   letter-spacing: 1.5px;
   line-height: 1.2;
+}
+
+.section-cover-body {
+  flex: 1 1 67%;
+  overflow: hidden;
+}
+
+.section-cover-body .page-inner {
+  height: 100%;
 }
 
 .page-content {

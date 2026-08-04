@@ -706,7 +706,7 @@
     var label = editContainer.querySelector('.dev-size-label');
     var area = editContainer.querySelector('.dev-content-area');
     if (label) label.textContent = pct + '%';
-    if (area) area.style.fontSize = (0.82 * (pct / 100)) + 'rem';
+    if (area) area.style.fontSize = (0.76 * (pct / 100)) + 'rem';
   }
 
   function updateToolbarState() {

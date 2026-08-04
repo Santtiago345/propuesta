@@ -1,49 +1,29 @@
 (function () {
   'use strict';
 
-  function waitForLib(cb) {
-    if (typeof St !== 'undefined' && St.PageFlip) { cb(); return; }
-    var n = 0;
-    var t = setInterval(function () {
-      n++;
-      if (typeof St !== 'undefined' && St.PageFlip) {
-        clearInterval(t); cb();
-      } else if (n > 120) {
-        clearInterval(t);
-        document.getElementById('loader').textContent =
-          'Error: No se pudo cargar el libro. Verifica tu conexión.';
-      }
-    }, 100);
-  }
+  var pageFlip = null, pagesLen = 0;
 
-  var pageFlip = null;
-  var pagesLen = 0;
   var pageLabels = [
-    'Portada',
-    'Índice',
-    'El día que te conocí',
-    'Nuestra primera cita',
-    'Lo que más me gusta de ti',
-    'Momentos inolvidables',
-    'Razones para amarte',
-    'Mi carta para ti',
-    'Contraportada'
+    'Portada', 'Índice',
+    'El día que te conocí', 'Nuestra primera cita',
+    'Lo que más me gusta de ti', 'Momentos inolvidables',
+    'Razones para amarte', 'Mi carta para ti', 'Contraportada'
   ];
 
-  var ctrlPrev, ctrlNext, ctrlToc, ctrlFs, pageIndicator;
-  var tocOverlay, hintOverlay, loader;
+  var ctrlPrev, ctrlNext, ctrlToc, pageIndicator, tocOverlay, hintOverlay;
+
+  function $(id) { return document.getElementById(id); }
 
   function cacheDom() {
-    ctrlPrev      = document.getElementById('ctrlPrev');
-    ctrlNext      = document.getElementById('ctrlNext');
-    ctrlToc       = document.getElementById('ctrlToc');
-    ctrlFs        = document.getElementById('ctrlFs');
-    pageIndicator = document.getElementById('pageIndicator');
-    tocOverlay    = document.getElementById('tocOverlay');
-    hintOverlay   = document.getElementById('hintOverlay');
-    loader        = document.getElementById('loader');
+    ctrlPrev      = $('ctrlPrev');
+    ctrlNext      = $('ctrlNext');
+    ctrlToc       = $('ctrlToc');
+    pageIndicator = $('pageIndicator');
+    tocOverlay    = $('tocOverlay');
+    hintOverlay   = $('hintOverlay');
   }
 
+  /* ─── TOC PANEL ─── */
   var tocItems = [
     { page: 2, label: 'El día que te conocí' },
     { page: 3, label: 'Nuestra primera cita' },
@@ -54,49 +34,42 @@
   ];
 
   function buildTocPanel() {
-    var body = document.getElementById('tocBody');
-    body.innerHTML = '';
+    var body = $('tocBody'), html = '';
     tocItems.forEach(function (item, i) {
-      var div = document.createElement('div');
-      div.className = 'toc-item';
-      div.innerHTML =
-        '<span class="idx-badge">' + (i + 1) + '</span>' + item.label;
-      div.addEventListener('click', function () {
+      html += '<div class="toc-item" data-p="' + item.page + '">' +
+        '<span class="idx-badge">' + (i + 1) + '</span>' + item.label + '</div>';
+    });
+    body.innerHTML = html;
+    body.querySelectorAll('.toc-item').forEach(function (el) {
+      el.addEventListener('click', function () {
         closeToc();
-        if (pageFlip) pageFlip.flip(item.page, 'bottom');
+        if (pageFlip) pageFlip.flip(parseInt(el.getAttribute('data-p')), 'bottom');
       });
-      body.appendChild(div);
     });
   }
 
+  /* ─── INDEX PAGE CLICKS ─── */
   function setupIndexClicks() {
     setTimeout(function () {
-      var items = document.querySelectorAll('.index-list li');
-      items.forEach(function (li) {
+      document.querySelectorAll('.index-list li').forEach(function (li) {
         li.addEventListener('click', function (e) {
           e.stopPropagation();
           var p = parseInt(li.getAttribute('data-page'), 10);
-          if (!isNaN(p) && pageFlip) {
-            pageFlip.flip(p, 'bottom');
-          }
+          if (!isNaN(p) && pageFlip) pageFlip.flip(p, 'bottom');
         });
       });
     }, 600);
   }
 
+  /* ─── UI ─── */
   function updateControls() {
     if (!pageFlip) return;
     var idx = pageFlip.getCurrentPageIndex();
     var total = pageFlip.getPageCount();
     var label = pageLabels[idx] || '';
-
     pageIndicator.textContent = label + '  (' + (idx + 1) + ' / ' + total + ')';
-
-    if (idx <= 0) ctrlPrev.classList.add('disabled');
-    else ctrlPrev.classList.remove('disabled');
-
-    if (idx >= total - 1) ctrlNext.classList.add('disabled');
-    else ctrlNext.classList.remove('disabled');
+    ctrlPrev.classList.toggle('disabled', idx <= 0);
+    ctrlNext.classList.toggle('disabled', idx >= total - 1);
   }
 
   function hideHint() {
@@ -107,27 +80,19 @@
   function openToc() { tocOverlay.classList.add('open'); }
   function closeToc() { tocOverlay.classList.remove('open'); }
 
-  var fsOn = false;
-  function toggleFullscreen() {
-    fsOn = !fsOn;
-    var scene = document.getElementById('scene');
-    if (fsOn) scene.classList.add('fullscreen');
-    else scene.classList.remove('fullscreen');
-    if (pageFlip) setTimeout(function () { pageFlip.update(); }, 100);
-  }
-
+  /* ─── CREATE ─── */
   function createFlipbook() {
-    var wrapper = document.getElementById('bookWrapper');
+    var wrapper = $('bookWrapper');
     var pageEls = wrapper.querySelectorAll('.book-page');
 
     pageFlip = new St.PageFlip(wrapper, {
-      width: 520,
-      height: 680,
+      width: 550,
+      height: 710,
       size: 'stretch',
-      minWidth: 280,
-      minHeight: 340,
-      maxWidth: 1100,
-      maxHeight: 800,
+      minWidth: 340,
+      minHeight: 440,
+      maxWidth: 900,
+      maxHeight: 740,
       showCover: true,
       drawShadow: true,
       flippingTime: 800,
@@ -149,10 +114,10 @@
 
     updateControls();
     setupIndexClicks();
-
-    setTimeout(function () { loader.classList.add('done'); }, 300);
+    setTimeout(function () { $('loader').classList.add('done'); }, 300);
   }
 
+  /* ─── EVENTS ─── */
   function setupEvents() {
     ctrlPrev.addEventListener('click', function () {
       if (pageFlip) { pageFlip.flipPrev('bottom'); hideHint(); }
@@ -161,8 +126,7 @@
       if (pageFlip) { pageFlip.flipNext('bottom'); hideHint(); }
     });
     ctrlToc.addEventListener('click', openToc);
-    ctrlFs.addEventListener('click', toggleFullscreen);
-    document.getElementById('tocClose').addEventListener('click', closeToc);
+    $('tocClose').addEventListener('click', closeToc);
 
     tocOverlay.addEventListener('click', function (e) {
       if (e.target === tocOverlay) closeToc();
@@ -176,15 +140,21 @@
       if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
         e.preventDefault(); pageFlip.flipPrev('bottom'); hideHint();
       }
-      if (e.key === 'Escape') {
-        if (tocOverlay.classList.contains('open')) closeToc();
-        else if (fsOn) toggleFullscreen();
-      }
+      if (e.key === 'Escape' && tocOverlay.classList.contains('open')) closeToc();
     });
 
-    document.getElementById('bookWrapper').addEventListener('click', function () {
-      hideHint();
-    });
+    $('bookWrapper').addEventListener('click', hideHint);
+  }
+
+  /* ─── INIT ─── */
+  function waitForLib(cb) {
+    if (typeof St !== 'undefined' && St.PageFlip) { cb(); return; }
+    var n = 0;
+    var t = setInterval(function () {
+      n++;
+      if (typeof St !== 'undefined' && St.PageFlip) { clearInterval(t); cb(); }
+      else if (n > 120) { clearInterval(t); $('loader').textContent = 'Error al cargar.'; }
+    }, 100);
   }
 
   cacheDom();
@@ -195,6 +165,7 @@
     setupEvents();
   });
 
+  /* ─── API ─── */
   window.Flipbook = {
     getCurrentPage: function () { return pageFlip ? pageFlip.getCurrentPageIndex() : -1; },
     getTotalPages: function () { return pagesLen; },

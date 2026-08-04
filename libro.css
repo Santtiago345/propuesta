@@ -72,6 +72,10 @@ html, body {
   background: #fdf8f0;
 }
 
+.spacer-page {
+  background: #f5efe4;
+}
+
 .cover-page {
   background: linear-gradient(140deg, #7c3aed, #5b21b6, #4c1d95);
   display: flex;

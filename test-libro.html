@@ -66,7 +66,7 @@
   <div class="container">
     <a href="libro.html" class="back">← Volver al libro</a>
     <h1>🧪 Pruebas del Flipbook</h1>
-    <p class="sub">Verificación automática con StPageFlip</p>
+    <p class="sub">Verificación automática</p>
 
     <button class="btn" id="btnRun" onclick="run()" disabled>Cargando...</button>
     <div class="bar"><div class="bar-fill" id="bar" style="width:0%"></div></div>
@@ -104,7 +104,7 @@
     function onLoad() {
       waitFB().then(function(ok) {
         var btn = document.getElementById('btnRun');
-        if (ok) { btn.textContent = 'Ejecutar pruebas ▶'; btn.disabled = false; }
+        if (ok) { btn.textContent = 'Ejecutar pruebas \u25B6'; btn.disabled = false; }
         else { btn.textContent = 'Error de carga'; }
         buildList();
       });
@@ -114,39 +114,37 @@
       list = [
         { name: '1. El flipbook está listo', msg: 'isReady() debe devolver true',
           fn: function() { return FB && FB.isReady(); } },
-        { name: '2. Inicia en la portada (página 0)', msg: 'getCurrentPage() debe ser 0',
-          fn: function() { return FB.getCurrentPage() === 0; } },
-        { name: '3. Hay 9 páginas en total', msg: 'getTotalPages() debe ser 9',
-          fn: function() { return FB.getTotalPages() === 9; } },
-        { name: '4. Avanzar a página 2 (índice + cap1)', msg: 'Flip a spread con índice',
-          fn: function() { FB.goToPage(2); return true; }, wait: 1100 },
-        { name: '5. Verificar página 2', msg: 'getCurrentPage() debe ser 2',
-          fn: function() { return FB.getCurrentPage() === 2; } },
-        { name: '6. Avanzar a página 4', msg: 'Flip a segundo spread',
-          fn: function() { FB.goToPage(4); return true; }, wait: 1100 },
-        { name: '7. Verificar página 4', msg: 'getCurrentPage() debe ser 4',
-          fn: function() { return FB.getCurrentPage() === 4; } },
-        { name: '8. Avanzar a página 6', msg: 'Flip a tercer spread',
-          fn: function() { FB.goToPage(6); return true; }, wait: 1100 },
-        { name: '9. Verificar página 6', msg: 'getCurrentPage() debe ser 6',
-          fn: function() { return FB.getCurrentPage() === 6; } },
-        { name: '10. Avanzar a página 8 (contraportada)', msg: 'Flip al final',
-          fn: function() { FB.goToPage(8); return true; }, wait: 1100 },
-        { name: '11. Verificar última página', msg: 'getCurrentPage() debe ser 8',
-          fn: function() { return FB.getCurrentPage() === 8; } },
-        { name: '12. Volver a la portada', msg: 'goToPage(0) debe funcionar',
-          fn: function() { FB.goToPage(0); return true; }, wait: 1100 },
-        { name: '13. Verificar portada de nuevo', msg: 'getCurrentPage() debe ser 0',
-          fn: function() { return FB.getCurrentPage() === 0; } },
+        { name: '2. Inicia en la portada (pág 1)', msg: 'getCurrentPage() debe ser 1',
+          fn: function() { return FB.getCurrentPage() === 1; } },
+        { name: '3. Hay 10 páginas en total', msg: 'getTotalPages() debe ser 10',
+          fn: function() { return FB.getTotalPages() === 10; } },
+        { name: '4. Avanzar a índice (pág 3)', msg: 'Ir al primer spread con índice',
+          fn: function() { FB.goToPage(3); return true; }, wait: 1100 },
+        { name: '5. Verificar página 3', msg: 'getCurrentPage() debe ser 3',
+          fn: function() { return FB.getCurrentPage() === 3; } },
+        { name: '6. Avanzar a pág 5', msg: 'Saltar a segundo spread',
+          fn: function() { FB.goToPage(5); return true; }, wait: 1100 },
+        { name: '7. Verificar página 5', msg: 'getCurrentPage() debe ser 5',
+          fn: function() { return FB.getCurrentPage() === 5; } },
+        { name: '8. Avanzar a pág 7', msg: 'Saltar a tercer spread',
+          fn: function() { FB.goToPage(7); return true; }, wait: 1100 },
+        { name: '9. Verificar página 7', msg: 'getCurrentPage() debe ser 7',
+          fn: function() { return FB.getCurrentPage() === 7; } },
+        { name: '10. Avanzar a pág 9 (contraportada)', msg: 'Ir al final',
+          fn: function() { FB.goToPage(9); return true; }, wait: 1100 },
+        { name: '11. Verificar última página', msg: 'getCurrentPage() debe ser 9',
+          fn: function() { return FB.getCurrentPage() === 9; } },
+        { name: '12. Volver a portada', msg: 'goToPage(1) debe funcionar',
+          fn: function() { FB.goToPage(1); return true; }, wait: 1100 },
+        { name: '13. Verificar portada de nuevo', msg: 'getCurrentPage() debe ser 1',
+          fn: function() { return FB.getCurrentPage() === 1; } },
         { name: '14. flipNext funciona', msg: 'Avanzar con flecha',
           fn: function() { FB.flipNext(); return true; }, wait: 1100 },
-        { name: '15. Verificar tras flipNext', msg: 'getCurrentPage() debe ser > 0',
-          fn: function() { return FB.getCurrentPage() > 0; } },
+        { name: '15. Verificar tras flipNext', msg: 'getCurrentPage() debe ser > 1',
+          fn: function() { return FB.getCurrentPage() > 1; } },
         { name: '16. flipPrev funciona', msg: 'Retroceder con flecha',
           fn: function() { FB.flipPrev(); return true; }, wait: 1100 },
-        { name: '17. Verificar tras flipPrev', msg: 'getCurrentPage() debe ser 0',
-          fn: function() { return FB.getCurrentPage() === 0; } },
-        { name: '18. Sin crashes con páginas inválidas', msg: 'goToPage(-1) y goToPage(99) no crashean',
+        { name: '17. No crash con págs inválidas', msg: 'goToPage(-1) y goToPage(99) no crashean',
           fn: function() {
             try { FB.goToPage(-1); FB.goToPage(99); return true; }
             catch(e) { return false; }

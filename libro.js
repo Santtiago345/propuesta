@@ -505,15 +505,15 @@
 
   function saveToLocalStorage() {
     try {
-      localStorage.setItem('flipbook_intro_v2', JSON.stringify(introParagraphs));
-      localStorage.setItem('flipbook_chapters_v2', JSON.stringify(chapters));
+      localStorage.setItem('flipbook_intro_v3', JSON.stringify(introParagraphs));
+      localStorage.setItem('flipbook_chapters_v3', JSON.stringify(chapters));
     } catch (e) {}
   }
 
   function loadFromLocalStorage() {
     try {
-      var savedIntro = localStorage.getItem('flipbook_intro_v2');
-      var savedChap = localStorage.getItem('flipbook_chapters_v2');
+      var savedIntro = localStorage.getItem('flipbook_intro_v3');
+      var savedChap = localStorage.getItem('flipbook_chapters_v3');
       if (savedIntro) {
         var parsedI = JSON.parse(savedIntro);
         if (Array.isArray(parsedI) && parsedI.length > 0) introParagraphs = parsedI;
@@ -529,6 +529,8 @@
     try {
       localStorage.removeItem('flipbook_intro_v2');
       localStorage.removeItem('flipbook_chapters_v2');
+      localStorage.removeItem('flipbook_intro_v3');
+      localStorage.removeItem('flipbook_chapters_v3');
       localStorage.removeItem('flipbook_intro');
       localStorage.removeItem('flipbook_chapters');
     } catch (e) {}

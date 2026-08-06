@@ -1,0 +1,234 @@
+/* ========================================
+   CARTAS - Estilos
+   ======================================== */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100vw; min-height: 100vh;
+  font-family: 'Libre Baskerville', Georgia, 'Times New Roman', serif;
+  background: radial-gradient(ellipse at 50% 30%, #2d2040 0%, #1a1028 55%, #0d0618 100%);
+  overflow-x: hidden;
+}
+
+/* ── SCENE ── */
+.cartas-scene {
+  min-height: 100vh;
+  padding: 6rem 2rem 3rem;
+}
+
+.cartas-title-wrap {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.cartas-main-title {
+  color: #c084fc;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.cartas-subtitle {
+  color: #a78bfa;
+  font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+  opacity: 0.8;
+}
+
+/* ── GRID ── */
+.cartas-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* ── CARTA ── */
+.carta-wrapper {
+  perspective: 800px;
+  cursor: pointer;
+}
+
+.carta {
+  width: 240px;
+  height: 320px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.carta-front {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: linear-gradient(145deg, #fdf8f0, #f5efe4, #ede0d0);
+  border-radius: 12px;
+  border: 1px solid rgba(212,168,85,0.3);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.carta-front::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(212,168,85,0.15);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.carta:hover .carta-front {
+  box-shadow: 0 8px 32px rgba(124,58,237,0.25);
+  transform: translateY(-4px);
+}
+
+.carta:hover .carta {
+  transform: rotateY(5deg);
+}
+
+.carta-seal {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  animation: cartaFloat 3s ease-in-out infinite;
+}
+
+@keyframes cartaFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.carta-name {
+  color: #3b1f5c;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  font-family: 'Libre Baskerville', Georgia, serif;
+}
+
+.carta-hint {
+  color: #8b6baa;
+  font-size: 0.78rem;
+  font-style: italic;
+}
+
+/* ── OVERLAY ── */
+.carta-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.carta-overlay.open {
+  display: flex;
+}
+
+.carta-opened {
+  background: #fdf8f0;
+  border-radius: 16px;
+  width: 90vw;
+  max-width: 650px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  animation: cartaOpen 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+@keyframes cartaOpen {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.carta-close {
+  position: absolute;
+  top: 12px; right: 14px;
+  background: none;
+  border: none;
+  color: #5b3a7a;
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: 0.2s;
+  z-index: 5;
+}
+.carta-close:hover { background: rgba(124,58,237,0.1); }
+
+.carta-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2.5rem 2rem 1.5rem;
+}
+
+.carta-content h2 {
+  color: #3b1f5c;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 700;
+}
+
+.carta-content p {
+  color: #5b3a7a;
+  line-height: 1.75;
+  margin: 0.8rem 0;
+  font-size: 0.92rem;
+  text-align: justify;
+}
+
+.carta-content p:last-child {
+  text-align: right;
+  font-style: italic;
+  color: #7c3aed;
+}
+
+/* ── NAV ── */
+.carta-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 1.5rem;
+  border-top: 1px solid #e9d5ff;
+}
+
+.carta-nav-btn {
+  background: none;
+  border: 1px solid #d4a855;
+  color: #5b3a7a;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: 0.2s;
+  font-family: 'Libre Baskerville', Georgia, serif;
+}
+.carta-nav-btn:hover { background: rgba(212,168,85,0.1); }
+
+.carta-counter {
+  color: #8b6baa;
+  font-size: 0.8rem;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .cartas-scene { padding: 5rem 1rem 2rem; }
+  .carta { width: 200px; height: 270px; }
+  .cartas-grid { gap: 1.2rem; }
+  .carta-opened { width: 95vw; }
+  .carta-content { padding: 2rem 1.2rem 1rem; }
+}

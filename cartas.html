@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cartas</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="cartas.css" />
+</head>
+<body>
+
+  <a href="index.html" class="fixed top-4 left-4 z-50 bg-white bg-opacity-80 text-purple-700 px-4 py-2 rounded-full text-sm font-semibold shadow hover:bg-purple-100 transition no-underline">
+    ← Inicio
+  </a>
+
+  <div class="cartas-scene">
+
+    <!-- Título -->
+    <div class="cartas-title-wrap">
+      <h1 class="cartas-main-title">Cartas para ti</h1>
+      <p class="cartas-subtitle">Selecciona una carta para leerla</p>
+    </div>
+
+    <!-- Grid de cartas -->
+    <div class="cartas-grid" id="cartasGrid">
+
+      <!-- Carta 1: Sobre la suerte -->
+      <div class="carta-wrapper" onclick="Cartas.abrir(0)">
+        <div class="carta">
+          <div class="carta-front">
+            <div class="carta-seal">💌</div>
+            <h2 class="carta-name">Sobre la suerte</h2>
+            <p class="carta-hint">Toca para leer</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Overlay de carta abierta -->
+    <div class="carta-overlay" id="cartaOverlay">
+      <div class="carta-opened" id="cartaOpened">
+        <button class="carta-close" onclick="Cartas.cerrar()">✕</button>
+        <div class="carta-content" id="cartaContent"></div>
+        <div class="carta-nav">
+          <button class="carta-nav-btn" id="cartaPrev" onclick="Cartas.anterior()">← Anterior</button>
+          <span class="carta-counter" id="cartaCounter">1 / 1</span>
+          <button class="carta-nav-btn" id="cartaNext" onclick="Cartas.siguiente()">Siguiente →</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="cartas.js"></script>
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

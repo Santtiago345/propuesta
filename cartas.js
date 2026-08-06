@@ -15,6 +15,7 @@ var Cartas = (function () {
   ];
 
   var currentIndex = -1;
+  var cartaAudio = document.getElementById('cartaAudio');
 
   function abrir(index) {
     if (index < 0 || index >= cartas.length) return;
@@ -27,11 +28,17 @@ var Cartas = (function () {
 
     document.getElementById('cartaOverlay').classList.add('open');
     actualizarNav();
+
+    if (cartaAudio) {
+      cartaAudio.currentTime = 0;
+      cartaAudio.play().catch(function () {});
+    }
   }
 
   function cerrar() {
     document.getElementById('cartaOverlay').classList.remove('open');
     currentIndex = -1;
+    if (cartaAudio) cartaAudio.pause();
   }
 
   function anterior() {

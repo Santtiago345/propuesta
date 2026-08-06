@@ -258,8 +258,8 @@
             }
           }
         } else if (!item.isTitle) {
-          // Si el elemento contiene HTML inline (spans, links), no dividirlo
-          var hasInlineHTML = item.html && item.html.indexOf('<') >= 0;
+          // Si el elemento contiene spans con data-tip (tooltips), no dividirlo
+          var hasInlineHTML = item.html && item.html.indexOf('<span') >= 0;
           
           if (hasInlineHTML) {
             // No dividir: mandar a siguiente pagina completo

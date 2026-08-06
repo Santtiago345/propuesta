@@ -346,37 +346,15 @@
           var hasInlineHTML = item.html && item.html.indexOf('<span') >= 0;
           
           if (hasInlineHTML) {
-            // Dividir preservando HTML en ambas mitades
-            var fwords = (item.text || '').split(/\s+/);
-            var flow = 1, fhigh = fwords.length, fbest = 0;
-            while (flow <= fhigh) {
-              var fmid = Math.floor((flow + fhigh) / 2);
-              var ftest = fwords.slice(0, fmid).join(' ');
-              innerEl.innerHTML = currentHTML + renderItemHTML(item, ftest);
-              if (!checkOverflow()) { fbest = fmid; flow = fmid + 1; }
-              else { fhigh = fmid - 1; }
-            }
-            if (fbest > 0) {
-              var parts = splitHTML(item.html || '', fbest);
-              var cls = item.className ? ' class="' + item.className + '"' : '';
-              currentHTML += '<' + item.tag + cls + '>' + parts.first + '</' + item.tag + '>';
-              pages.push(makePage(title, currentHTML, startNum + pages.length));
-              currentHTML = '';
-              if (parts.second.trim()) {
-                items[itemIdx] = { tag: item.tag, className: item.className, html: parts.second, text: parts.second.replace(/<[^>]+>/g, '') };
-              } else { itemIdx++; }
-            } else if (currentHTML) {
+            // Parrafos con spans: no se dividen, se mueven completos
+            if (currentHTML) {
               pages.push(makePage(title, currentHTML, startNum + pages.length));
               currentHTML = '';
             } else {
-              var ffpart = fwords.slice(0, 1).join(' ');
-              currentHTML = renderItemHTML(item, ffpart);
+              currentHTML = itemHTML;
               pages.push(makePage(title, currentHTML, startNum + pages.length));
               currentHTML = '';
-              var ffrest = fwords.slice(1).join(' ');
-              if (ffrest.trim()) {
-                items[itemIdx] = { tag: item.tag, className: item.className, html: ffrest, text: ffrest };
-              } else { itemIdx++; }
+              itemIdx++;
             }
           } else {
             var words = (item.text || '').split(/\s+/);

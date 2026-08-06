@@ -819,6 +819,50 @@
     if (target >= 0) setTimeout(function () { pageFlip.flip(target, 'bottom'); }, 50);
   }
 
+  /* ======== LINKED PHRASE TOOLTIPS (JS, fuera del overflow:hidden) ======== */
+  var tooltipEl = null;
+
+  function showTooltip(e) {
+    var span = e.target.closest('.linked-phrase');
+    if (!span) return;
+    var tip = span.getAttribute('data-tip');
+    if (!tip) return;
+    if (!tooltipEl) {
+      tooltipEl = document.createElement('div');
+      tooltipEl.className = 'phrase-tooltip';
+      document.body.appendChild(tooltipEl);
+    }
+    tooltipEl.textContent = tip;
+    tooltipEl.style.display = 'block';
+    var rect = span.getBoundingClientRect();
+    var ttRect = tooltipEl.getBoundingClientRect();
+    var top = rect.top - ttRect.height - 8;
+    if (top < 8) top = rect.bottom + 8;
+    var left = rect.left + rect.width / 2 - ttRect.width / 2;
+    if (left < 8) left = 8;
+    if (left + ttRect.width > window.innerWidth - 8) left = window.innerWidth - ttRect.width - 8;
+    tooltipEl.style.top = top + 'px';
+    tooltipEl.style.left = left + 'px';
+  }
+
+  function hideTooltip() {
+    if (tooltipEl) tooltipEl.style.display = 'none';
+  }
+
+  document.addEventListener('mouseover', function (e) {
+    if (e.target.closest('.linked-phrase')) showTooltip(e);
+  }, true);
+  document.addEventListener('mouseout', function (e) {
+    if (e.target.closest('.linked-phrase')) hideTooltip();
+  }, true);
+  document.addEventListener('touchstart', function (e) {
+    if (e.target.closest('.linked-phrase')) { e.preventDefault(); showTooltip(e); }
+    else hideTooltip();
+  }, true);
+  document.addEventListener('touchend', function () {
+    setTimeout(hideTooltip, 1500);
+  });
+
   /* ======== INIT ======== */
   function waitForLib(cb) {
     if (typeof St !== 'undefined' && St.PageFlip) { cb(); return; }

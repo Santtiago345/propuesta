@@ -292,41 +292,15 @@
           var hasInlineHTML = item.html && item.html.indexOf('<span') >= 0;
           
           if (hasInlineHTML) {
-            // Intentar llenar el espacio restante con palabras del span
-            var fwords = (item.text || '').split(/\s+/);
-            var flow = 1, fhigh = fwords.length, fbest = 0;
-            while (flow <= fhigh) {
-              var fmid = Math.floor((flow + fhigh) / 2);
-              var ftest = fwords.slice(0, fmid).join(' ');
-              innerEl.innerHTML = currentHTML + renderItemHTML(item, ftest);
-              if (!checkOverflow()) { fbest = fmid; flow = fmid + 1; }
-              else { fhigh = fmid - 1; }
-            }
-            if (fbest > 0) {
-              // Preservar HTML del span en la primera parte
-              var truncatedInner = truncateHTML(item.html || '', fbest);
-              var cls = item.className ? ' class="' + item.className + '"' : '';
-              currentHTML += '<' + item.tag + cls + '>' + truncatedInner + '</' + item.tag + '>';
-              pages.push(makePage(title, currentHTML, startNum + pages.length));
-              currentHTML = '';
-              var frest = fwords.slice(fbest).join(' ');
-              if (frest.trim()) {
-                items[itemIdx] = { tag: item.tag, className: item.className, html: frest, text: frest };
-              } else { itemIdx++; }
-            } else if (currentHTML) {
-              // Ni una palabra cabe: empujar pagina actual
+            // Parrafos con spans: no dividir, mandar completos a siguiente pagina
+            if (currentHTML) {
               pages.push(makePage(title, currentHTML, startNum + pages.length));
               currentHTML = '';
             } else {
-              // Pagina vacia y no cabe nada: forzar al menos una palabra
-              var ffpart = fwords.slice(0, 1).join(' ');
-              currentHTML = renderItemHTML(item, ffpart);
+              currentHTML = itemHTML;
               pages.push(makePage(title, currentHTML, startNum + pages.length));
               currentHTML = '';
-              var ffrest = fwords.slice(1).join(' ');
-              if (ffrest.trim()) {
-                items[itemIdx] = { tag: item.tag, className: item.className, html: ffrest, text: ffrest };
-              } else { itemIdx++; }
+              itemIdx++;
             }
           } else {
             var words = (item.text || '').split(/\s+/);

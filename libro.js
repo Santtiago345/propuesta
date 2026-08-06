@@ -174,6 +174,57 @@
     return div.innerHTML;
   }
 
+  function splitHTML(html, wordCount) {
+    if (!html || wordCount <= 0) return { first: '', second: html };
+    var div1 = document.createElement('div');
+    var div2 = document.createElement('div');
+    div1.innerHTML = html;
+    div2.innerHTML = html;
+    var text = div1.textContent || '';
+    var words = text.split(/\s+/);
+    if (wordCount >= words.length) return { first: html, second: '' };
+    var targetLen = words.slice(0, wordCount).join(' ').length;
+
+    // Parte 1: truncar en div1
+    var w1 = document.createTreeWalker(div1, NodeFilter.SHOW_TEXT, null, false);
+    var count = 0, cutNode1 = null, cutOffset1 = 0;
+    while (w1.nextNode()) {
+      var node = w1.currentNode;
+      var len = node.textContent.length;
+      if (count + len >= targetLen) {
+        cutNode1 = node; cutOffset1 = targetLen - count;
+        var rest = node.textContent.substring(cutOffset1);
+        var sp = rest.indexOf(' ');
+        if (sp > -1) cutOffset1 += sp;
+        node.textContent = node.textContent.substring(0, cutOffset1);
+        while (w1.nextNode()) { w1.currentNode.parentNode.removeChild(w1.currentNode); }
+        break;
+      }
+      count += len;
+    }
+
+    // Parte 2: eliminar texto inicial en div2 hasta el punto de corte de parte 1
+    var w2 = document.createTreeWalker(div2, NodeFilter.SHOW_TEXT, null, false);
+    var count2 = 0, found = false;
+    while (w2.nextNode()) {
+      var node2 = w2.currentNode;
+      var len2 = node2.textContent.length;
+      if (!found) {
+        if (count2 + len2 > cutOffset1) {
+          // Este nodo contiene el punto de corte
+          node2.textContent = node2.textContent.substring(cutOffset1 - count2);
+          found = true;
+        } else {
+          // Nodo completo queda antes del corte: eliminarlo
+          count2 += len2;
+          node2.textContent = '';
+        }
+      }
+    }
+
+    return { first: div1.innerHTML, second: div2.innerHTML };
+  }
+
   function parseElements(elements, title, isChapter) {
     var items = [];
     if (isChapter) {
@@ -292,15 +343,37 @@
           var hasInlineHTML = item.html && item.html.indexOf('<span') >= 0;
           
           if (hasInlineHTML) {
-            // Parrafos con spans: no dividir, mandar completos a siguiente pagina
-            if (currentHTML) {
+            // Dividir preservando HTML en ambas mitades
+            var fwords = (item.text || '').split(/\s+/);
+            var flow = 1, fhigh = fwords.length, fbest = 0;
+            while (flow <= fhigh) {
+              var fmid = Math.floor((flow + fhigh) / 2);
+              var ftest = fwords.slice(0, fmid).join(' ');
+              innerEl.innerHTML = currentHTML + renderItemHTML(item, ftest);
+              if (!checkOverflow()) { fbest = fmid; flow = fmid + 1; }
+              else { fhigh = fmid - 1; }
+            }
+            if (fbest > 0) {
+              var parts = splitHTML(item.html || '', fbest);
+              var cls = item.className ? ' class="' + item.className + '"' : '';
+              currentHTML += '<' + item.tag + cls + '>' + parts.first + '</' + item.tag + '>';
+              pages.push(makePage(title, currentHTML, startNum + pages.length));
+              currentHTML = '';
+              if (parts.second.trim()) {
+                items[itemIdx] = { tag: item.tag, className: item.className, html: parts.second, text: parts.second.replace(/<[^>]+>/g, '') };
+              } else { itemIdx++; }
+            } else if (currentHTML) {
               pages.push(makePage(title, currentHTML, startNum + pages.length));
               currentHTML = '';
             } else {
-              currentHTML = itemHTML;
+              var ffpart = fwords.slice(0, 1).join(' ');
+              currentHTML = renderItemHTML(item, ffpart);
               pages.push(makePage(title, currentHTML, startNum + pages.length));
               currentHTML = '';
-              itemIdx++;
+              var ffrest = fwords.slice(1).join(' ');
+              if (ffrest.trim()) {
+                items[itemIdx] = { tag: item.tag, className: item.className, html: ffrest, text: ffrest };
+              } else { itemIdx++; }
             }
           } else {
             var words = (item.text || '').split(/\s+/);

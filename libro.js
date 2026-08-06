@@ -194,38 +194,34 @@
 
     // Parte 1: truncar en div1
     var w1 = document.createTreeWalker(div1, NodeFilter.SHOW_TEXT, null, false);
-    var count = 0, cutNode1 = null, cutOffset1 = 0;
+    var count = 0;
     while (w1.nextNode()) {
       var node = w1.currentNode;
       var len = node.textContent.length;
       if (count + len >= targetLen) {
-        cutNode1 = node; cutOffset1 = targetLen - count;
-        var rest = node.textContent.substring(cutOffset1);
+        var cutAt = targetLen - count;
+        var rest = node.textContent.substring(cutAt);
         var sp = rest.indexOf(' ');
-        if (sp > -1) cutOffset1 += sp;
-        node.textContent = node.textContent.substring(0, cutOffset1);
+        if (sp > -1) cutAt += sp;
+        node.textContent = node.textContent.substring(0, cutAt);
         while (w1.nextNode()) { w1.currentNode.parentNode.removeChild(w1.currentNode); }
         break;
       }
       count += len;
     }
 
-    // Parte 2: eliminar texto inicial en div2 hasta el punto de corte de parte 1
+    // Parte 2: eliminar texto inicial en div2 hasta targetLen
     var w2 = document.createTreeWalker(div2, NodeFilter.SHOW_TEXT, null, false);
-    var count2 = 0, found = false;
+    var count2 = 0;
     while (w2.nextNode()) {
       var node2 = w2.currentNode;
       var len2 = node2.textContent.length;
-      if (!found) {
-        if (count2 + len2 > cutOffset1) {
-          // Este nodo contiene el punto de corte
-          node2.textContent = node2.textContent.substring(cutOffset1 - count2);
-          found = true;
-        } else {
-          // Nodo completo queda antes del corte: eliminarlo
-          count2 += len2;
-          node2.textContent = '';
-        }
+      if (count2 + len2 > targetLen) {
+        node2.textContent = node2.textContent.substring(targetLen - count2);
+        break;
+      } else {
+        count2 += len2;
+        node2.textContent = '';
       }
     }
 

@@ -110,9 +110,11 @@ var Cartas = (function () {
     document.getElementById('cartaOverlay').classList.add('open');
     actualizarNav();
 
-    if (cartaAudio) {
+    if (cartaAudio && c.titulo === 'Sobre la suerte') {
       cartaAudio.currentTime = 0;
       cartaAudio.play().catch(function () {});
+    } else if (cartaAudio) {
+      cartaAudio.pause();
     }
   }
 

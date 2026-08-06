@@ -275,60 +275,61 @@
           } else {
             var words = (item.text || '').split(/\s+/);
 
-          if (words.length <= 1) {
-            if (currentHTML) {
-              pages.push(makePage(title, currentHTML, startNum + pages.length));
-              currentHTML = '';
-            } else {
-              currentHTML = itemHTML;
-              pages.push(makePage(title, currentHTML, startNum + pages.length));
-              currentHTML = '';
-              itemIdx++;
-            }
-          } else {
-            var low = 1;
-            var high = words.length;
-            var best = 0;
-
-            while (low <= high) {
-              var mid = Math.floor((low + high) / 2);
-              var testWords = words.slice(0, mid).join(' ');
-              var testHTML = currentHTML + renderItemHTML(item, testWords);
-              innerEl.innerHTML = testHTML;
-              if (!checkOverflow()) {
-                best = mid;
-                low = mid + 1;
-              } else {
-                high = mid - 1;
-              }
-            }
-
-            if (best > 0) {
-              var partWords = words.slice(0, best).join(' ');
-              currentHTML += renderItemHTML(item, partWords);
-              pages.push(makePage(title, currentHTML, startNum + pages.length));
-              currentHTML = '';
-
-              var restWords = words.slice(best).join(' ');
-              if (restWords.trim()) {
-                items[itemIdx] = { tag: item.tag, className: item.className, html: restWords, text: restWords };
-              } else {
-                itemIdx++;
-              }
-            } else {
+            if (words.length <= 1) {
               if (currentHTML) {
                 pages.push(makePage(title, currentHTML, startNum + pages.length));
                 currentHTML = '';
               } else {
-                var partWords = words.slice(0, 1).join(' ');
-                currentHTML = renderItemHTML(item, partWords);
+                currentHTML = itemHTML;
                 pages.push(makePage(title, currentHTML, startNum + pages.length));
                 currentHTML = '';
-                var restWords = words.slice(1).join(' ');
+                itemIdx++;
+              }
+            } else {
+              var low = 1;
+              var high = words.length;
+              var best = 0;
+
+              while (low <= high) {
+                var mid = Math.floor((low + high) / 2);
+                var testWords = words.slice(0, mid).join(' ');
+                var testHTML = currentHTML + renderItemHTML(item, testWords);
+                innerEl.innerHTML = testHTML;
+                if (!checkOverflow()) {
+                  best = mid;
+                  low = mid + 1;
+                } else {
+                  high = mid - 1;
+                }
+              }
+
+              if (best > 0) {
+                var partWords = words.slice(0, best).join(' ');
+                currentHTML += renderItemHTML(item, partWords);
+                pages.push(makePage(title, currentHTML, startNum + pages.length));
+                currentHTML = '';
+
+                var restWords = words.slice(best).join(' ');
                 if (restWords.trim()) {
                   items[itemIdx] = { tag: item.tag, className: item.className, html: restWords, text: restWords };
                 } else {
                   itemIdx++;
+                }
+              } else {
+                if (currentHTML) {
+                  pages.push(makePage(title, currentHTML, startNum + pages.length));
+                  currentHTML = '';
+                } else {
+                  var partWords = words.slice(0, 1).join(' ');
+                  currentHTML = renderItemHTML(item, partWords);
+                  pages.push(makePage(title, currentHTML, startNum + pages.length));
+                  currentHTML = '';
+                  var restWords = words.slice(1).join(' ');
+                  if (restWords.trim()) {
+                    items[itemIdx] = { tag: item.tag, className: item.className, html: restWords, text: restWords };
+                  } else {
+                    itemIdx++;
+                  }
                 }
               }
             }

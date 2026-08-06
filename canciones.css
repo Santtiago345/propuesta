@@ -1,0 +1,248 @@
+/* ========================================
+   CANCIONES - Vinilos
+   ======================================== */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100vw; min-height: 100vh;
+  font-family: 'Libre Baskerville', Georgia, serif;
+  background: radial-gradient(ellipse at 50% 30%, #1a1028 0%, #0d0518 60%, #050210 100%);
+  overflow-x: hidden;
+}
+
+.vinyl-scene {
+  min-height: 100vh;
+  padding: 6rem 2rem 3rem;
+}
+
+.vinyl-title-wrap {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.vinyl-main-title {
+  color: #c084fc;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 700;
+}
+
+.vinyl-subtitle {
+  color: #a78bfa;
+  font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+  margin-top: 0.5rem;
+  opacity: 0.8;
+}
+
+/* ── GRID ── */
+.vinyl-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* ── VINILO ── */
+.vinyl-wrapper {
+  position: relative;
+  width: 240px;
+  height: 280px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vinyl-disc {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at center,
+    #1a1a1a 0%, #1a1a1a 28%,
+    #2a2a2a 28.5%, #111 30%, #222 32%, #111 34%, #222 36%,
+    #111 38%, #222 40%, #111 42%, #222 44%, #111 46%, #222 48%,
+    #111 50%, #222 52%, #111 54%, #222 56%, #111 58%, #222 60%,
+    #111 62%, #222 64%, #111 66%, #222 68%, #111 70%, #222 72%,
+    #111 74%, #222 76%, #111 78%, #222 80%, #111 82%, #222 84%,
+    #111 86%, #222 88%, #111 90%, #222 92%, #111 94%, #222 96%,
+    #111 98%, #222 100%
+  );
+  box-shadow:
+    0 0 0 8px #0a0a0a,
+    0 0 0 10px #1a1a1a,
+    0 8px 30px rgba(0,0,0,0.5);
+  position: relative;
+  transition: transform 0.4s ease;
+}
+
+.vinyl-wrapper:hover .vinyl-disc {
+  transform: scale(1.06);
+}
+
+.vinyl-disc.spinning {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.vinyl-label {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70px; height: 70px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #7c3aed, #5b21b6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+}
+
+.vinyl-song {
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  padding: 4px;
+}
+
+/* ── BRAZO ── */
+.vinyl-arm {
+  position: absolute;
+  top: 10px;
+  right: -10px;
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, #888, #ccc, #888);
+  border-radius: 2px;
+  transform: rotate(-25deg);
+  transform-origin: right center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.vinyl-arm::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: -4px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: #ccc;
+}
+
+/* ── OVERLAY ── */
+.lyrics-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.lyrics-overlay.open {
+  display: flex;
+}
+
+.lyrics-panel {
+  background: #1a1028;
+  border: 1px solid rgba(124,58,237,0.3);
+  border-radius: 16px;
+  width: 90vw;
+  max-width: 600px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  animation: vinylOpen 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes vinylOpen {
+  from { opacity: 0; transform: scale(0.92) translateY(16px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.lyrics-close {
+  position: absolute;
+  top: 12px; right: 14px;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: #e9d5ff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  z-index: 5;
+  transition: 0.2s;
+}
+.lyrics-close:hover { background: rgba(255,255,255,0.2); }
+
+.lyrics-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 2rem 0.5rem;
+  border-bottom: 1px solid rgba(124,58,237,0.15);
+}
+
+.lyrics-header h2 {
+  color: #c084fc;
+  font-size: 1.3rem;
+  font-weight: 700;
+  flex: 1;
+}
+
+.lyrics-spinning-vinyl {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, #1a1a1a 0%, #1a1a1a 35%, #2a2a2a 36%, #111 50%, #222 51%);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.lyrics-spinning-vinyl.spinning {
+  animation: spin 3s linear infinite;
+}
+
+.mini-label {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: #7c3aed;
+}
+
+.lyrics-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem 2rem 2rem;
+  color: #e9d5ff;
+  font-size: 0.9rem;
+  line-height: 1.8;
+  white-space: pre-line;
+  text-align: center;
+  font-style: italic;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .vinyl-disc { width: 180px; height: 180px; }
+  .vinyl-label { width: 56px; height: 56px; }
+  .vinyl-song { font-size: 0.5rem; }
+  .vinyl-wrapper { width: 200px; height: 240px; }
+  .vinyl-grid { gap: 2rem; }
+  .lyrics-panel { width: 95vw; }
+}

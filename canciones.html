@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Canciones</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="canciones.css" />
+</head>
+<body>
+
+  <a href="index.html" class="fixed top-4 left-4 z-50 bg-white bg-opacity-80 text-purple-700 px-4 py-2 rounded-full text-sm font-semibold shadow hover:bg-purple-100 transition no-underline">
+    ← Inicio
+  </a>
+
+  <!-- Video oculto para reproducir solo audio -->
+  <video id="audioSource" src="VID_20251121_221539.mp4" preload="auto" style="display:none"></video>
+
+  <div class="vinyl-scene">
+
+    <div class="vinyl-title-wrap">
+      <h1 class="vinyl-main-title">Canciones</h1>
+      <p class="vinyl-subtitle">Toca un vinilo para escuchar</p>
+    </div>
+
+    <div class="vinyl-grid" id="vinylGrid">
+
+      <!-- Vinilo 1: Maldito enero -->
+      <div class="vinyl-wrapper" onclick="Canciones.abrir(0)">
+        <div class="vinyl-disc" id="vinylDisc0">
+          <div class="vinyl-grooves"></div>
+          <div class="vinyl-label">
+            <span class="vinyl-song">Maldito enero</span>
+          </div>
+        </div>
+        <div class="vinyl-arm"></div>
+      </div>
+
+    </div>
+
+    <!-- Overlay de letra -->
+    <div class="lyrics-overlay" id="lyricsOverlay">
+      <div class="lyrics-panel">
+        <button class="lyrics-close" onclick="Canciones.cerrar()">✕</button>
+        <div class="lyrics-header">
+          <h2 id="lyricsTitle"></h2>
+          <div class="lyrics-spinning-vinyl" id="lyricsMiniVinyl">
+            <div class="mini-grooves"></div>
+            <div class="mini-label"></div>
+          </div>
+        </div>
+        <div class="lyrics-content" id="lyricsContent"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="canciones.js"></script>
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

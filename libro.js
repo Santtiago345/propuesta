@@ -263,31 +263,40 @@
           var hasInlineHTML = item.html && item.html.indexOf('<span') >= 0;
           
           if (hasInlineHTML) {
-            // Intentar no dividir spans, pero si no cabe ni en pagina vacia, partir
-            if (currentHTML) {
-              pages.push(makePage(title, currentHTML, startNum + pages.length));
-              currentHTML = '';
-            } else {
-              // No cabe ni en pagina vacia: partir a la fuerza
-              var fwords = (item.text || '').split(/\s+/);
-              var flow = 1, fhigh = fwords.length, fbest = 1;
-              while (flow <= fhigh) {
-                var fmid = Math.floor((flow + fhigh) / 2);
-                var ftest = fwords.slice(0, fmid).join(' ');
-                innerEl.innerHTML = renderItemHTML(item, ftest);
-                if (!checkOverflow()) { fbest = fmid; flow = fmid + 1; }
-                else { fhigh = fmid - 1; }
-              }
+            // Intentar llenar el espacio restante con palabras del span
+            var fwords = (item.text || '').split(/\s+/);
+            var flow = 1, fhigh = fwords.length, fbest = 0;
+            while (flow <= fhigh) {
+              var fmid = Math.floor((flow + fhigh) / 2);
+              var ftest = fwords.slice(0, fmid).join(' ');
+              innerEl.innerHTML = currentHTML + renderItemHTML(item, ftest);
+              if (!checkOverflow()) { fbest = fmid; flow = fmid + 1; }
+              else { fhigh = fmid - 1; }
+            }
+            if (fbest > 0) {
+              // Algunas palabras caben: dividir aqui
               var fpart = fwords.slice(0, fbest).join(' ');
-              currentHTML = renderItemHTML(item, fpart);
+              currentHTML += renderItemHTML(item, fpart);
               pages.push(makePage(title, currentHTML, startNum + pages.length));
               currentHTML = '';
               var frest = fwords.slice(fbest).join(' ');
               if (frest.trim()) {
                 items[itemIdx] = { tag: item.tag, className: item.className, html: frest, text: frest };
-              } else {
-                itemIdx++;
-              }
+              } else { itemIdx++; }
+            } else if (currentHTML) {
+              // Ni una palabra cabe: empujar pagina actual
+              pages.push(makePage(title, currentHTML, startNum + pages.length));
+              currentHTML = '';
+            } else {
+              // Pagina vacia y no cabe nada: forzar al menos una palabra
+              var ffpart = fwords.slice(0, 1).join(' ');
+              currentHTML = renderItemHTML(item, ffpart);
+              pages.push(makePage(title, currentHTML, startNum + pages.length));
+              currentHTML = '';
+              var ffrest = fwords.slice(1).join(' ');
+              if (ffrest.trim()) {
+                items[itemIdx] = { tag: item.tag, className: item.className, html: ffrest, text: ffrest };
+              } else { itemIdx++; }
             }
           } else {
             var words = (item.text || '').split(/\s+/);

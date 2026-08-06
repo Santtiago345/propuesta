@@ -4,6 +4,7 @@ var Canciones = (function () {
   var canciones = [
     {
       titulo: 'Maldito enero',
+      archivo: 'maldito-enero.mp3',
       letra:
         'Dime que me vaya ya\nTe prometo nunca regresar por ti\nDime que no volver\u00e1s\n\n' +
         'Estoy cansado de esperarte aqu\u00ed\n\n' +
@@ -14,11 +15,21 @@ var Canciones = (function () {
         'Dime que me acompa\u00f1as\nEn cada d\u00eda al despertar\nDime cuando regresas\nPor ti te espero hasta el final\n\n' +
         'Porque si t\u00fa te vas, no estar\u00e9 en paz\n\n' +
         'Dime, que las flores que te hice est\u00e1n guardadas\nDime, que me esperas cuando miras por ventanas\nDime, que ma\u00f1ana no tienes que hacer nada\nY te llego con todo el amor que te tengo\nQue respira por mis poros y que huelo\nQue me lleva a cantar con mariposas\nA volar con ella y posarme en rosas\nDime por favor que no tengo que olvidarme de esto\nDime por favor que el amor seguir\u00e1 siendo nuestro\nDime que vas a leer el libro en alg\u00fan enero\nMaldito enero'
+    },
+    {
+      titulo: 'Solecito',
+      archivo: 'solecito.mp3',
+      letra:
+        'Me siento tan bien cuando aqu\u00ed est\u00e1s\nMe emociono tanto, se me va el respirar\nTienes algo que me da tranquilidad\nEres el lugar seguro donde quiero estar\n\n' +
+        'Y yo de ti no pienso huir\nY por esa raz\u00f3n yo te quer\u00eda decir\nQue tu cabello rima con el Sol\nQue si quiero estar con alguien, esa sos vos\n\n' +
+        'Que yo me arriesgo a darte mi coraz\u00f3n\nPorque por vos estoy que estallo de amor\nY los planetas bailan a tu alrededor\nEn las ma\u00f1anas t\u00fa eres mi Sol\n\n' +
+        'Le das luz y vida a mi girasol\nY a m\u00ed me das esperanza y amor\nY yo de ti no pienso huir\nPor esa raz\u00f3n yo te quer\u00eda decir\n\n' +
+        'Que tu cabello rima con el Sol\nQue si quiero estar con alguien, esa sos vos\nQue yo me arriesgo a darte mi coraz\u00f3n\nPorque por vos estoy que estallo de amor'
     }
   ];
 
   var currentIndex = -1;
-  var videoEl = document.getElementById('audioSource');
+  var audioEl = document.getElementById('audioSource');
 
   function abrir(index) {
     if (index < 0 || index >= canciones.length) return;
@@ -36,10 +47,11 @@ var Canciones = (function () {
     // Girar mini vinilo en overlay
     document.getElementById('lyricsMiniVinyl').classList.add('spinning');
 
-    // Reproducir audio del video
-    if (videoEl) {
-      videoEl.currentTime = 0;
-      videoEl.play().catch(function () {});
+    // Reproducir audio de la cancion
+    if (audioEl) {
+      audioEl.src = c.archivo;
+      audioEl.load();
+      audioEl.play().catch(function () {});
     }
   }
 
@@ -55,8 +67,8 @@ var Canciones = (function () {
     document.getElementById('lyricsMiniVinyl').classList.remove('spinning');
 
     // Pausar audio
-    if (videoEl) {
-      videoEl.pause();
+    if (audioEl) {
+      audioEl.pause();
     }
 
     currentIndex = -1;

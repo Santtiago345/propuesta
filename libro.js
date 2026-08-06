@@ -183,49 +183,58 @@
 
   function splitHTML(html, wordCount) {
     if (!html || wordCount <= 0) return { first: '', second: html };
-    var div1 = document.createElement('div');
-    var div2 = document.createElement('div');
-    div1.innerHTML = html;
-    div2.innerHTML = html;
-    var text = div1.textContent || '';
-    var words = text.split(/\s+/);
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    var fullText = div.textContent || '';
+    var words = fullText.split(/\s+/);
     if (wordCount >= words.length) return { first: html, second: '' };
-    var targetLen = words.slice(0, wordCount).join(' ').length;
+    var targetStr = words.slice(0, wordCount).join(' ');
+    var targetLen = targetStr.length;
 
-    // Parte 1: truncar en div1
-    var w1 = document.createTreeWalker(div1, NodeFilter.SHOW_TEXT, null, false);
+    // Clonar para parte 2
+    var d2 = div.cloneNode(true);
+
+    // Parte 1: eliminar todo texto despues de targetLen
+    splitAt(div, targetLen, 'first');
+    // Parte 2: eliminar todo texto antes de targetLen
+    splitAt(d2, targetLen, 'second');
+
+    return { first: div.innerHTML, second: d2.innerHTML };
+  }
+
+  function splitAt(root, charPos, part) {
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
     var count = 0;
-    while (w1.nextNode()) {
-      var node = w1.currentNode;
+    var nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+
+    for (var i = 0; i < nodes.length; i++) {
+      var node = nodes[i];
       var len = node.textContent.length;
-      if (count + len >= targetLen) {
-        var cutAt = targetLen - count;
-        var rest = node.textContent.substring(cutAt);
-        var sp = rest.indexOf(' ');
-        if (sp > -1) cutAt += sp;
-        node.textContent = node.textContent.substring(0, cutAt);
-        while (w1.nextNode()) { w1.currentNode.parentNode.removeChild(w1.currentNode); }
+      if (count + len > charPos) {
+        var local = charPos - count;
+        if (part === 'first') {
+          // Cortar este nodo y eliminar siguientes
+          var after = node.textContent.substring(local);
+          var sp = after.search(/\S/);
+          if (sp === -1) sp = after.length;
+          node.textContent = node.textContent.substring(0, local + sp);
+          for (var j = i + 1; j < nodes.length; j++) {
+            var p = nodes[j].parentNode;
+            if (p) p.removeChild(nodes[j]);
+          }
+        } else {
+          // Eliminar nodos anteriores y cortar este
+          for (var k = 0; k < i; k++) {
+            var pk = nodes[k].parentNode;
+            if (pk) pk.removeChild(nodes[k]);
+          }
+          node.textContent = node.textContent.substring(local);
+        }
         break;
       }
       count += len;
     }
-
-    // Parte 2: eliminar texto inicial en div2 hasta targetLen
-    var w2 = document.createTreeWalker(div2, NodeFilter.SHOW_TEXT, null, false);
-    var count2 = 0;
-    while (w2.nextNode()) {
-      var node2 = w2.currentNode;
-      var len2 = node2.textContent.length;
-      if (count2 + len2 > targetLen) {
-        node2.textContent = node2.textContent.substring(targetLen - count2);
-        break;
-      } else {
-        count2 += len2;
-        node2.textContent = '';
-      }
-    }
-
-    return { first: div1.innerHTML, second: div2.innerHTML };
   }
 
   function parseElements(elements, title, isChapter) {
@@ -346,15 +355,37 @@
           var hasInlineHTML = item.html && item.html.indexOf('<span') >= 0;
           
           if (hasInlineHTML) {
-            // Parrafos con spans: no se dividen, se mueven completos
-            if (currentHTML) {
+            // Dividir preservando HTML con splitHTML corregido
+            var fwords = (item.text || '').split(/\s+/);
+            var flow = 1, fhigh = fwords.length, fbest = 0;
+            while (flow <= fhigh) {
+              var fmid = Math.floor((flow + fhigh) / 2);
+              var ftest = fwords.slice(0, fmid).join(' ');
+              innerEl.innerHTML = currentHTML + renderItemHTML(item, ftest);
+              if (!checkOverflow()) { fbest = fmid; flow = fmid + 1; }
+              else { fhigh = fmid - 1; }
+            }
+            if (fbest > 0) {
+              var parts = splitHTML(item.html || '', fbest);
+              var cls = item.className ? ' class="' + item.className + '"' : '';
+              currentHTML += '<' + item.tag + cls + '>' + parts.first + '</' + item.tag + '>';
+              pages.push(makePage(title, currentHTML, startNum + pages.length));
+              currentHTML = '';
+              if (parts.second.trim()) {
+                items[itemIdx] = { tag: item.tag, className: item.className, html: parts.second, text: parts.second.replace(/<[^>]+>/g, '') };
+              } else { itemIdx++; }
+            } else if (currentHTML) {
               pages.push(makePage(title, currentHTML, startNum + pages.length));
               currentHTML = '';
             } else {
-              currentHTML = itemHTML;
+              var ffpart = fwords.slice(0, 1).join(' ');
+              currentHTML = renderItemHTML(item, ffpart);
               pages.push(makePage(title, currentHTML, startNum + pages.length));
               currentHTML = '';
-              itemIdx++;
+              var ffrest = fwords.slice(1).join(' ');
+              if (ffrest.trim()) {
+                items[itemIdx] = { tag: item.tag, className: item.className, html: ffrest, text: ffrest };
+              } else { itemIdx++; }
             }
           } else {
             var words = (item.text || '').split(/\s+/);

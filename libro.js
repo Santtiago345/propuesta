@@ -263,15 +263,31 @@
           var hasInlineHTML = item.html && item.html.indexOf('<span') >= 0;
           
           if (hasInlineHTML) {
-            // No dividir: mandar a siguiente pagina completo
+            // Intentar no dividir spans, pero si no cabe ni en pagina vacia, partir
             if (currentHTML) {
               pages.push(makePage(title, currentHTML, startNum + pages.length));
               currentHTML = '';
             } else {
-              currentHTML = itemHTML;
+              // No cabe ni en pagina vacia: partir a la fuerza
+              var fwords = (item.text || '').split(/\s+/);
+              var flow = 1, fhigh = fwords.length, fbest = 1;
+              while (flow <= fhigh) {
+                var fmid = Math.floor((flow + fhigh) / 2);
+                var ftest = fwords.slice(0, fmid).join(' ');
+                innerEl.innerHTML = renderItemHTML(item, ftest);
+                if (!checkOverflow()) { fbest = fmid; flow = fmid + 1; }
+                else { fhigh = fmid - 1; }
+              }
+              var fpart = fwords.slice(0, fbest).join(' ');
+              currentHTML = renderItemHTML(item, fpart);
               pages.push(makePage(title, currentHTML, startNum + pages.length));
               currentHTML = '';
-              itemIdx++;
+              var frest = fwords.slice(fbest).join(' ');
+              if (frest.trim()) {
+                items[itemIdx] = { tag: item.tag, className: item.className, html: frest, text: frest };
+              } else {
+                itemIdx++;
+              }
             }
           } else {
             var words = (item.text || '').split(/\s+/);

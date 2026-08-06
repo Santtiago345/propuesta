@@ -169,17 +169,21 @@
   function domToItem(node) {
     var tag = node.tagName.toLowerCase();
     var className = node.className || '';
+    var outer = node.outerHTML;
     if (tag === 'ul') {
       var listItems = [];
       Array.from(node.children).forEach(function (li) {
         listItems.push(li.innerHTML || li.textContent);
       });
-      return { tag: 'ul', className: className, listItems: listItems };
+      return { tag: 'ul', className: className, outerHTML: outer, listItems: listItems };
     }
-    return { tag: tag, className: className, html: node.innerHTML, text: node.textContent || node.innerText };
+    return { tag: tag, className: className, outerHTML: outer, html: node.innerHTML, text: node.textContent || node.innerText };
   }
 
   function renderItemHTML(item, overrideContent) {
+    if (overrideContent === undefined && item.outerHTML) {
+      return item.outerHTML;
+    }
     var cls = item.className ? ' class="' + item.className + '"' : '';
     if (item.tag === 'ul') {
       var lis = (overrideContent || item.listItems).map(function (li) {

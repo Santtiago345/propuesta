@@ -386,14 +386,17 @@ body {
   transform: translateX(-50%);
   background: #2d1b4e;
   color: #e9d5ff;
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: 6px;
   font-size: 0.65rem;
   font-style: italic;
-  white-space: nowrap;
+  white-space: normal;
+  max-width: 260px;
+  text-align: center;
   z-index: 10;
   pointer-events: none;
   font-family: 'Libre Baskerville', Georgia, serif;
+  word-wrap: break-word;
 }
 
 /* ── AUDIO BTN ── */

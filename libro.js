@@ -683,15 +683,15 @@
 
   function saveToLocalStorage() {
     try {
-      localStorage.setItem('flipbook_intro_v3', JSON.stringify(introParagraphs));
-      localStorage.setItem('flipbook_chapters_v3', JSON.stringify(chapters));
+      localStorage.setItem('flipbook_intro_v4', JSON.stringify(introParagraphs));
+      localStorage.setItem('flipbook_chapters_v4', JSON.stringify(chapters));
     } catch (e) { }
   }
 
   function loadFromLocalStorage() {
     try {
-      var savedIntro = localStorage.getItem('flipbook_intro_v3');
-      var savedChap = localStorage.getItem('flipbook_chapters_v3');
+      var savedIntro = localStorage.getItem('flipbook_intro_v4');
+      var savedChap = localStorage.getItem('flipbook_chapters_v4');
       if (savedIntro) {
         var parsedI = JSON.parse(savedIntro);
         if (Array.isArray(parsedI) && parsedI.length > 0) introParagraphs = parsedI;

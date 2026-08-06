@@ -224,6 +224,22 @@ html, body {
   font-size: 0.8rem;
 }
 
+/* ── FOLDER ── */
+.folder-card .folder-front {
+  background: linear-gradient(145deg, #f0e6d3, #e8d8c0, #dfc9a8);
+  border: 1px solid rgba(180,140,80,0.3);
+}
+
+.back-card .back-front {
+  background: linear-gradient(145deg, #e9d5ff, #dcc4f0, #c4a8e0);
+  border: 1px solid rgba(124,58,237,0.3);
+}
+
+.back-card .carta-seal {
+  font-size: 1.5rem;
+  animation: none;
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 640px) {
   .cartas-scene { padding: 5rem 1rem 2rem; }

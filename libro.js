@@ -145,6 +145,35 @@
     return d;
   }
 
+  function truncateHTML(html, wordCount) {
+    if (!html || wordCount <= 0) return '';
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    var text = div.textContent || '';
+    var words = text.split(/\s+/);
+    if (wordCount >= words.length) return html;
+    var targetLen = words.slice(0, wordCount).join(' ').length;
+    var walker = document.createTreeWalker(div, NodeFilter.SHOW_TEXT, null, false);
+    var count = 0;
+    while (walker.nextNode()) {
+      var node = walker.currentNode;
+      var len = node.textContent.length;
+      if (count + len >= targetLen) {
+        var cut = targetLen - count;
+        var rest = node.textContent.substring(cut);
+        var sp = rest.indexOf(' ');
+        if (sp > -1) cut += sp;
+        node.textContent = node.textContent.substring(0, cut);
+        while (walker.nextNode()) {
+          walker.currentNode.parentNode.removeChild(walker.currentNode);
+        }
+        break;
+      }
+      count += len;
+    }
+    return div.innerHTML;
+  }
+
   function parseElements(elements, title, isChapter) {
     var items = [];
     if (isChapter) {
@@ -274,9 +303,10 @@
               else { fhigh = fmid - 1; }
             }
             if (fbest > 0) {
-              // Algunas palabras caben: dividir aqui
-              var fpart = fwords.slice(0, fbest).join(' ');
-              currentHTML += renderItemHTML(item, fpart);
+              // Preservar HTML del span en la primera parte
+              var truncatedInner = truncateHTML(item.html || '', fbest);
+              var cls = item.className ? ' class="' + item.className + '"' : '';
+              currentHTML += '<' + item.tag + cls + '>' + truncatedInner + '</' + item.tag + '>';
               pages.push(makePage(title, currentHTML, startNum + pages.length));
               currentHTML = '';
               var frest = fwords.slice(fbest).join(' ');

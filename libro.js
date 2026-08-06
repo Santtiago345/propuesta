@@ -50,7 +50,21 @@
     },
     { title: 'Cap\u00edtulo 5', html: '<p></p>' },
     { title: 'Cap\u00edtulo 6', html: '<p></p>' },
-    { title: 'Cap\u00edtulo 7', html: '<p></p>' },
+    { title: 'Cap\u00edtulo 7: This Is Home', hdr: 'This Is Home', html:
+      '<div class="audio-btn-wrap">' +
+        '<button class="audio-btn" id="audioBtn7" onclick="Flipbook.toggleAudio()" title="Reproducir / Pausar">&#9654;</button>' +
+        '<span class="audio-label">This Is Home \u2014 Cavetown</span>' +
+      '</div>' +
+      '<p>Arribada una de esas tristezas de las que me obliga estrictamente a sacarla a patadas con canciones o palabras me encuentro escuchando hace casi dos o tres horas la misma canci\u00f3n. This Is Home de Cavetown, cuando la escuch\u00e9 por primera vez en v\u00edsperas de la pandemia en esa extra\u00f1a \u00e9poca en que escuchaba todas las semanas la lista de canciones nuevas recomendadas, me gust\u00f3 por su tristeza, s\u00ed, por su tristeza. La tristeza es de esos sentimientos que me conmueven por su poder, fuera del amor es el sentimiento m\u00e1s poderoso, ese que tiene la omnipotencia de darnos licencia de no lavarnos la cara por las noches o a veces olvidar de cepillar los dientes. Ese poder de desdibujar alg\u00fan otro y componer la canci\u00f3n m\u00e1s triste del mundo, o solo cantarlas. Tanto as\u00ed que es de mis listas favoritas, la mitad de mis canciones favoritas son tristes; Creep, Til Kingdom Come, The Night We Met, Abrazado A Ti, Lugares Incorrectos, Midnight Train, Moldes, Acurrucar, Hasta La Piel, Cuando Me Vaya y por supuesto, This Is Home. De esas canciones inmemoriales aunque solo sea un ukelele y un chico con voz aguda confundida con la de una chica. Es extra\u00f1o que una canci\u00f3n se adapte exactamente a lo que est\u00e1 sucediendo en tu coraz\u00f3n, pero es a\u00fan m\u00e1s extra\u00f1o que se adapte a lo que siente otra persona y t\u00fa lo sepas, o bueno, lo supongo. Escucho y solo siento que te gustar\u00eda, empieza con la idea de la molestia por no poder enamorarse y el siguiente verso suscita que al menos eso evita el estr\u00e9s de un coraz\u00f3n roto, rozando por palabras el arromanticismo. Tal vez tenga que algo que ver el nombre, me da una sensaci\u00f3n de casa, de esa vulnerabilidad que solo puedes mostrarla donde compartes tus momentos m\u00e1s \u00edntimos, ser\u00eda de esas que me dificultar\u00eda poder cantar en conciertos o en alg\u00fan lugar lleno de personas que no las sienta m\u00edas porque ver\u00edan de reojo mi coraz\u00f3n magullado.</p>' +
+      '<div class="lyric-block">Are you tired of me yet?</div>' +
+      '<p>En el proceso de sacar mi tristeza a patadas, me respondo esa primera pregunta a m\u00ed mismo <span class="linked-phrase" data-tip="Are you tired of me yet?">\u2014\u201cYa est\u00e1s cansada de m\u00ed?\u201d\u2014</span> tratando de ser optimista, con el deseo de meterme a tu cabeza y responderme, claro est\u00e1. Justamente esta parte se adapta a lo que siento en algunas ocasiones, entiendo de sobremesa que no llega a ser sencillo quererme ni mucho menos tratar mi ambivalencia o mis gestos que a\u00fan no s\u00e9 bien del todo c\u00f3mo transmit\u00edrtelos sin agobiar tu am\u00edgdala cerebral.</p>' +
+      '<div class="lyric-block">Get a load of this monster\nHe doesn\'t know how to communicate\nHis mind is in a different place\nWill everybody please give him a little bit of space</div>' +
+      '<p>Recuerdo cuando te dije que mis canciones favoritas en su mayor\u00eda sol\u00edan ser tristes, te pareci\u00f3 extra\u00f1o y no te culpo, tal vez te est\u00e9 obligando a escuchar esta canci\u00f3n mientras lees el cap\u00edtulo presente y me disculpo por ello. Esta extra\u00f1eza surge de algo de lo que no estoy seguro y nunca he compartido contigo, esta parte de la canci\u00f3n <span class="linked-phrase" data-tip="Get a load of this monster \u2014 He doesn\'t know how to communicate">\u2014\u201cMiren a este monstruo, \u00e9l no sabe c\u00f3mo comunicarse\u201d\u2014</span> es de aquellas que muy bien sin haberlas le\u00eddo o escuchado, hubiese podido escribirlas en estas tardes grises de lluvia, m\u00e1s por el hecho de que Cavetown lo retrata en tercera persona como una autoimagen de s\u00ed. Hay un monstruo miedoso \u2014como ese con el que nos asustaban de peque\u00f1os para que durmi\u00e9ramos temprano\u2014 que en ocasiones no me deja dormir, ir\u00f3nicamente. Aquel monstruo quisiera verlo de igual manera como fuera de m\u00ed en forma de autocr\u00edtica, pero se me complica, est\u00e1 tan interiorizado que me ha hecho enamorarme de la tristeza y por ello, me acomodo en lo que ella comparte.</p>' +
+      '<div class="lyric-block">I\'ll cut my hair</div>' +
+      '<p>El coro dice que <span class="linked-phrase" data-tip="I\'ll cut my hair">cortar\u00e1 su cabello</span>, como interpretaci\u00f3n lo tomo de la manera en que se hacen cosas para que funcione una relaci\u00f3n, encontrar esa manera de sacarnos de ese lugar l\u00fagubre donde caen com\u00fanmente las relaciones donde cometen ese error fatal de tratar el amor por costumbre o por el inminente miedo de estar en soledad. Repudio ese lugar como pocas cosas en la vida, repudio las mentiras y repudio a esos que odian amar pero quieren ser amados.</p>' +
+      '<p><span class="linked-phrase" data-tip="His mind is in a different place \u2014 Will everybody please give him a little bit of space">Mi mente puede estar en diferentes lugares</span>, en ocasiones en una introspecci\u00f3n intensa lo que me lleva a perderme en pensamientos o tomar muy como m\u00edas canciones de este estilo, pero s\u00e9 que el amor todo lo puede, en alg\u00fan momento este monstruo se ir\u00e1, ya no ser\u00e9 doliente de \u00e9l, <span class="linked-phrase" data-tip="I\'m a little sick right now, but I swear \u2014 When I\'m ready I will fly us out of here">y cuando est\u00e9 listo, prometo sacarnos volando de aqu\u00ed y me cortar\u00e9 el pelo.</span></p>' +
+      '<p>Me sienta ese miedo que se ha apoderado de m\u00ed en los \u00faltimos meses de que todo esto te parezca demasiado, que un libro sea lo suficientemente cursi para que no te guste o te genere aversi\u00f3n, o ni siquiera s\u00e9 si vas a leer esto para alguna ocasi\u00f3n especial como lo planeo o a tus 35 a\u00f1os en el sill\u00f3n largo de tu casa tom\u00e1ndote un caf\u00e9 en tu taza rara color pastel y teniendo el recuerdo de mi paso por tu vida como una estrella fugaz o ese helado delicioso que no volviste a encontrar. Lo \u00fanico que s\u00e9 es que este es mi burdo intento de apantallar mis sentimientos y encontrar esa manera de no atosigarte con mis vivaces sentires, no es que no lo quiera, es que a\u00fan estoy aprendiendo a quererte.</p>'
+    },
     { title: 'Cap\u00edtulo 8', html: '<p></p>' },
     { title: 'Cap\u00edtulo 9', html: '<p></p>' },
     { title: 'Cap\u00edtulo 10', html: '<p></p>' }
@@ -829,6 +843,18 @@
     flipNext: function () { if (pageFlip) pageFlip.flipNext('bottom'); },
     flipPrev: function () { if (pageFlip) pageFlip.flipPrev('bottom'); },
     goToPage: function (n) { if (pageFlip) pageFlip.flip(n, 'bottom'); },
-    isReady: function () { return pageFlip !== null; }
+    isReady: function () { return pageFlip !== null; },
+    toggleAudio: function () {
+      var audio = document.getElementById('bgAudio');
+      var btn = document.getElementById('audioBtn7');
+      if (!audio) return;
+      if (audio.paused) {
+        audio.play();
+        if (btn) { btn.classList.add('playing'); btn.innerHTML = '&#9646;&#9646;'; }
+      } else {
+        audio.pause();
+        if (btn) { btn.classList.remove('playing'); btn.innerHTML = '&#9654;'; }
+      }
+    }
   };
 })();
